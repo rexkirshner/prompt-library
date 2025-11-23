@@ -237,6 +237,181 @@ mkdir -p docs && mv reference docs/
 
 ---
 
+## 2025-11-23 - /review-context - Bug 🐛
+
+**What happened**: Step 1.5 version check script fails with shell parsing errors on macOS
+
+**Expected behavior**: Version check should compare current version (3.4.0) with latest GitHub version and prompt for update if newer version available
+
+**Actual behavior**: Shell script throws parsing error:
+```
+(eval):1: parse error near `)'
+```
+
+**Steps to reproduce**:
+1. Run `/review-context` on macOS with zsh
+2. Observe failure at Step 1.5 when checking for system updates
+3. Script attempts to use `get_system_version` function from common-functions.sh
+4. Parsing fails, likely due to function syntax incompatibility
+
+**Root cause analysis**:
+The command uses:
+```bash
+CURRENT_VERSION=$(get_system_version)
+```
+
+But `get_system_version` may have syntax incompatible with zsh or the function isn't properly sourced/exported.
+
+**Suggestion**:
+1. Add error handling for version check failures - don't block review if network/parsing fails
+2. Simplify version extraction to avoid function dependency:
+```bash
+CURRENT_VERSION=$(grep -m 1 '"version":' context/.context-config.json | sed 's/.*"version": "\([^"]*\)".*/\1/' 2>/dev/null || cat VERSION 2>/dev/null || echo "unknown")
+```
+3. Make version check truly non-blocking with fallback message
+4. Test shell compatibility (bash vs zsh) for all script components
+
+**Impact**: Review continues successfully even with this error (non-blocking), but users miss update notifications.
+
+**Severity**: 🟡 Moderate (workaround: version check fails silently, review completes successfully)
+
+**Environment**:
+- OS: macOS Darwin 24.6.0 (zsh shell)
+- Claude Code: Claude Sonnet 4.5
+- CCS: 3.4.0
+
+---
+
+## 2025-11-23 - /review-context - Improvement 💡
+
+**What happened**: Step 2.7 decision documentation check produces minor shell errors when counting decisions
+
+**Expected behavior**: Clean output showing decision count vs commit count analysis
+
+**Actual behavior**: Works correctly but shows shell evaluation errors:
+```
+(eval):[:17: integer expression expected: 0\n0
+(eval):[:20: integer expression expected: 0\n0
+```
+
+**Root cause**: The `grep -c` command is outputting "0\n0" instead of just "0", causing integer comparison to fail.
+
+**Suggestion**:
+1. Add `| head -1` or use `grep -c` more carefully:
+```bash
+DECISION_COUNT=$(grep -c "^### D[0-9]" "$CONTEXT_DIR/DECISIONS.md" 2>/dev/null | head -1 || echo "0")
+```
+2. Alternatively, use a more robust pattern:
+```bash
+DECISION_COUNT=$(grep "^### D[0-9]" "$CONTEXT_DIR/DECISIONS.md" 2>/dev/null | wc -l | tr -d ' ')
+```
+
+**Impact**: Functionality works (reports correct decision count), just produces cosmetic error messages.
+
+**Severity**: 🟢 Minor (cosmetic issue, doesn't affect functionality)
+
+**Environment**:
+- OS: macOS Darwin 24.6.0 (zsh shell)
+- Claude Code: Claude Sonnet 4.5
+- CCS: 3.4.0
+
+---
+
+## 2025-11-23 - /review-context - Praise 👍
+
+**What happened**: Despite the minor shell errors above, `/review-context` executed successfully and provided an excellent comprehensive analysis
+
+**Why it's great**:
+
+1. **Smart SESSIONS.md loading strategy** - Checks file size first and loads appropriately:
+   - <1000 lines: full read
+   - 1000-5000 lines: strategic (index + recent)
+   - >5000 lines: minimal (index + current only)
+   - This prevents token limit crashes on large files - brilliant!
+
+2. **Documentation staleness check** (v3.3.0 feature):
+   - Color-coded freshness indicators (🟢 ≤7 days, 🟡 8-14 days, 🔴 >14 days)
+   - Proactive detection of stale docs before they become problems
+   - Module README check (would verify src/modules/*/README.md existence)
+   - Decision documentation coverage heuristic (1 decision per ~25 commits)
+
+3. **Comprehensive confidence scoring** (0-100):
+   - Completeness: 0-30 points
+   - Accuracy: 0-30 points
+   - Consistency: 0-20 points
+   - Recency: 0-20 points
+   - Clear thresholds for action (90+ perfect, 75-89 good, 60-74 adequate, <60 critical)
+
+4. **Critical protocol reminder** at session start:
+   - PUSH_APPROVED = false flag
+   - Clear explanation of git push permission protocol
+   - Prevents accidental pushes that trigger builds/deployments
+
+5. **Actionable recommendations**:
+   - Specific issues found with severity levels
+   - Clear resume point identification
+   - Prioritized next steps from STATUS.md
+   - Suggested actions to improve documentation
+
+6. **Git workflow reminder** copy-paste prompt:
+   - Sets expectations for commit frequency (often and liberally)
+   - Reinforces push permission protocol
+   - User can paste into session with any AI assistant
+
+**Particularly impressive**:
+- The "Trust But Verify" principle - trust recent docs, verify stale ones
+- Cross-document consistency checking (STATUS ↔ SESSIONS ↔ DECISIONS)
+- Non-blocking design - version check fails gracefully, review continues
+- Real-world awareness - understands Phase 0 means no code yet expected
+
+**Result**: Got confidence score of 85/100 (Good) with clear, actionable feedback:
+- Identified STATUS.md Quick Reference needs population (-10 points)
+- Noted missing PRD.md in context/ directory (-5 points)
+- Recognized this is normal for Phase 0 (pre-implementation)
+- Provided specific next steps
+
+**This command is the perfect session-start ritual!** Sets context, verifies accuracy, identifies gaps, and prepares for work.
+
+**Severity**: 🟢 (strong appreciation for the design!)
+
+**Environment**:
+- OS: macOS Darwin 24.6.0
+- Claude Code: Claude Sonnet 4.5
+- CCS: 3.4.0
+
+---
+
+## 2025-11-23 - /review-context - Feature Request ✨
+
+**What happened**: Review provides excellent analysis but doesn't auto-populate STATUS.md Quick Reference section
+
+**Expected behavior**: After review, offer to run `/save` to populate Quick Reference if it contains template placeholders
+
+**Suggestion**: At end of review, if issues include "STATUS.md Quick Reference contains template placeholders", add:
+
+```
+💡 Quick Fix Available:
+Your STATUS.md Quick Reference section contains template placeholders.
+Would you like me to run /save now to populate it with current project data? [Y/n]
+```
+
+This would:
+1. Make the review actionable immediately
+2. Reduce friction (one command vs two)
+3. Improve confidence score automatically
+4. Teach users about the auto-generation feature
+
+**Alternative**: Could auto-run `/save` if confidence score docked points for unpopulated Quick Reference, since this is deterministically fixable.
+
+**Severity**: 🟢 Minor (nice quality of life improvement)
+
+**Environment**:
+- OS: macOS Darwin 24.6.0
+- Claude Code: Claude Sonnet 4.5
+- CCS: 3.4.0
+
+---
+
 ## Examples (Delete after reading)
 
 ### Example 1: Bug Report
