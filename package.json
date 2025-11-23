@@ -13,12 +13,18 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "type-check": "tsc --noEmit"
+    "test:db": "dotenv -e .env.local -- tsx scripts/test-db.ts",
+    "type-check": "tsc --noEmit",
+    "db:migrate": "dotenv -e .env.local -- prisma migrate dev",
+    "db:push": "dotenv -e .env.local -- prisma db push",
+    "db:studio": "dotenv -e .env.local -- prisma studio"
   },
   "dependencies": {
+    "@prisma/adapter-pg": "^7.0.0",
     "@prisma/client": "^7.0.0",
     "dotenv": "^17.2.3",
     "next": "16.0.3",
+    "pg": "^8.16.3",
     "react": "19.2.0",
     "react-dom": "19.2.0"
   },
@@ -31,6 +37,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "dotenv-cli": "^11.0.0",
     "eslint": "^9",
     "eslint-config-next": "16.0.3",
     "eslint-config-prettier": "^10.1.8",
@@ -40,6 +47,7 @@
     "prettier": "^3.6.2",
     "prisma": "^7.0.0",
     "tailwindcss": "^4",
+    "tsx": "^4.20.6",
     "typescript": "^5"
   }
 }
