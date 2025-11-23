@@ -2,28 +2,31 @@ import { render, screen } from '@testing-library/react'
 import Page from '../page'
 
 describe('Home Page', () => {
-  it('renders successfully', () => {
+  it('renders the page title', () => {
     render(<Page />)
 
-    // The Next.js default page includes "To get started"
-    const element = screen.getByText(/To get started/i)
-    expect(element).toBeInTheDocument()
+    const heading = screen.getByRole('heading', { name: /AI Prompts Library/i })
+    expect(heading).toBeInTheDocument()
   })
 
-  it('contains Next.js logo', () => {
+  it('displays the tagline', () => {
     render(<Page />)
 
-    const logo = screen.getByAltText(/Next.js logo/i)
-    expect(logo).toBeInTheDocument()
+    const tagline = screen.getByText(/A curated collection of high-quality AI prompts/i)
+    expect(tagline).toBeInTheDocument()
   })
 
-  it('contains call-to-action links', () => {
+  it('shows current phase status', () => {
     render(<Page />)
 
-    const deployLink = screen.getByText(/Deploy Now/i)
-    const docsLink = screen.getByText(/Documentation/i)
+    const status = screen.getByText(/Phase 0 - Foundation/i)
+    expect(status).toBeInTheDocument()
+  })
 
-    expect(deployLink).toBeInTheDocument()
-    expect(docsLink).toBeInTheDocument()
+  it('displays status description', () => {
+    render(<Page />)
+
+    const description = screen.getByText(/Building the infrastructure/i)
+    expect(description).toBeInTheDocument()
   })
 })
