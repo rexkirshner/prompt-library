@@ -20,6 +20,7 @@ Everything exists to serve this goal.
 - Every change should impact as little as possible
 
 **Applied to commands:**
+
 - Clear, linear execution steps
 - No complex logic unless absolutely necessary
 - Bash scripts over intricate awk/sed when possible
@@ -31,11 +32,13 @@ Everything exists to serve this goal.
 **Critical Distinction: Commit ≠ Push**
 
 Git operations are DISTINCT and require SEPARATE approval:
+
 - `git add` → Staging (reversible)
 - `git commit` → Local history (reversible with reset)
 - `git push` → **PUBLICATION** (visible to others, permanent)
 
 **When user says "commit", do ONLY commit:**
+
 ```
 User: "ok, let's commit to git"
 ✅ CORRECT: Stage files, commit locally, STOP and report
@@ -43,6 +46,7 @@ User: "ok, let's commit to git"
 ```
 
 **Push requires EXPLICIT approval phrases:**
+
 - "push to github"
 - "push to origin"
 - "push everything"
@@ -50,6 +54,7 @@ User: "ok, let's commit to git"
 - "commit and push"
 
 **Push permission NEVER carries forward:**
+
 ```
 Session start:
 User: "commit and push to github"
@@ -63,12 +68,14 @@ User: "ok let's commit these changes"
 ```
 
 **Why this matters:**
+
 - Commit = safe, local, reversible
 - Push = public, permanent, affects team
 - User may want to review/amend before pushing
 - Violating this breaks user trust and control
 
 **Commands that modify code, delete files, or push to remote:**
+
 - Must ask user first
 - Clear about what will change
 - Provide preview when possible
@@ -95,6 +102,7 @@ echo "Content" >> "$CONTEXT_DIR/SESSIONS.md"
 ```
 
 **Why this matters:**
+
 - Users work in subdirectories (`cd backend && /save`)
 - Old behavior: "context/ not found" error
 - New behavior: Searches `./context`, `../context`, `../../context`
@@ -110,6 +118,7 @@ echo "Content" >> "$CONTEXT_DIR/SESSIONS.md"
 **Real-world issue:** Commands containing command substitution syntax (`$(...)`) can fail with parse errors when executed through Claude Code's SlashCommand tool.
 
 **Examples that may fail:**
+
 ```bash
 # Command substitution in variable assignment
 MV_CMD=$(which git)
@@ -132,6 +141,7 @@ EOF
    - No SlashCommand parsing involved
 
 2. **Rewrite to avoid command substitution** (if possible):
+
    ```bash
    # Before (may fail)
    DEST_DIR=$(dirname "$dest")
@@ -147,6 +157,7 @@ EOF
    ```
 
 **Why this matters:**
+
 - SlashCommand has parsing limitations we cannot control
 - Manual execution via Bash tool always works
 - Commands should document if they require manual execution
@@ -159,6 +170,7 @@ EOF
 **Only promise what we actually deliver.**
 
 v1.4.0 removed JSON artifacts because:
+
 - Promised "fast agent loading"
 - Never implemented the loading
 - Feature added complexity without value
@@ -190,6 +202,7 @@ This separation keeps commands scannable.
 **When in doubt, save it.**
 
 /save-context should be:
+
 - Run frequently (every 30-60 minutes)
 - Before breaks (even 5-minute ones)
 - At session end (always!)
@@ -225,17 +238,20 @@ Frequent saves shouldn't be painful.
 **Code review NEVER makes changes.**
 
 Why this rule exists:
+
 - Past experience: changes during review broke things
 - Time pressure leads to hasty fixes
 - Review and fix are different mindsets
 - Analysis requires different pace than implementation
 
 **Temptations to resist:**
+
 - "This is a quick fix" - NO, document it
 - "Just renaming a variable" - NO, document it
 - "One-line change" - NO, document it
 
 **What to do instead:**
+
 - Document the issue thoroughly
 - Explain how to fix it
 - Note effort required
@@ -256,6 +272,7 @@ Update template → all projects get improvement via `/update-context-system`
 ### Markdown Over JSON
 
 Markdown is:
+
 - Human-readable
 - Git-friendly
 - Easy to edit
@@ -266,6 +283,7 @@ JSON artifacts were removed because they didn't deliver value.
 ### Cross-Document Consistency
 
 Documentation must tell coherent story:
+
 - CLAUDE.md status == PRD.md status
 - DECISIONS.md choices reflected in ARCHITECTURE.md
 - KNOWN_ISSUES.md blockers mentioned in next-steps.md
@@ -278,6 +296,7 @@ Commands check for inconsistencies.
 ### Fail Clearly, Never Silently
 
 When something goes wrong:
+
 - Report what failed clearly
 - Show what was successfully created
 - Provide manual recovery steps
@@ -292,6 +311,7 @@ When something goes wrong:
 ### Trust but Verify
 
 /review-context approach:
+
 - Trust docs when recent (<48 hours)
 - Verify against code when older
 - Check for contradictions
@@ -302,6 +322,7 @@ When something goes wrong:
 ### Perfect Outcome
 
 **For /save-context:**
+
 - All relevant files updated
 - SESSIONS.md has complete entry
 - WIP state preserved
@@ -309,12 +330,14 @@ When something goes wrong:
 - Next session can resume seamlessly
 
 **For /review-context:**
+
 - Score 90-100
 - Can state exact resume point
 - Understand full context
 - Ready to continue seamlessly
 
 **For /code-review:**
+
 - Thorough and unhurried
 - Issues with root causes
 - Clear fix suggestions
@@ -324,6 +347,7 @@ When something goes wrong:
 ### Good Enough
 
 Don't let perfect be the enemy of good:
+
 - /save-context with minor gaps is better than no save
 - /review-context score 75+ is usable
 - /validate-context warnings are non-critical

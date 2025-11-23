@@ -59,6 +59,7 @@ chmod +x scripts/validate-context.sh
 ```
 
 The script performs these checks:
+
 - ✅ Required documentation files exist
 - ✅ No unresolved placeholders (`[TODO:]`, `[PLACEHOLDER]`, etc.)
 - ✅ Valid JSON in .context-config.json
@@ -68,11 +69,13 @@ The script performs these checks:
 ### Step 2: Interpret Results
 
 **Exit codes:**
+
 - `0` = All checks passed (excellent health)
 - `1` = Warnings found (non-critical issues)
 - `2` = Errors found (critical issues to fix)
 
 **Output format:**
+
 ```
 🔍 Validating AI Context System...
 
@@ -175,6 +178,7 @@ echo ""
 ```
 
 **Why this validation matters:**
+
 - Ensures git push protocol is being followed
 - Verifies auto-logging is working correctly
 - Identifies any sessions where push approval wasn't logged
@@ -276,12 +280,14 @@ echo ""
 ```
 
 **Why staleness detection matters:**
+
 - Prevents outdated context from misleading AI agents
 - Configurable per-project (fast-moving vs. stable projects)
 - Visual indicators make staleness obvious
 - Specific recommendations based on which docs are stale
 
 **Recommendations based on staleness:**
+
 - 🔴 STATUS.md stale → Run /save or /save-full immediately
 - 🔴 SESSIONS.md stale → Run /save-full to capture recent work
 - 🔴 CONTEXT.md stale → Review architecture changes, update if needed
@@ -388,11 +394,13 @@ echo ""
 ```
 
 **What this checks:**
+
 - Loose .md files in project root (should be ≤ 5)
 - Documentation in source directories (should be 0)
 - Presence of organizational folders (artifacts/, docs/)
 
 **Why this matters:**
+
 - Professional appearance
 - Easy navigation
 - Reduced cognitive load
@@ -400,6 +408,7 @@ echo ""
 - See ORGANIZATION.md for complete guidelines
 
 **Scoring:**
+
 - 100: Perfect organization (≤ 5 files in root, no source docs)
 - 90-99: Excellent (minor cleanup needed)
 - 75-89: Good (some reorganization recommended)
@@ -413,40 +422,48 @@ echo ""
 Based on validation results, provide actionable recommendations:
 
 **If errors found (exit code 2):**
+
 ```markdown
 ❌ **Critical Issues Found**
 
 **High Priority Fixes:**
+
 1. Create missing STATUS.md - Run /save to generate
 2. Fix invalid JSON in .context-config.json
 3. Add missing required sections to CONTEXT.md
 
 **Next Steps:**
+
 - Fix errors before proceeding
 - Run /validate-context again to verify
 ```
 
 **If warnings found (exit code 1):**
+
 ```markdown
-⚠️  **Warnings Found**
+⚠️ **Warnings Found**
 
 **Recommended Improvements:**
+
 1. Fill in owner name in .context-config.json
 2. Replace 5 TODO placeholders in documentation
 3. Add more detail to sparse ARCHITECTURE.md (if exists)
 
 **Impact:**
+
 - Documentation is usable but incomplete
 - Address warnings when time permits
 ```
 
 **If all passed (exit code 0):**
+
 ```markdown
 ✅ **Documentation Health: Excellent**
 
 All validation checks passed. Your context system is in great shape!
 
 **Stats:**
+
 - All required files present
 - No unresolved placeholders
 - Valid configuration
@@ -458,18 +475,21 @@ Ready to /export-context or share with team.
 ## Validation Categories
 
 ### Critical Issues (Block Usage)
+
 - Missing 3+ required files → Run /init-context
 - Invalid .context-config.json → Fix JSON syntax
 - No session history at all → Run /save-context
 - Missing core commands → Reinstall system
 
 ### Warnings (Should Fix Soon)
+
 - Missing 1-2 required files → Create from templates
 - Missing required sections → Add to documentation
 - 5+ unfilled placeholders → Fill in project details
 - Sparse documentation → Expand content
 
 ### Info (Nice to Have)
+
 - Few placeholders (1-4) → Fill when convenient
 - Older session history → Run /save-context more frequently
 - Config owner still placeholder → Personalize config
@@ -477,6 +497,7 @@ Ready to /export-context or share with team.
 ## Usage Examples
 
 ### After Initial Setup
+
 ```
 /init-context
 /validate-context
@@ -487,6 +508,7 @@ Ready to /export-context or share with team.
 ```
 
 ### After Migration
+
 ```
 /migrate-context
 /validate-context
@@ -497,6 +519,7 @@ Ready to /export-context or share with team.
 ```
 
 ### Before Export
+
 ```
 /save-context
 /validate-context
@@ -507,6 +530,7 @@ Ready to /export-context or share with team.
 ```
 
 ### Regular Health Check
+
 ```
 /validate-context
 
@@ -519,16 +543,19 @@ Ready to /export-context or share with team.
 ### What Gets Validated
 
 **Structure:**
+
 - Required files exist
 - Required sections present
 - Proper file organization
 
 **Content:**
+
 - Placeholders filled in
 - Valid JSON format
 - Minimum file sizes
 
 **Completeness:**
+
 - Session history exists
 - Config properly formatted
 - Commands all present
@@ -545,6 +572,7 @@ Ready to /export-context or share with team.
 The validation script is at: `scripts/validate-context.sh`
 
 To run independently (outside Claude Code):
+
 ```bash
 cd your-project
 ./scripts/validate-context.sh
@@ -553,6 +581,7 @@ cd your-project
 ## Success Criteria
 
 Validation succeeds when:
+
 - Script runs without errors
 - Results clearly communicated
 - Recommendations actionable
@@ -560,6 +589,7 @@ Validation succeeds when:
 - Health status obvious
 
 **Perfect validation:**
+
 - Exit code 0 (all passed)
 - Clear report
 - Ready for export/sharing

@@ -6,17 +6,20 @@
 ---
 
 <!-- TEMPLATE SECTION: KEEP ALL - Project overview structure -->
+
 ## What Is This Project?
 
 **AI Prompts Library** - A lightweight, public-facing web application for saving, sharing, and discovering AI prompts. Built for a small community (<1K users) with emphasis on quality curation through manual moderation. All content is contributed under CC0 (Public Domain) license for maximum reusability.
 
 **Goals:**
+
 - Create a high-quality, searchable repository of useful AI prompts
 - Enable community contributions while maintaining quality through manual moderation
 - Provide a simple, fast user experience focused on discoverability
 - Build a sustainable, low-maintenance platform optimized for small community scale
 
 **Key Stakeholders:**
+
 - Owner: Rex Kirshner
 - Users: AI users looking for quality prompts, contributors sharing prompts
 - Contributors: Community members submitting prompts
@@ -40,6 +43,7 @@
 4. **Start working** ✅
 
 **Need deeper context? (30-minute orientation)**
+
 - Read this file (CONTEXT.md) for architecture → 10 minutes
 - Read DECISIONS.md for technical rationale → 15 minutes
 - Read recent SESSIONS.md entries for recent work → 5 minutes
@@ -50,9 +54,11 @@ Recommended: Complete 30-minute orientation above + review last 3 sessions in SE
 ---
 
 <!-- TEMPLATE SECTION: KEEP ALL - Tech stack structure -->
+
 ## Tech Stack
 
 **Core Technologies:**
+
 - **Framework:** Next.js 14+ (App Router) - SSR/ISR for SEO and performance
 - **Language:** TypeScript - Type safety and better developer experience
 - **Database:** PostgreSQL (Vercel Postgres) - Reliable, full-text search support
@@ -62,11 +68,13 @@ Recommended: Complete 30-minute orientation above + review last 3 sessions in SE
 
 **Why these choices?**
 Optimized for small-scale operation with minimal maintenance overhead. Vercel platform features reduce operational complexity. PostgreSQL full-text search adequate for <10K prompts. Manual moderation keeps quality high without complex automation.
+
 <!-- END TEMPLATE SECTION -->
 
 ---
 
 <!-- TEMPLATE SECTION: KEEP ALL - Architecture structure -->
+
 ## High-Level Architecture
 
 **Type:** Web App
@@ -74,6 +82,7 @@ Optimized for small-scale operation with minimal maintenance overhead. Vercel pl
 **Architecture Pattern:** Server-rendered Next.js with App Router, ISR caching, and API routes
 
 **System Diagram:**
+
 ```
 ┌─────────────────┐
 │   Browser       │
@@ -96,6 +105,7 @@ Optimized for small-scale operation with minimal maintenance overhead. Vercel pl
 ```
 
 **Key Components:**
+
 - **Public Pages:** Browse/search prompts, detail views, submission forms
 - **Admin Dashboard:** Moderation queue, content management, user management
 - **API Routes:** CRUD operations, search, authentication
@@ -105,6 +115,7 @@ Optimized for small-scale operation with minimal maintenance overhead. Vercel pl
 Anonymous users browse approved prompts via SSR/ISR pages. Submissions enter pending status in database. Admins review via dashboard, approve/reject via API routes. Approved prompts become publicly visible. Search uses PostgreSQL full-text indexes. ISR caching reduces database load.
 
 **For detailed architectural decisions:** See [DECISIONS.md](./DECISIONS.md)
+
 <!-- END TEMPLATE SECTION -->
 
 ---
@@ -125,6 +136,7 @@ Anonymous users browse approved prompts via SSR/ISR pages. Submissions enter pen
 ```
 
 **File Organization Principles:**
+
 - [Principle 1, e.g., "Colocation - tests next to source"]
 - [Principle 2, e.g., "Feature folders, not type folders"]
 - [Principle 3, e.g., "Shared code in /lib"]
@@ -134,6 +146,7 @@ Anonymous users browse approved prompts via SSR/ISR pages. Submissions enter pen
 ## Development Workflow
 
 **Core Principles:**
+
 1. **Plan First** - Understand the problem before writing code
 2. **Test in Dev** - Verify locally before committing
 3. **Incremental Changes** - Small, focused commits
@@ -142,6 +155,7 @@ Anonymous users browse approved prompts via SSR/ISR pages. Submissions enter pen
 6. **Full Code Tracing** - Debug by following entire flow, no assumptions
 
 **Git Workflow:**
+
 - Branch: [Strategy - feature branches, trunk-based, etc.]
 - Commits: [Convention - conventional commits, semantic, etc.]
 - **Push Protocol:** NEVER push without explicit user approval
@@ -149,6 +163,7 @@ Anonymous users browse approved prompts via SSR/ISR pages. Submissions enter pen
   - Current status: See STATUS.md for git state
 
 **Testing Approach:**
+
 - **Unit Tests:** [When/what to test]
 - **Integration Tests:** [Coverage expectations]
 - **E2E Tests:** [If applicable]
@@ -161,11 +176,13 @@ Anonymous users browse approved prompts via SSR/ISR pages. Submissions enter pen
 ## Environment Setup
 
 **Prerequisites:**
+
 - [e.g., Node.js 20+]
 - [e.g., PostgreSQL 15+]
 - [e.g., Other tools]
 
 **Initial Setup:**
+
 ```bash
 # 1. Install dependencies
 [install command]
@@ -182,6 +199,7 @@ cp .env.example .env.local
 ```
 
 **Environment Variables:**
+
 - Template: `.env.example` (committed)
 - Local config: `.env.local` (gitignored, never commit)
 - Critical vars: [List key variables and what they do]
@@ -191,6 +209,7 @@ cp .env.example .env.local
 ## Key Resources
 
 **Documentation:**
+
 - [STATUS.md](./STATUS.md) - Current state, tasks, and Quick Reference
 - [DECISIONS.md](./DECISIONS.md) - Technical decisions and rationale
 - [SESSIONS.md](./SESSIONS.md) - Session history and mental models
@@ -198,12 +217,14 @@ cp .env.example .env.local
 - [CODE_MAP.md](./CODE_MAP.md) - Code location guide (if exists)
 
 **External Resources:**
+
 - [Framework Docs]: [URL]
 - [Key Dependency]: [URL]
 - [API Reference]: [URL if applicable]
 
 **Project URLs:**
 (Also available in STATUS.md Quick Reference)
+
 - **Production:** [URL or N/A]
 - **Staging:** [URL or N/A]
 - **Repository:** [GitHub/GitLab URL]
@@ -216,6 +237,7 @@ cp .env.example .env.local
 > The guidance below is derived from that configuration.
 
 **Communication Style:**
+
 - Direct, concise responses without preamble
 - High-level summaries of changes (e.g., "Changed X to Y in file.ts:123")
 - Honest assessment of confidence levels
@@ -223,17 +245,20 @@ cp .env.example .env.local
 - No emojis unless explicitly requested
 
 **What to Avoid:**
+
 - Verbose explanations unless requested
 - Pushing to GitHub without explicit approval
 - Making assumptions about user intent
 - Temporary fixes instead of root cause solutions
 
 **Task Management:**
+
 - Use TodoWrite tool for tracking tasks
 - Create todo items that can be checked off during work
 - Mark complete as you go, one task at a time
 
 **Session Management:**
+
 - Use `/save` for quick session updates (2-3 min)
 - Use `/save-full` before breaks/handoffs (10-15 min)
 - See `.claude/commands/` for all available commands
@@ -243,21 +268,26 @@ cp .env.example .env.local
 ## Important Context & Gotchas
 
 **Dependencies:**
+
 - [Critical dependency 1 and why it matters]
 - [External service requirements]
 
 **Known Limitations:**
+
 - [Limitation 1 and workaround if any]
 - [Limitation 2]
 
 **Common Pitfalls:**
+
 - [Gotcha 1 that developers should know]
 - [Gotcha 2]
 
 **Performance Considerations:**
+
 - [If any critical performance constraints]
 
 **Security Notes:**
+
 - Never commit credentials (use .env.local)
 - [Any other security considerations]
 
@@ -268,12 +298,15 @@ cp .env.example .env.local
 [Use this section for any project-specific context that doesn't fit above]
 
 **Custom Workflows:**
+
 - [Any unique workflow requirements]
 
 **Technical Constraints:**
+
 - [Any hard requirements or limitations]
 
 **Integration Points:**
+
 - [External systems this connects to]
 
 ---

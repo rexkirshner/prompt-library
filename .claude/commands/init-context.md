@@ -10,11 +10,13 @@ Initialize a **minimal overhead** context system for this project. Creates 5 cor
 **Philosophy:** Minimal overhead during work. Good-enough recovery when needed. Single source of truth. Platform-neutral core with tool-specific entry points.
 
 **See also:**
+
 - `.claude/docs/command-philosophy.md` for core principles
 
 ## What This Command Does
 
 Creates **5 core files + 1 AI header** that serve dual purpose (developer productivity + AI agent review/takeover):
+
 1. **claude.md** - AI header (entry point for Claude, points to CONTEXT.md)
 2. **CONTEXT.md** - Orientation (rarely changes: who/what/how/why, platform-neutral)
 3. **STATUS.md** - Current state with auto-generated Quick Reference at top
@@ -27,16 +29,19 @@ Optional files (CODE_MAP.md, cursor.md, aider.md, PRD.md, ARCHITECTURE.md) sugge
 ## Why These 6 Files?
 
 **The Dual Purpose:**
+
 1. **Session continuity** - Resume work seamlessly
 2. **AI agent review/takeover** - Enable AI to understand WHY, review code, take over development
 
 **Real-world feedback revealed:**
+
 - System isn't just for you - it's for AI agents reviewing and improving your work
 - AI agents need to understand WHY decisions were made, not just WHAT code exists
 - TodoWrite for productivity during work, rich docs for AI at save points
 - DECISIONS.md is critical - AI needs rationale, constraints, tradeoffs
 
 **v2.1.0 approach:**
+
 - claude.md as AI header (tool-specific entry point)
 - CONTEXT.md for orientation (platform-neutral, ~300 lines)
 - STATUS.md for current state (with auto-generated Quick Reference section)
@@ -228,17 +233,20 @@ Check if context/ folder already exists:
 Gather information about the project:
 
 **File System Analysis:**
+
 - Run `ls -la` to see root structure
 - Check for package.json, Cargo.toml, go.mod, requirements.txt, etc.
 - Identify project type (web app, CLI, library, API, etc.)
 - Find README.md if exists
 
 **Git Analysis (if git repo):**
+
 - Run `git log --oneline -10` for recent history
 - Run `git remote -v` to find repo URL
 - Check current branch with `git branch --show-current`
 
 **Technology Stack:**
+
 - Read package.json for Node.js projects
 - Read Cargo.toml for Rust projects
 - Read go.mod for Go projects
@@ -324,10 +332,12 @@ fi
 **What each file contains:**
 
 **context/claude.md** - AI header (entry point)
+
 - 7-line file pointing to CONTEXT.md
 - **Tool-specific entry point for platform-neutral docs**
 
 **context/CONTEXT.md** - Orientation (platform-neutral, ~300 lines)
+
 - Project overview (from README or git description)
 - **"Getting Started Path"** with 5-min and 30-min orientations
 - Tech stack (from package analysis)
@@ -338,6 +348,7 @@ fi
 - **References other files for current work** (no duplication)
 
 **context/STATUS.md** - Current state with auto-generated Quick Reference
+
 - **Quick Reference section (auto-generated, DO NOT edit manually)**
   - Project info, URLs, tech stack from .context-config.json
   - Current phase, active tasks, status indicator
@@ -350,18 +361,21 @@ fi
 - **Single source of truth for "what's happening now"**
 
 **context/DECISIONS.md** - Decision log (critical for AI agents)
+
 - Initialize with template and "Guidelines for AI Agents" section
 - Empty active decisions table ready for use
 - Example decision showing proper format
 - **Critical for AI agents to understand WHY choices were made**
 
 **context/SESSIONS.md** - History (structured, comprehensive)
+
 - First entry documenting initialization (with mandatory TL;DR)
 - Session index table
 - Template for future entries (TL;DR, accomplishments, git operations, tests)
 - **Mandatory TL;DR ensures perfect continuity**
 
 **context/context-feedback.md** - Feedback log (v2.3.1+)
+
 - Structured feedback collection for system improvements
 - Template for bugs, improvements, questions, feature requests
 - Archived on `/update-context-system` (if has content)
@@ -380,6 +394,7 @@ curl -sL https://raw.githubusercontent.com/rexkirshner/ai-context-system/main/co
 ```
 
 **IMPORTANT:** You MUST:
+
 1. Use Read tool to read `context/.context-config.json`
 2. Use Edit tool to replace ALL placeholders:
    - `[Your Name]` → actual owner name
@@ -681,12 +696,14 @@ When filling templates, use this priority:
 When `/save-context` runs, it should check if additional documentation is needed:
 
 **Check for ARCHITECTURE.md need:**
+
 - Project has >20 files in src/
 - Multiple directories with different purposes
 - Complex dependency relationships
 - Ask: "Your architecture is getting complex. Should I create ARCHITECTURE.md for AI agents to understand system design?"
 
 **Check for PRD.md need:**
+
 - Product vision discussed multiple times
 - Feature roadmap getting complex
 - Ask: "Product scope is expanding. Should I create PRD.md to document vision and roadmap for AI agent context?"
@@ -710,6 +727,7 @@ When `/save-context` runs, it should check if additional documentation is needed
 ## Error Handling
 
 If errors occur:
+
 - Report what failed clearly
 - Show what was successfully created
 - Provide manual recovery steps
@@ -718,6 +736,7 @@ If errors occur:
 ## Success Criteria
 
 Command succeeds when:
+
 - 5 core files + 1 AI header (claude.md, CONTEXT.md, STATUS.md, DECISIONS.md, SESSIONS.md, context-feedback.md) created with available data
 - All files use v2.1 structure and format
 - STATUS.md includes auto-generated Quick Reference section
@@ -754,6 +773,7 @@ Understood?
 ```
 
 **Why this matters:**
+
 - Standardizes git workflow expectations across all AI assistants
 - Prevents accidental pushes to remote repository
 - Encourages frequent local commits (good practice)

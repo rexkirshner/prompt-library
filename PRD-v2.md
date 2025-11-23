@@ -1,17 +1,20 @@
 # Product Requirements Document: AI Prompts Library v2
 
 ## Executive Summary
+
 A lightweight, public-facing web application for saving, sharing, and discovering AI prompts. Built for a small community (<1K users) with emphasis on quality curation through manual moderation. All content is contributed under CC0 (Public Domain) license for maximum reusability.
 
 ## Goals & Success Metrics
 
 ### Primary Goals
+
 - Create a high-quality, searchable repository of useful AI prompts
 - Enable community contributions while maintaining quality through manual moderation
 - Provide a simple, fast user experience focused on discoverability
 - Build a sustainable, low-maintenance platform optimized for small community scale
 
 ### Non-Goals
+
 - Complex social features (profiles, followers, messaging, comments)
 - Advanced analytics or usage tracking beyond basic metrics
 - Multi-language support (initial version)
@@ -22,16 +25,19 @@ A lightweight, public-facing web application for saving, sharing, and discoverin
 ### Success Metrics
 
 #### North Star Metrics
+
 - **Content Growth**: 50+ approved prompts within first month, 200+ by month 6
 - **Content Quality**: >80% submission approval rate (indicates community understands quality bar)
 - **User Engagement**: 100+ weekly active visitors browsing prompts
 
 #### Operational Metrics
+
 - **Moderation Efficiency**: Review 100% of submissions within 72 hours
 - **Site Performance**: Page load time <2 seconds on 3G connection
 - **Uptime**: 99.5% availability (allows ~3.5 hours downtime/month)
 
 #### Quality Indicators
+
 - **Content Freshness**: >25% of prompts updated or added in last 90 days
 - **Discovery Success**: >50% of searches result in prompt views
 - **Community Participation**: 10+ unique contributors per month
@@ -39,6 +45,7 @@ A lightweight, public-facing web application for saving, sharing, and discoverin
 ## Tech Stack & Architecture
 
 ### Core Technologies
+
 - **Frontend & Backend**: Next.js 14+ (App Router) with React
 - **Database**: PostgreSQL (Vercel Postgres recommended for simplicity)
 - **Authentication**: NextAuth.js (Google OAuth only for MVP)
@@ -47,6 +54,7 @@ A lightweight, public-facing web application for saving, sharing, and discoverin
 - **Email**: Resend or similar for transactional emails (optional for MVP)
 
 ### Architecture Decisions
+
 - **Rendering Strategy**: Server-side rendering (SSR) for SEO with Incremental Static Regeneration (ISR) for approved prompt pages
 - **Search**: PostgreSQL full-text search with GiST indexes (adequate for <10K prompts)
 - **Caching**: Vercel's built-in caching + 5-minute ISR for prompt lists
@@ -54,6 +62,7 @@ A lightweight, public-facing web application for saving, sharing, and discoverin
 - **Background Jobs**: None initially; admin notifications can be synchronous
 
 ### Development & Deployment
+
 - **Environments**: Local development + Vercel preview branches + production
 - **Database Migrations**: Prisma or Drizzle ORM for schema management
 - **Monitoring**: Vercel Analytics (basic) + error tracking via console logs
@@ -62,7 +71,9 @@ A lightweight, public-facing web application for saving, sharing, and discoverin
 ## User Roles & Permissions
 
 ### 1. Anonymous Visitor
+
 **Capabilities:**
+
 - Browse all approved prompts
 - Search prompts by keywords
 - Filter by categories/tags
@@ -71,24 +82,30 @@ A lightweight, public-facing web application for saving, sharing, and discoverin
 - Submit new prompts (requires moderation)
 
 **Restrictions:**
+
 - Cannot edit or delete prompts
 - Cannot see pending submissions
 - No submission history tracking
 
 ### 2. Authenticated User
+
 **Capabilities:**
+
 - All visitor capabilities
 - Track own submission history
 - See status of own submissions (pending/approved/rejected)
 - Pre-filled author info on submissions
 
 **Restrictions:**
+
 - All submissions still require admin approval
 - Cannot edit approved prompts (must submit as suggestion)
 - Cannot delete own submissions once approved
 
 ### 3. Admin
+
 **Capabilities:**
+
 - All user capabilities
 - Approve/reject/edit pending submissions
 - Edit any approved prompt directly
@@ -102,19 +119,23 @@ A lightweight, public-facing web application for saving, sharing, and discoverin
 ### 1. Prompt Discovery
 
 #### Prompt Structure
+
 Each prompt contains:
 
 **Required Fields:**
+
 - **Title**: Concise, descriptive name (10-100 characters)
 - **Prompt Text**: The actual prompt content (150-5000 characters)
 - **Category**: Primary category from fixed list (e.g., "Writing", "Coding", "Analysis")
 - **Tags**: 1-5 additional descriptive tags
 
 **Optional Fields:**
+
 - **Description**: Brief explanation of use case (up to 500 characters)
 - **Example Output**: Sample of expected result (up to 1000 characters)
 
 **System Fields:**
+
 - **Slug**: Auto-generated from title for SEO-friendly URLs
 - **Author Attribution**: Name (required for display even if anonymous)
 - **Submission Date**: When originally submitted
@@ -125,6 +146,7 @@ Each prompt contains:
 #### Browse & Search Interface
 
 **Homepage (`/`)**
+
 - Hero section with search bar
 - Featured prompts (admin-curated)
 - Recent additions (last 10 approved)
@@ -132,6 +154,7 @@ Each prompt contains:
 - Total prompt count display
 
 **Browse Page (`/prompts`)**
+
 - Grid/list view toggle
 - Real-time search filtering
 - Category and tag filters (AND logic)
@@ -139,6 +162,7 @@ Each prompt contains:
 - Pagination (20 per page)
 
 **Search Implementation**
+
 - PostgreSQL full-text search across title, prompt text, description
 - Instant results with debouncing (300ms)
 - Search suggestions based on popular queries
@@ -147,12 +171,14 @@ Each prompt contains:
 #### Prompt Detail Page (`/prompts/[slug]`)
 
 **Content Display:**
+
 - Full prompt text in monospace font
 - Copy button with confirmation toast
 - Metadata sidebar (category, tags, dates, view count)
 - Author attribution per CC0 terms
 
 **Actions:**
+
 - Copy to clipboard (tracked)
 - Share via URL copy
 - "Suggest Improvement" (opens pre-filled form)
@@ -163,6 +189,7 @@ Each prompt contains:
 #### New Prompt Submission (`/submit`)
 
 **Form Fields:**
+
 1. **Title** (required)
    - Character count indicator
    - Slug preview
@@ -190,6 +217,7 @@ Each prompt contains:
    - Stored but not linked to auth account
 
 **Submission Flow:**
+
 1. User fills form with client-side validation
 2. Preview step showing formatted prompt
 3. Consent to CC0 license checkbox
@@ -198,6 +226,7 @@ Each prompt contains:
 6. Email notification if address provided (optional)
 
 #### Improvement Suggestions
+
 - Same form as new submission
 - Pre-populated with existing prompt data
 - Required "What's changed?" field
@@ -208,6 +237,7 @@ Each prompt contains:
 #### Moderation Dashboard (`/admin`)
 
 **Queue Management:**
+
 - Filterable list of pending items
 - Type indicators (new vs. improvement)
 - Submission timestamp and author
@@ -215,6 +245,7 @@ Each prompt contains:
 - Bulk selection for approval/rejection
 
 **Review Interface:**
+
 - Full prompt preview
 - Edit capability before approval
 - Rejection with reason (template messages)
@@ -222,6 +253,7 @@ Each prompt contains:
 - History of previous submissions from same author
 
 **Content Management:**
+
 - Search and filter all prompts
 - Inline editing of approved content
 - Soft delete with restoration
@@ -229,6 +261,7 @@ Each prompt contains:
 - View/manage tags
 
 **Admin Tools:**
+
 - Basic stats dashboard (submissions per day, approval rate)
 - Tag management (rename, merge, delete unused)
 - Export data as JSON/CSV
@@ -237,6 +270,7 @@ Each prompt contains:
 ### 4. Content Licensing & Attribution
 
 #### CC0 Implementation
+
 - Clear notice on submission form
 - Checkbox consent required
 - Link to human-readable CC0 explanation
@@ -244,6 +278,7 @@ Each prompt contains:
 - Terms of Service page explaining license
 
 #### Attribution Display
+
 - "Contributed by [Name]" on prompt pages
 - Optional link to contributor's website
 - No claims of endorsement
@@ -253,6 +288,7 @@ Each prompt contains:
 ### Core Entities
 
 #### Prompt
+
 ```typescript
 {
   id: UUID (primary key)
@@ -288,6 +324,7 @@ Each prompt contains:
 ```
 
 #### User
+
 ```typescript
 {
   id: UUID (primary key)
@@ -301,6 +338,7 @@ Each prompt contains:
 ```
 
 #### Tag
+
 ```typescript
 {
   id: UUID (primary key)
@@ -312,6 +350,7 @@ Each prompt contains:
 ```
 
 #### PromptTag (Junction Table)
+
 ```typescript
 {
   prompt_id: UUID (FK to Prompt)
@@ -321,6 +360,7 @@ Each prompt contains:
 ```
 
 #### PromptEdit (Suggested Improvements)
+
 ```typescript
 {
   id: UUID (primary key)
@@ -351,6 +391,7 @@ Each prompt contains:
 ```
 
 #### AdminAction (Audit Log)
+
 ```typescript
 {
   id: UUID (primary key)
@@ -364,6 +405,7 @@ Each prompt contains:
 ```
 
 ### Database Indexes
+
 - `prompts.slug` - unique index for URL lookups
 - `prompts.status, prompts.created_at` - for moderation queue
 - `prompts.status, prompts.featured, prompts.approved_at` - for homepage queries
@@ -372,17 +414,20 @@ Each prompt contains:
 ## UI/UX Specifications
 
 ### Design System
+
 - **Typography**: System font stack with clear hierarchy
 - **Colors**: Minimal palette (background, text, primary accent, success/error)
 - **Spacing**: 8px grid system
 - **Components**: Based on shadcn/ui for consistency
 
 ### Responsive Breakpoints
+
 - Mobile: <640px (single column)
 - Tablet: 640px-1024px (two columns for grid)
 - Desktop: >1024px (three columns for grid, sidebars)
 
 ### Accessibility Requirements
+
 - WCAG 2.1 AA compliance
 - Keyboard navigation for all interactive elements
 - ARIA labels for buttons and form fields
@@ -391,6 +436,7 @@ Each prompt contains:
 - Skip navigation links
 
 ### Performance Targets
+
 - Lighthouse score >90 for all pages
 - First Contentful Paint <1.5s
 - Time to Interactive <3s
@@ -399,6 +445,7 @@ Each prompt contains:
 ## Security & Privacy
 
 ### Security Measures
+
 - **Input Sanitization**: HTML stripped from all user inputs except markdown fields
 - **Markdown Sanitization**: Using DOMPurify or similar for allowed markdown
 - **SQL Injection Prevention**: Parameterized queries via ORM
@@ -412,6 +459,7 @@ Each prompt contains:
   - X-Content-Type-Options
 
 ### Privacy Considerations
+
 - **Data Minimization**: Only collect necessary information
 - **Encryption**: HTTPS only, passwords never stored (OAuth only)
 - **Privacy Policy**: Clear statement about CC0 content and data usage
@@ -424,7 +472,9 @@ Each prompt contains:
 ## Implementation Roadmap
 
 ### Phase 0: Foundation (Week 1-2)
+
 **Goal**: Set up development environment and core infrastructure
+
 - [ ] Initialize Next.js project with TypeScript
 - [ ] Set up Vercel deployment pipeline
 - [ ] Configure PostgreSQL database
@@ -435,7 +485,9 @@ Each prompt contains:
 **Exit Criteria**: Dev environment working, auth functional, database connected
 
 ### Phase 1: MVP Core (Week 3-5)
+
 **Goal**: Basic submission and moderation flow
+
 - [ ] Prompt submission form
 - [ ] Admin moderation queue
 - [ ] Public browse page (no search yet)
@@ -446,7 +498,9 @@ Each prompt contains:
 **Exit Criteria**: Can submit, moderate, and display prompts
 
 ### Phase 2: Discovery Features (Week 6-7)
+
 **Goal**: Make prompts findable
+
 - [ ] Full-text search implementation
 - [ ] Category and tag filtering
 - [ ] Copy to clipboard functionality
@@ -457,7 +511,9 @@ Each prompt contains:
 **Exit Criteria**: Search returns relevant results, filters work
 
 ### Phase 3: Polish & Launch (Week 8-9)
+
 **Goal**: Production readiness
+
 - [ ] Improvement suggestion flow
 - [ ] Email notifications (optional)
 - [ ] Privacy policy and terms
@@ -469,7 +525,9 @@ Each prompt contains:
 **Exit Criteria**: Site ready for public launch
 
 ### Phase 4: Post-Launch Iteration
+
 **Based on user feedback:**
+
 - Export functionality (JSON/CSV)
 - Markdown preview in submission
 - Advanced tag management
@@ -487,20 +545,24 @@ Each prompt contains:
 ## Operational Runbook
 
 ### Daily Tasks
+
 - Check moderation queue (morning and evening)
 - Review any error logs in Vercel dashboard
 
 ### Weekly Tasks
+
 - Review submission metrics
 - Clean up orphaned tags
 - Check for needed prompt updates
 
 ### Incident Response
+
 - **Site Down**: Check Vercel status, database connection
 - **Spam Wave**: Temporarily disable anonymous submissions
 - **Bad Content**: Soft delete immediately, review moderation criteria
 
 ### Backup & Recovery
+
 - Automated daily backups via Vercel Postgres
 - Monthly manual export of all data as JSON
 - Document restoration process
@@ -508,12 +570,14 @@ Each prompt contains:
 ## Dependencies & Risks
 
 ### External Dependencies
+
 - Vercel (hosting, deployments)
 - PostgreSQL database provider
 - Google OAuth
 - npm packages (Next.js, React, etc.)
 
 ### Risks & Mitigations
+
 - **Risk**: Spam submissions overwhelming moderation
   - **Mitigation**: Rate limiting, ability to disable anonymous submissions
 - **Risk**: Database costs growing with views/copies tracking
@@ -524,6 +588,7 @@ Each prompt contains:
 ## Appendix
 
 ### Fixed Category List
+
 - Writing & Content
 - Coding & Development
 - Analysis & Research
@@ -533,6 +598,7 @@ Each prompt contains:
 - Personal Productivity
 
 ### Rejection Reason Templates
+
 - "Too short or lacks detail"
 - "Duplicate of existing prompt"
 - "Contains inappropriate content"
@@ -540,6 +606,7 @@ Each prompt contains:
 - "Quality below community standards"
 
 ### Example Prompt Format
+
 ```
 Title: Code Review Assistant
 

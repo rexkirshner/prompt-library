@@ -5,6 +5,7 @@
 **Architecture Pattern:** [e.g., Layered, MVC, Microservices, Event-driven]
 
 **Core Principles:**
+
 - [Principle 1: e.g., Separation of concerns]
 - [Principle 2: e.g., Single responsibility]
 - [Principle 3: e.g., Dependency injection]
@@ -23,6 +24,7 @@
 ## Technology Stack
 
 ### Frontend
+
 - **Framework:** [e.g., Next.js 15]
 - **Language:** [e.g., TypeScript 5.6]
 - **UI Library:** [e.g., React 19]
@@ -33,6 +35,7 @@
 [Rationale for frontend stack]
 
 ### Backend
+
 - **Framework:** [e.g., Next.js API Routes, Express]
 - **Language:** [e.g., TypeScript]
 - **Runtime:** [e.g., Node.js 20]
@@ -42,6 +45,7 @@
 [Rationale for backend stack]
 
 ### Database & Storage
+
 - **Primary Database:** [e.g., PostgreSQL]
 - **Caching:** [e.g., Redis]
 - **File Storage:** [e.g., AWS S3, Cloudflare R2]
@@ -51,6 +55,7 @@
 [Rationale for data layer]
 
 ### Infrastructure
+
 - **Hosting:** [e.g., Vercel, AWS, Cloudflare Pages]
 - **CI/CD:** [e.g., GitHub Actions]
 - **Monitoring:** [e.g., Sentry, LogRocket]
@@ -68,6 +73,7 @@ project-root/
 ```
 
 **Organization Principles:**
+
 - [Principle 1: e.g., Group by feature, not by type]
 - [Principle 2: e.g., Colocation of related code]
 
@@ -80,14 +86,17 @@ project-root/
 **Location:** `[path/to/module]`
 
 **Key Components:**
+
 - `[file1.ts]` - [Purpose]
 - `[file2.ts]` - [Purpose]
 
 **Dependencies:**
+
 - [External dependency 1]
 - [Internal module dependency]
 
 **Data Flow:**
+
 ```
 [Describe how data flows through this module]
 ```
@@ -117,10 +126,12 @@ project-root/
 ### State Management
 
 **Client-side State:**
+
 - [How state is managed on client]
 - [What goes in local state vs. global state]
 
 **Server-side State:**
+
 - [How state is managed on server]
 - [Session management approach]
 
@@ -133,6 +144,7 @@ project-root/
 **Base URL:** `[/api or https://...]`
 
 **Key Endpoints:**
+
 ```
 GET    /api/[resource]           # [Purpose]
 POST   /api/[resource]           # [Purpose]
@@ -145,6 +157,7 @@ DELETE /api/[resource]/:id       # [Purpose]
 **Auth Method:** [e.g., JWT, Session-based, OAuth]
 
 **Implementation:**
+
 - [Where auth logic lives]
 - [How tokens/sessions are managed]
 - [How routes are protected]
@@ -154,6 +167,7 @@ DELETE /api/[resource]/:id       # [Purpose]
 ### Core Tables/Collections
 
 **[Table 1: e.g., users]**
+
 ```
 - id: UUID (PK)
 - email: string (unique)
@@ -161,6 +175,7 @@ DELETE /api/[resource]/:id       # [Purpose]
 ```
 
 **[Table 2: e.g., posts]**
+
 ```
 - id: UUID (PK)
 - user_id: UUID (FK → users)
@@ -168,6 +183,7 @@ DELETE /api/[resource]/:id       # [Purpose]
 ```
 
 **Relationships:**
+
 - [Describe key relationships]
 
 ## Integration Points
@@ -175,11 +191,13 @@ DELETE /api/[resource]/:id       # [Purpose]
 ### External Services
 
 **[Service 1: e.g., Stripe]**
+
 - **Purpose:** [e.g., Payment processing]
 - **Integration:** [How integrated]
 - **Location:** `[path/to/integration]`
 
 **[Service 2: e.g., SendGrid]**
+
 - **Purpose:** [e.g., Email delivery]
 - **Integration:** [How integrated]
 - **Location:** `[path/to/integration]`
@@ -187,29 +205,35 @@ DELETE /api/[resource]/:id       # [Purpose]
 ## Security Architecture
 
 **Authentication:**
+
 - [Method and implementation]
 
 **Authorization:**
+
 - [How permissions are checked]
 - [Role/permission model]
 
 **Data Protection:**
+
 - [Encryption at rest]
 - [Encryption in transit]
 - [Sensitive data handling]
 
 **Input Validation:**
+
 - [Where validation happens]
 - [Validation library used]
 
 ## Performance Considerations
 
 **Caching Strategy:**
+
 - [What is cached]
 - [Cache invalidation approach]
 - [Cache storage location]
 
 **Optimization Techniques:**
+
 - [Database indexing strategy]
 - [Query optimization]
 - [Asset optimization]
@@ -218,40 +242,48 @@ DELETE /api/[resource]/:id       # [Purpose]
 ## Error Handling
 
 **Strategy:**
+
 - [How errors are caught]
 - [How errors are logged]
 - [How errors are reported to users]
 
 **Error Boundaries:**
+
 - [Client-side error boundaries]
 - [Server-side error handling]
 
 ## Scalability Plan
 
 **Current Scale:**
+
 - [Expected users/requests]
 
 **Scaling Strategy:**
+
 - [Vertical vs horizontal]
 - [Load balancing approach]
 - [Database scaling plan]
 
 **Bottlenecks Identified:**
+
 - [Potential bottleneck 1]
 - [Mitigation strategy]
 
 ## Development Workflow
 
 **Local Development:**
+
 1. [Step 1]
 2. [Step 2]
 
 **Testing Strategy:**
+
 - [Unit testing approach]
 - [Integration testing approach]
 - [E2E testing approach]
 
 **Deployment Process:**
+
 1. [Step 1]
 2. [Step 2]
 3. [Step 3]
@@ -259,11 +291,13 @@ DELETE /api/[resource]/:id       # [Purpose]
 ## Design Patterns Used
 
 **[Pattern 1: e.g., Repository Pattern]**
+
 - **Where:** [Location in codebase]
 - **Why:** [Reason for using]
 - **Example:** `[path/to/example]`
 
 **[Pattern 2: e.g., Factory Pattern]**
+
 - **Where:** [Location in codebase]
 - **Why:** [Reason for using]
 - **Example:** `[path/to/example]`
@@ -271,21 +305,25 @@ DELETE /api/[resource]/:id       # [Purpose]
 ## Future Architectural Considerations
 
 **Potential Changes:**
+
 - [Change 1] - [Trigger condition]
 - [Change 2] - [Trigger condition]
 
 **Technical Debt:**
+
 - [Debt item 1] - [Plan to address]
 - [Debt item 2] - [Plan to address]
 
 ## Diagrams
 
 ### [Diagram 1: System Architecture]
+
 ```
 [ASCII art or description]
 ```
 
 ### [Diagram 2: Data Flow]
+
 ```
 [ASCII art or description]
 ```

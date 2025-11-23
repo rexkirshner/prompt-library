@@ -89,15 +89,8 @@
     "customCommands": []
   },
   "documentation": {
-    "required": [
-      "CONTEXT.md",
-      "STATUS.md",
-      "DECISIONS.md",
-      "SESSIONS.md"
-    ],
-    "aiHeaders": [
-      "claude.md"
-    ],
+    "required": ["CONTEXT.md", "STATUS.md", "DECISIONS.md", "SESSIONS.md"],
+    "aiHeaders": ["claude.md"],
     "optional": [
       "PRD.md",
       "CODE_MAP.md",
@@ -124,12 +117,7 @@
     "pushProtection": {
       "enabled": true,
       "requireExplicitApproval": true,
-      "approvalPhrases": [
-        "push",
-        "deploy",
-        "go ahead and push",
-        "yes push"
-      ]
+      "approvalPhrases": ["push", "deploy", "go ahead and push", "yes push"]
     },
     "commitMessageFormat": "standard",
     "includeCoAuthor": true,
@@ -228,13 +216,7 @@
   "customRules": {
     "projectSpecific": [],
     "filePatterns": {},
-    "exclusions": [
-      "node_modules/",
-      ".next/",
-      "dist/",
-      "build/",
-      ".git/"
-    ]
+    "exclusions": ["node_modules/", ".next/", "dist/", "build/", ".git/"]
   },
   "metadata": {
     "createdAt": "2025-11-23",

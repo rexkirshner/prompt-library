@@ -1,4 +1,5 @@
 <!-- TEMPLATE: READ-ONLY - This file contains instructions for Claude AI. Do not modify this file. -->
+
 # Claude Context
 
 **📍 Start here:** [CONTEXT.md](./CONTEXT.md)
@@ -14,10 +15,12 @@ This project uses the AI Context System v3.0. All documentation is in platform-n
 **NEVER push to GitHub without EXPLICIT approval for EACH push.**
 
 **Commit ≠ Push:**
+
 - User says **"commit"** → ONLY commit locally, then STOP
 - User says **"push"** or **"commit and push"** → OK to push
 
 **Permission NEVER carries forward:**
+
 - Approval for one push does NOT apply to future pushes
 - EACH git push requires NEW explicit approval
 
@@ -36,26 +39,31 @@ When making architectural, technical, or process decisions, ask:
 ### Examples of Decisions to Capture
 
 **Library/Framework Choices:**
+
 - "Why Zod over Yup for validation?"
 - "Why Sentry for error tracking?"
 - "Why Tailwind over CSS-in-JS?"
 
 **Performance Strategies:**
+
 - "Why React.memo for list components?"
 - "Why DESC indexes on date columns?"
 - "Why async validation over sync?"
 
 **Data Model Changes:**
+
 - "Why separate table for user preferences?"
 - "Why NoSQL over SQL for this feature?"
 - "Why normalize vs. denormalize?"
 
 **Security Approaches:**
+
 - "Why structured logging over console.log?"
 - "Why JWT over session cookies?"
 - "Why encrypt PII at application layer?"
 
 **Process Changes:**
+
 - "Why switch from feature branches to trunk-based?"
 - "Why add pre-commit hooks?"
 - "Why change deployment strategy?"
@@ -71,6 +79,7 @@ When making architectural, technical, or process decisions, ask:
 React.memo reduced to 45ms (85% improvement).
 
 **Trade-offs**:
+
 - ✅ Dramatic performance improvement for large lists
 - ❌ Slight complexity increase (need to understand memoization)
 - ✅ Shallow equality check sufficient for our use case
@@ -81,6 +90,7 @@ React.memo reduced to 45ms (85% improvement).
 ### When NOT to Document
 
 **Skip documentation for:**
+
 - Trivial code decisions (variable naming, formatting)
 - Obvious bug fixes
 - Standard patterns already in CODE_STYLE.md

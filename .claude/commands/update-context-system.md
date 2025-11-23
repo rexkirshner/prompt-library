@@ -33,6 +33,7 @@ Update your project's AI Context System to the latest version from GitHub using 
 Each bash code block in this file should be run using the Bash tool. This is an automated update process.
 
 **CRITICAL WORKING DIRECTORY RULE:**
+
 - User will run this command FROM the project directory
 - Do NOT try to cd into the project directory yourself
 - All paths in commands are relative to project root
@@ -145,6 +146,7 @@ fi
 ```
 
 The installer will:
+
 - Check if you already have the latest version (and exit if you do)
 - Back up your existing installation
 - Download all latest files
@@ -153,6 +155,7 @@ The installer will:
 - Report what was updated
 
 **After the installer completes:**
+
 - Review the output to see what was updated
 - Installer will show version change (if any)
 - Installer will list all updated files
@@ -251,6 +254,7 @@ log_info ""
 ```
 
 **Why this matters:**
+
 - Preserves your previous feedback (archived with version number)
 - Gives you fresh file for new feedback
 - Tracks what version you were using when you had issues
@@ -405,6 +409,7 @@ Automated migration with dry-run, backup, and rollback is planned for v2.1. For 
 4. Verify with `/validate-context`
 
 **Why manual for now?**
+
 - v2.0.0 focuses on getting the new structure right
 - Automated migration requires extensive testing (10+ real projects)
 - Manual migration ensures you understand changes
@@ -513,6 +518,7 @@ Review templates/ directory for new reference content you may want to adopt:
 ## Error Handling
 
 **If GitHub is unreachable:**
+
 ```
 ❌ Cannot reach GitHub
 - Check internet connection
@@ -521,6 +527,7 @@ Review templates/ directory for new reference content you may want to adopt:
 ```
 
 **If installer fails:**
+
 ```
 ❌ Installation failed
 - Check error output above
@@ -531,6 +538,7 @@ Review templates/ directory for new reference content you may want to adopt:
 ## Success Criteria
 
 Update succeeds when:
+
 - Installer completes without errors
 - All files verified
 - Version number updated in config
@@ -538,6 +546,7 @@ Update succeeds when:
 - User informed of changes
 
 **Perfect update:**
+
 - System files auto-updated
 - Project content untouched
 - Clear report of what changed
@@ -578,6 +587,7 @@ Understood?
 ```
 
 **Why this matters:**
+
 - Standardizes git workflow expectations across all AI assistants
 - Prevents accidental pushes to remote repository
 - Encourages frequent local commits (good practice)

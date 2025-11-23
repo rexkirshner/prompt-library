@@ -8,6 +8,7 @@ description: Compare and update context files with latest templates
 **Purpose:** Compare your context documentation with latest templates and selectively update
 
 **Use this when:**
+
 - New template improvements available
 - Want to adopt latest best practices
 - Template structure changed in system update
@@ -247,12 +248,14 @@ echo "💡 Tip: Use git diff to see exactly what changed"
 ### What Gets Updated
 
 **Structure updates:**
+
 - Section ordering
 - New sections added to templates
 - Formatting improvements
 - Documentation guidelines
 
 **NOT updated (preserved):**
+
 - Your project-specific content
 - Custom sections you added
 - Filled-in placeholders
@@ -268,12 +271,14 @@ echo "💡 Tip: Use git diff to see exactly what changed"
 ### When to Use
 
 **Good times to update:**
+
 - ✅ After system upgrade (/update-context-system)
 - ✅ New template features you want to adopt
 - ✅ Template structure improved
 - ✅ Periodic maintenance (quarterly)
 
 **Not recommended when:**
+
 - ❌ In middle of active development
 - ❌ Haven't committed recent work
 - ❌ Customizations you want to preserve
@@ -303,6 +308,7 @@ Command tries these strategies in order:
 ## Success Criteria
 
 Command succeeds when:
+
 - Templates located successfully
 - Diffs shown clearly for each file
 - User approves/rejects each update
@@ -311,6 +317,7 @@ Command succeeds when:
 - User knows next steps
 
 **Perfect execution:**
+
 - All templates found locally (fast)
 - Clear visual diffs shown
 - User makes informed decisions

@@ -12,6 +12,7 @@ description: Comprehensive session documentation for breaks and handoffs (10-15 
 **⏱️ Estimated time:** 10-15 minutes
 
 **Philosophy:**
+
 - Capture TodoWrite state for productivity tracking
 - Extract mental models and decision rationale for AI agents
 - Update what changed (not everything)
@@ -22,6 +23,7 @@ description: Comprehensive session documentation for breaks and handoffs (10-15 
 ## When to Use This Command
 
 **Use /save-full (comprehensive) when:**
+
 - Taking break >1 week
 - Handing off to another agent/developer
 - Major milestone completed
@@ -36,17 +38,19 @@ description: Comprehensive session documentation for breaks and handoffs (10-15 
 ## What This Command Does
 
 **Everything /save does:**
+
 1. Updates STATUS.md (current tasks, blockers, next steps)
 2. Auto-generates Quick Reference section in STATUS.md (dashboard)
 
-**PLUS comprehensive documentation:**
-3. **Creates SESSIONS.md entry** - Structured 40-60 lines with:
-   - What changed and why
-   - Problem solved (issue, constraints, approach, rationale)
-   - Mental models (current understanding, insights, gotchas)
-   - Files modified (with context)
-   - Work in progress (precise resume point)
-   - TodoWrite state (completed vs. pending)
+**PLUS comprehensive documentation:** 3. **Creates SESSIONS.md entry** - Structured 40-60 lines with:
+
+- What changed and why
+- Problem solved (issue, constraints, approach, rationale)
+- Mental models (current understanding, insights, gotchas)
+- Files modified (with context)
+- Work in progress (precise resume point)
+- TodoWrite state (completed vs. pending)
+
 4. **Updates DECISIONS.md** - If significant decision made
 5. **Optional: Exports JSON** - For multi-agent workflows (--with-json flag)
 
@@ -63,6 +67,7 @@ description: Comprehensive session documentation for breaks and handoffs (10-15 
 **Note:** The Bash tool doesn't handle multi-line if-then-else blocks well. Use simple sequential commands instead.
 
 **Check if common-functions.sh exists:**
+
 ```bash
 test -f "scripts/common-functions.sh" && echo "common-functions.sh found" || echo "common-functions.sh not found (will use direct commands)"
 ```
@@ -89,11 +94,13 @@ echo "✅ Found context at: $CONTEXT_DIR"
 **Note:** This searches current directory, parent directory, and grandparent directory for context/ folder. Use `$CONTEXT_DIR` variable throughout this command instead of hardcoded `context/`.
 
 **Alternative if script not available:**
+
 ```bash
 test -d "context" && echo "context" || test -d "../context" && echo "../context" || test -d "../../context" && echo "../../context" || echo "ERROR: context/ not found"
 ```
 
 **Why this works:**
+
 - Searches current directory first
 - Then parent directory (for `backend/` subdirs)
 - Then grandparent (for `backend/src/` subdirs)
@@ -105,16 +112,19 @@ test -d "context" && echo "context" || test -d "../context" && echo "../context"
 ### Step 2: Analyze What Changed
 
 **Try helper script first (optional):**
+
 ```bash
 test -x "scripts/save-full-helper.sh" && echo "Helper script available" || echo "Helper script not available - will use manual process"
 ```
 
 **If helper is available, you can try running it:**
+
 ```bash
 ./scripts/save-full-helper.sh 2>/dev/null && echo "Helper succeeded - draft at context/.session-draft.md" || echo "Helper failed or not available - using manual process"
 ```
 
 **Manual analysis process - use simple sequential commands:**
+
 ```bash
 echo "Gathering session information..."
 echo ""
@@ -142,6 +152,7 @@ echo ""
 ```
 
 **Key improvements:**
+
 - ✅ No command substitution
 - ✅ Auto-runs helper script if available
 - ✅ Graceful fallback to manual process
@@ -199,31 +210,37 @@ echo ""
 **Duration:** [X]h | **Focus:** [Brief description] | **Status:** ✅/⏳
 
 ### TL;DR
+
 - [Key accomplishment 1]
 - [Key accomplishment 2]
 - [Key accomplishment 3]
 
 ### Problem Solved
+
 **Issue:** [What problem did this session address?]
 **Constraints:** [What limitations existed?]
 **Approach:** [How did you solve it? What was your thinking?]
 **Why this approach:** [Rationale for the chosen solution]
 
 ### Decisions
+
 - **[Decision topic]:** [What and why] → See DECISIONS.md D[ID]
 - Or: No significant technical decisions this session
 
 ### Files
+
 **NEW:** `path/to/file.ts:1-150` - [Purpose and key contents]
 **MOD:** `path/to/file.tsx:123-145` - [What changed and why]
 **DEL:** `path/to/old-file.ts` - [Why removed]
 
 ### Mental Models
+
 **Current understanding:** [Explain your mental model of the system]
 **Key insights:** [Insights AI agents should know]
 **Gotchas discovered:** [Things that weren't obvious]
 
 ### Work In Progress
+
 **Task:** [What's incomplete - be specific]
 **Location:** `file.ts:145` in `functionName()`
 **Current approach:** [Detailed mental model of what you're doing]
@@ -232,14 +249,18 @@ echo ""
 **Context needed:** [What you need to remember to resume]
 
 ### TodoWrite State
+
 **Completed:**
+
 - ✅ [Todo 1]
 - ✅ [Todo 2]
 
 **In Progress:**
+
 - ⏳ [Todo 3]
 
 ### Next Session
+
 **Priority:** [Most important next action]
 **Blockers:** [None / List blockers with details]
 
@@ -247,6 +268,7 @@ echo ""
 ```
 
 **Critical for AI Agents:**
+
 - TL;DR section - Quick scan of key points
 - Problem Solved section - Shows your thinking process
 - Mental Models section - AI understands your approach
@@ -638,10 +660,12 @@ echo ""
 ### Update Philosophy
 
 **Dual purpose in mind:**
+
 - **For you:** Capture TodoWrite state, update STATUS.md, quick recovery
 - **For AI agents:** Mental models, decision rationale, comprehensive context
 
 **Be structured AND comprehensive:**
+
 - Structured format (scannable sections)
 - Include depth (mental models, rationale, constraints)
 - Include file paths and line numbers
@@ -650,6 +674,7 @@ echo ""
 - **Structured ≠ minimal** - AI agents need context
 
 **Grow when needed:**
+
 - Don't create files prematurely
 - Suggest ARCHITECTURE/PRD when complexity warrants
 - DECISIONS.md is always core (AI agents need it)
@@ -659,6 +684,7 @@ echo ""
 ### What to Always Capture
 
 **Non-negotiable (Core Files):**
+
 - **SESSIONS.md entry** - Comprehensive with mental models (40-60 lines)
 - **STATUS.md update** - Current tasks, blockers, priorities, Quick Reference
 - **DECISIONS.md entry** - If significant decisions made (WHY)
@@ -666,6 +692,7 @@ echo ""
 - **TodoWrite state** - Capture completed vs. pending
 
 **Critical for AI agents:**
+
 - Mental models - How you understand the system
 - Decision rationale - WHY you chose this approach
 - Problem-solving approach - How you tackled the issue
@@ -673,14 +700,17 @@ echo ""
 - Gotchas discovered - Things that weren't obvious
 
 **Can skip:**
+
 - Optional files that didn't change (PRD, ARCHITECTURE)
 - Sections that have no updates
 
 ### Work-In-Progress Capture (Critical!)
 
 **Be specific about WIP:**
+
 ```markdown
 **Work In Progress:**
+
 - Implementing JWT refresh logic in `lib/auth.ts:145`
 - Current approach: Using jose library for verification
 - Next: Add refresh endpoint at `app/api/auth/refresh/route.ts`
@@ -688,8 +718,10 @@ echo ""
 ```
 
 **Not this:**
+
 ```markdown
 **Work In Progress:**
+
 - Working on authentication
 ```
 
@@ -702,17 +734,20 @@ echo ""
 **Solution:** Always append, never edit the full file
 
 **Process:**
+
 1. Create session entry in draft file (context/.session-draft.md)
 2. Append draft to SESSIONS.md: `cat context/.session-draft.md >> context/SESSIONS.md`
 3. Delete draft: `rm context/.session-draft.md`
 
 **Benefits:**
+
 - Works with any file size
 - No Read tool limitations
 - Fast operation
 - Zero risk of corruption
 
 **When to archive:**
+
 - When SESSIONS.md > 5000 lines
 - Move sessions 1-50 to artifacts/sessions/archive-YYYY-QN.md
 - Keep recent 50-100 sessions in main file

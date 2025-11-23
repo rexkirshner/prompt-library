@@ -14,6 +14,7 @@ Verify that all context documentation is accurate, consistent, and complete enou
 **Primary use:** First thing at session start (always!)
 
 **Other uses:**
+
 - Before major decisions
 - When feeling disoriented
 - After someone else worked on project
@@ -127,19 +128,23 @@ Would you like to update now? [Y/n]
 ```
 
 **If user responds Y or yes:**
+
 - Report: "Running /update-context-system..."
 - **ACTION:** Execute the /update-context-system command
 - After update completes, resume from Step 2 of this command
 
 **If user responds n or no:**
+
 - Report: "⏭️ Skipping update - continuing with context review"
 - Note in final report: "System update available (v[LATEST_VERSION])"
 - Continue to Step 2
 
 **If output contains "UP_TO_DATE":**
+
 - Silently continue to Step 2 (no message needed)
 
 **If version check fails (network issue, etc.):**
+
 - Silently continue to Step 2 (don't block review on network)
 
 ### Step 1.6: Critical Protocol Reminder
@@ -289,12 +294,14 @@ Show file statistics:
 **Step 3: Handle Read failures gracefully**
 
 If Read tool returns error about token limits:
+
 1. Report the error clearly
 2. Fall back to smaller load (reduce limits by 50%)
 3. Suggest session archiving if file > 3000 lines
 4. NEVER crash - partial load is better than none
 
 **Why this works:**
+
 - Session index at top shows all session titles
 - Most recent session has current WIP state
 - Avoids reading middle history (not needed for resuming)
@@ -342,6 +349,7 @@ echo ""
 ```
 
 **Color coding:**
+
 - 🟢 Green: ≤7 days (current)
 - 🟡 Yellow: 8-14 days (getting stale)
 - 🔴 Red: >14 days (stale, update recommended)
@@ -428,6 +436,7 @@ echo ""
 ```
 
 **Why this matters:**
+
 - Detects documentation drift before it becomes a problem
 - Identifies missing module READMEs (common gap)
 - Highlights underused DECISIONS.md (architectural context loss)
@@ -442,6 +451,7 @@ echo ""
 Analyze actual project state:
 
 **Git state:**
+
 ```bash
 git status
 git log --oneline -5
@@ -450,12 +460,14 @@ git diff HEAD
 ```
 
 **File system:**
+
 ```bash
 ls -la
 # Check key directories exist as documented
 ```
 
 **Project info:**
+
 - Read package.json (or equivalent)
 - Verify tech stack matches documentation
 - Check dependencies match ARCHITECTURE.md
@@ -467,79 +479,95 @@ Check each file against reality:
 #### CONTEXT.md Verification
 
 **Getting Started section:**
+
 - [ ] Verify links to STATUS.md, SESSIONS.md, DECISIONS.md work
 - [ ] Check that orientation paths (5-min, 30-min) are accurate
 
 **Tech Stack section:**
+
 - [ ] Verify listed technologies match package.json (or equivalent)
 - [ ] Check links to DECISIONS.md for rationale are correct
 
 **High-Level Architecture section:**
+
 - [ ] Verify architecture pattern matches actual implementation
 - [ ] Check system diagram reflects current structure
 - [ ] Confirm key components are accurately described
 
 **Directory Structure section:**
+
 - [ ] Check directories mentioned actually exist
 - [ ] Verify file paths are correct
 - [ ] Confirm folder structure matches description
 
 **Environment Setup section:**
+
 - [ ] Run listed commands to verify they exist (dev, test, build)
 - [ ] Check prerequisites are accurate
 - [ ] Verify environment variables section is current
 
 **Issues found:**
+
 - List specific inaccuracies
 - Note severity (critical, minor, cosmetic)
 
 #### PRD.md Verification
 
 **Current Status:**
+
 - [ ] Version number makes sense
 - [ ] Phase status matches actual progress
 - [ ] Timeline aligns with reality
 
 **Progress Log:**
+
 - [ ] Last entry date is recent
 - [ ] Logged work matches git history
 - [ ] Sessions are numbered correctly
 
 **Implementation Plan:**
+
 - [ ] Completed phases actually complete
 - [ ] Current phase reflects actual work
 - [ ] Roadmap is still relevant
 
 **Issues found:**
+
 - Note any disconnects from reality
 
 #### ARCHITECTURE.md Verification
 
 **System design:**
+
 - [ ] Described architecture matches code structure
 - [ ] Dependencies listed exist in package files
 - [ ] Patterns described are actually used
 
 **Data flow:**
+
 - [ ] Matches actual implementation
 - [ ] Integration points accurate
 
 **Issues found:**
+
 - Note architectural drift
 
 #### DECISIONS.md Verification
 
 **For each decision:**
+
 - [ ] Decision is actually implemented
 - [ ] Code follows documented choice
 - [ ] Trade-offs mentioned are accurate
 
 **Check for undocumented decisions:**
+
 - Scan recent commits for major choices
 - Look for framework/library additions
 - Identify patterns not documented
 
 **Issues found:**
+
 - Missing decisions
 - Contradicted decisions
 - Outdated decisions
@@ -547,21 +575,25 @@ Check each file against reality:
 #### KNOWN_ISSUES.md Verification
 
 **For each listed issue:**
+
 - [ ] Issue still exists (check code)
 - [ ] Severity is accurate
 - [ ] Workaround still works if listed
 
 **Check for resolved issues:**
+
 - Scan git log for fixes
 - Test known broken areas
 - Verify workarounds
 
 **Check for new issues:**
+
 - Look for TODO comments
 - Check for console errors (if applicable)
 - Review recent bug reports
 
 **Issues found:**
+
 - Stale issues (already fixed)
 - Missing new issues
 - Incorrect severities
@@ -569,17 +601,20 @@ Check each file against reality:
 #### SESSIONS.md Verification
 
 **Last session entry:**
+
 - [ ] Entry exists and is recent
 - [ ] Work described matches git log
 - [ ] Files mentioned were actually modified
 - [ ] WIP state is captured
 
 **Session continuity:**
+
 - [ ] Can identify exact resume point
 - [ ] Understand context of last work
 - [ ] Know what was in progress
 
 **Issues found:**
+
 - Missing entries
 - Incomplete WIP capture
 - Gap in session history
@@ -587,6 +622,7 @@ Check each file against reality:
 #### STATUS.md Verification (v2.1+)
 
 **Quick Reference section (auto-generated):**
+
 - [ ] Project info accurate (name, phase, status)
 - [ ] URLs current (production, staging, repository)
 - [ ] Tech stack summary matches CONTEXT.md
@@ -596,6 +632,7 @@ Check each file against reality:
 - [ ] Documentation health timestamp recent
 
 **Active Tasks section:**
+
 - [ ] Tasks are accurate and current
 - [ ] Completed items marked done
 - [ ] Work In Progress section reflects reality
@@ -603,11 +640,13 @@ Check each file against reality:
 - [ ] Next session priorities make sense
 
 **Check against actual state:**
+
 - [ ] Matches git status and recent commits
 - [ ] WIP location references exist
 - [ ] Next actions are actionable
 
 **Issues found:**
+
 - Stale tasks
 - Missing recent work
 - Incorrect WIP state
@@ -618,27 +657,32 @@ Check each file against reality:
 Verify documentation tells coherent story:
 
 **Status consistency:**
+
 - [ ] STATUS.md Quick Reference section reflects current state
 - [ ] STATUS.md matches latest SESSIONS.md entry
 - [ ] Progress matches across docs
 - [ ] Dates/versions align
 
 **Technical consistency:**
+
 - [ ] ARCHITECTURE.md reflects DECISIONS.md choices
 - [ ] CODE_STYLE.md matches actual code patterns
 - [ ] Tech stack consistent across docs
 
 **Issue tracking consistency:**
+
 - [ ] KNOWN_ISSUES.md blockers mentioned in STATUS.md
 - [ ] Resolved issues removed from both
 - [ ] New issues documented everywhere
 
 **Timeline consistency:**
+
 - [ ] Session numbers sequential in SESSIONS.md
 - [ ] Progress log entries match session log
 - [ ] Timestamps make sense
 
 **Contradictions found:**
+
 - List specific inconsistencies
 - Note impact on continuity
 - Identify which doc is correct
@@ -648,6 +692,7 @@ Verify documentation tells coherent story:
 Evaluate if context is complete enough:
 
 **Critical information present:**
+
 - [ ] Can identify current project phase
 - [ ] Know exact last work done
 - [ ] Understand WIP state
@@ -656,6 +701,7 @@ Evaluate if context is complete enough:
 - [ ] Aware of current issues
 
 **Gap analysis:**
+
 - What information is missing?
 - What would help resume work?
 - What's unclear or ambiguous?
@@ -689,6 +735,7 @@ Assess ability to resume work seamlessly:
 **Total score:** 0-100
 
 **Confidence levels:**
+
 - 90-100: **Perfect** - Resume immediately with full confidence
 - 75-89: **Good** - Resume with minor clarifications needed
 - 60-74: **Adequate** - Review gaps before resuming
@@ -749,6 +796,7 @@ Provide comprehensive report:
 If confidence score >= 60, actively load context:
 
 **Internalize key information:**
+
 - Current project phase and goals
 - Last work session details
 - WIP state and exact resume point
@@ -757,6 +805,7 @@ If confidence score >= 60, actively load context:
 - Immediate next actions
 
 **Prepare for work:**
+
 - Understand user preferences from CONTEXT.md
 - Check STATUS.md for current priorities
 - Review CODE_STYLE.md standards (if exists)
@@ -764,6 +813,7 @@ If confidence score >= 60, actively load context:
 - Set mental context for continuation
 
 **If score < 60:**
+
 - Don't load potentially incorrect context
 - Wait for /save-context to update first
 
@@ -772,12 +822,14 @@ If confidence score >= 60, actively load context:
 ### Trust But Verify
 
 **Trust the docs when:**
+
 - Recent (last updated <48 hours)
 - Consistent across files
 - Match git history
 - WIP clearly stated
 
 **Verify against code when:**
+
 - Last updated >3 days ago
 - Contradictions found
 - Major changes in git log
@@ -831,6 +883,7 @@ Understood?
 ```
 
 **Why this matters:**
+
 - Standardizes git workflow expectations across all AI assistants
 - Prevents accidental pushes to remote repository
 - Encourages frequent local commits (good practice)

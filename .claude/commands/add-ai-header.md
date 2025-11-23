@@ -19,6 +19,7 @@ This system uses platform-neutral documentation (CONTEXT.md, STATUS.md, etc.) wi
 ```
 
 **Examples:**
+
 ```bash
 /add-ai-header cursor     # Creates cursor.md
 /add-ai-header aider      # Creates aider.md
@@ -29,11 +30,13 @@ This system uses platform-neutral documentation (CONTEXT.md, STATUS.md, etc.) wi
 ## When to Use This Command
 
 **Create header files for:**
+
 - AI coding tools you actively use in this project
 - New team members using different AI tools
 - Multi-agent workflows with different AI systems
 
 **Do NOT create for:**
+
 - Tools you don't use (avoid bloat)
 - Every possible AI tool "just in case"
 
@@ -135,6 +138,7 @@ fi
 **ACTION:** Check if we have a specific template for this tool
 
 **Known tools with templates:**
+
 - claude → claude.md.template
 - cursor → cursor.md.template
 - aider → aider.md.template
@@ -248,6 +252,7 @@ All AI tools use the same platform-neutral documentation:
 ### Multi-AI Pattern
 
 **Architecture:**
+
 ```
 context/
 ├── claude.md        # Claude/Claude Code entry point
@@ -262,11 +267,13 @@ All header files are 7 lines and point to the same documentation.
 ### When to Create Header Files
 
 **Create for:**
+
 - ✅ AI tools you actively use
 - ✅ Team members using different tools
 - ✅ Multi-agent workflows
 
 **Don't create for:**
+
 - ❌ Every possible tool "just in case"
 - ❌ Tools you tried once and don't use
 - ❌ Future tools you might use someday
@@ -276,12 +283,14 @@ All header files are 7 lines and point to the same documentation.
 ### Supported Tools
 
 **With dedicated templates:**
+
 - claude (Claude/Claude Code)
 - cursor (Cursor IDE)
 - aider (Aider CLI)
 - codex (GitHub Copilot)
 
 **Any other tool:**
+
 - Uses generic template
 - Tool name substituted automatically
 - Same 7-line format
@@ -305,6 +314,7 @@ This project uses the AI Context System v3.0. All documentation is in platform-n
 ## Success Criteria
 
 Command succeeds when:
+
 - Header file created in context/
 - Points to CONTEXT.md
 - Follows 7-line format
@@ -312,6 +322,7 @@ Command succeeds when:
 - User knows the file is ready to use
 
 **Perfect execution:**
+
 - Quick and painless
 - File is ready immediately
 - Clear output showing what was created

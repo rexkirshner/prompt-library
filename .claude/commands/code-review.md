@@ -22,12 +22,14 @@ Conduct a thorough, unhurried code quality audit. This command **NEVER makes cha
 ## When to Use This Command
 
 **Good times:**
+
 - After completing a feature or phase
 - Before deployment or major milestones
 - When quality matters more than speed
 - **Only when you have plenty of time** - user will only run this when unbound by time
 
 **Bad times:**
+
 - Time is limited
 - In middle of active development
 - During urgent fixes
@@ -50,6 +52,7 @@ Taking my time to be comprehensive...
 ### Step 1: Load Context and Standards
 
 **Read these files:**
+
 - context/CODE_STYLE.md - Know the standards
 - context/ARCHITECTURE.md - Understand design
 - context/DECISIONS.md - Know past choices
@@ -57,6 +60,7 @@ Taking my time to be comprehensive...
 - context/.context-config.json - User preferences
 
 **Internalize standards:**
+
 - Simplicity above all
 - No temporary fixes
 - Root cause solutions only
@@ -66,12 +70,14 @@ Taking my time to be comprehensive...
 ### Step 2: Analyze Project Structure
 
 **Scan directory structure:**
+
 ```bash
 find . -type f -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.jsx" | head -50
 ls -la src/ app/ lib/ components/ 2>/dev/null
 ```
 
 **Identify areas to review:**
+
 - Core business logic
 - API routes/endpoints
 - Data handling
@@ -81,6 +87,7 @@ ls -la src/ app/ lib/ components/ 2>/dev/null
 - Test coverage
 
 **Create review checklist:**
+
 - [ ] All major code areas identified
 - [ ] Priority areas noted
 - [ ] Scope is clear
@@ -90,6 +97,7 @@ ls -la src/ app/ lib/ components/ 2>/dev/null
 Review each area systematically. **NO CHANGES - ONLY ANALYSIS**
 
 Use specialized checklists for thoroughness:
+
 - **Security:** `.claude/checklists/security.md`
 - **Accessibility:** `.claude/checklists/accessibility.md`
 - **SEO:** `.claude/checklists/seo-review.md`
@@ -98,53 +106,62 @@ Use specialized checklists for thoroughness:
 #### Review Categories
 
 **1. Architecture & Design**
+
 - Architectural patterns match ARCHITECTURE.md?
 - Separation of concerns maintained?
 - Dependencies flow correctly?
 - Coupling minimal, cohesion high?
 
 **2. Code Standards** (from CODE_STYLE.md)
+
 - Simplicity principle followed?
 - No temporary/hacky fixes?
 - Root causes addressed?
 - Clear, readable code?
 
 **3. Performance** (checklist: `.claude/checklists/performance.md`)
+
 - Core Web Vitals acceptable?
 - Bundle sizes reasonable?
 - Images optimized?
 - Efficient database queries?
 
 **4. Security** (checklist: `.claude/checklists/security.md`)
+
 - Input validation present?
 - SQL injection protection?
 - XSS vulnerabilities?
 - Secrets in code?
 
 **5. Error Handling**
+
 - Proper try-catch usage?
 - Meaningful error messages?
 - Error logging?
 - User feedback?
 
 **6. Testing**
+
 - Critical paths tested?
 - Edge cases covered?
 - Test quality good?
 
 **7. Accessibility** (checklist: `.claude/checklists/accessibility.md`, if UI)
+
 - Semantic HTML?
 - Keyboard navigation?
 - Screen reader support?
 - Color contrast?
 
 **8. SEO** (checklist: `.claude/checklists/seo-review.md`, if public web)
+
 - Meta tags present?
 - Heading hierarchy correct?
 - Core Web Vitals acceptable?
 - Structured data present?
 
 **9. TypeScript Configuration** (if TypeScript project)
+
 - **ACTION:** Read tsconfig.json to verify settings
 - Strict mode enabled? (`"strict": true`)
 - No implicit any? (`"noImplicitAny": true` or covered by strict)
@@ -153,10 +170,12 @@ Use specialized checklists for thoroughness:
 - **IMPORTANT:** Always verify actual tsconfig.json content before claiming issues
 
 **Document findings:**
+
 ```markdown
 ### [Category] Issues
 
 **[ID]: [Issue Title]**
+
 - Severity: Critical/High/Medium/Low
 - Location: file.ts:123-145
 - Issue: [What's wrong]
@@ -169,12 +188,14 @@ Use specialized checklists for thoroughness:
 ### Step 4: Identify Patterns and Root Causes
 
 **Look for systemic issues:**
+
 - Same mistake repeated across files?
 - Architectural flaw causing problems?
 - Missing knowledge/skills?
 - Technical debt accumulated?
 
 **Categorize issues:**
+
 - **Quick wins:** Easy to fix, high impact
 - **Refactoring needed:** Architectural changes
 - **Technical debt:** Accumulated problems
@@ -183,12 +204,14 @@ Use specialized checklists for thoroughness:
 ### Step 5: Check Against KNOWN_ISSUES.md
 
 **Cross-reference:**
+
 - [ ] Are documented issues actually issues?
 - [ ] Are there undocumented issues?
 - [ ] Have documented issues been fixed?
 - [ ] Are severities accurate?
 
 **Update understanding:**
+
 - Note issues to add to KNOWN_ISSUES.md
 - Note issues to remove (if fixed)
 - Adjust severities based on findings
@@ -199,6 +222,7 @@ Create detailed report in `artifacts/code-reviews/session-[N]-review.md`:
 
 ```markdown
 # Code Review Report - Session [N]
+
 **Date:** YYYY-MM-DD
 **Reviewer:** Claude Code
 **Scope:** [What was reviewed]
@@ -219,6 +243,7 @@ Create detailed report in `artifacts/code-reviews/session-[N]-review.md`:
 **Low Priority:** [Number]
 
 **Top 3 Recommendations:**
+
 1. [Most important thing to fix]
 2. [Second most important]
 3. [Third most important]
@@ -230,6 +255,7 @@ Create detailed report in `artifacts/code-reviews/session-[N]-review.md`:
 ### Critical Issues (Fix Immediately)
 
 #### C1: [Issue Title]
+
 - **Severity:** Critical
 - **Location:** file.ts:123-145
 - **Issue:** [What's wrong]
@@ -257,11 +283,13 @@ Create detailed report in `artifacts/code-reviews/session-[N]-review.md`:
 ## Positive Findings
 
 **What's Working Well:**
+
 - [Good pattern 1]
 - [Good pattern 2]
 - [Well-structured code area]
 
 **Strengths:**
+
 - [Architecture strength]
 - [Code quality strength]
 - [Best practices followed]
@@ -271,14 +299,17 @@ Create detailed report in `artifacts/code-reviews/session-[N]-review.md`:
 ## Patterns Observed
 
 **Recurring Issues:**
+
 1. [Pattern repeated across codebase]
 2. [Another common problem]
 
 **Root Causes:**
+
 1. [Systemic issue causing problems]
 2. [Architectural flaw]
 
 **Quick Wins:**
+
 - [Easy fix with high impact]
 - [Low-hanging fruit]
 
@@ -287,16 +318,19 @@ Create detailed report in `artifacts/code-reviews/session-[N]-review.md`:
 ## Recommendations
 
 ### Immediate Actions (This Week)
+
 1. [Critical fix 1]
 2. [Critical fix 2]
 3. [Critical fix 3]
 
 ### Short-term Improvements (This Month)
+
 1. [High priority fix 1]
 2. [High priority fix 2]
 3. [Refactoring need]
 
 ### Long-term Enhancements (Backlog)
+
 1. [Architectural improvement]
 2. [Major refactor]
 3. [Infrastructure upgrade]
@@ -316,12 +350,14 @@ Create detailed report in `artifacts/code-reviews/session-[N]-review.md`:
 ## Compliance Check
 
 **CODE_STYLE.md Compliance:**
+
 - [✅/⚠️/❌] Simplicity principle
 - [✅/⚠️/❌] No temporary fixes
 - [✅/⚠️/❌] Root cause solutions
 - [✅/⚠️/❌] Minimal code impact
 
 **ARCHITECTURE.md Compliance:**
+
 - [✅/⚠️/❌] Follows documented patterns
 - [✅/⚠️/❌] Respects design decisions
 - [✅/⚠️/❌] Maintains separation
@@ -331,12 +367,14 @@ Create detailed report in `artifacts/code-reviews/session-[N]-review.md`:
 ## Next Steps
 
 **For User:**
+
 1. Review this report
 2. Prioritize issues to address
 3. Run /save-context to capture state
 4. Start fixing in new session
 
 **Suggested Fix Order:**
+
 1. [Critical issue to fix first]
 2. [Then this]
 3. [Then this]
@@ -675,6 +713,7 @@ After all integration steps:
 ### The "No Changes" Rule
 
 **Every temptation follows this pattern:**
+
 1. You notice something fixable
 2. You think "this is quick and easy"
 3. You're tempted to fix it now
@@ -685,6 +724,7 @@ After all integration steps:
 ### Taking Your Time
 
 User runs this when they have time. Be thorough:
+
 - Read code carefully
 - Trace through logic
 - Consider edge cases

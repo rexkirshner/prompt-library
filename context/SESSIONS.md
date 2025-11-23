@@ -28,6 +28,7 @@ Created comprehensive PRD v2 incorporating feedback, established git repository 
 **Issue:** Needed to refine initial PRD based on AI agent feedback while keeping scope appropriate for small community platform (<1K users)
 
 **Constraints:**
+
 - Small scale operation (minimal ops overhead)
 - Manual moderation only (no automation initially)
 - CC0 licensing requirement
@@ -47,6 +48,7 @@ Created comprehensive PRD v2 incorporating feedback, established git repository 
 ### Files
 
 **NEW:**
+
 - `PRD-v1.md` - Initial draft of product requirements
 - `PRD-v1-codex-suggestions.md` - AI agent feedback on v1
 - `PRD-v2.md` - Comprehensive revision with metrics, architecture, roadmap
@@ -59,6 +61,7 @@ Created comprehensive PRD v2 incorporating feedback, established git repository 
 - `context/context-feedback.md` - Feedback collection template
 
 **DEL:**
+
 - `path/to/old-file.ts` - [Why removed and what replaced it]
 
 ### Mental Models
@@ -67,10 +70,12 @@ Created comprehensive PRD v2 incorporating feedback, established git repository 
 [Explain your mental model of the system/feature you're working on]
 
 **Key insights:**
+
 - [Insight 1 that AI agents should know]
 - [Insight 2]
 
 **Gotchas discovered:**
+
 - [Gotcha 1 - thing that wasn't obvious]
 - [Gotcha 2]
 
@@ -86,6 +91,7 @@ Created comprehensive PRD v2 incorporating feedback, established git repository 
 ### TodoWrite State
 
 **Captured from TodoWrite:**
+
 - [Completed todo 1]
 - [Completed todo 2]
 - [ ] [Incomplete todo - in WIP]
@@ -97,6 +103,7 @@ Created comprehensive PRD v2 incorporating feedback, established git repository 
 **Questions:** [Open questions for next session]
 
 ### Git Operations
+
 **MANDATORY - Auto-logged from conversation**
 
 - **Commits:** [N] commits
@@ -137,6 +144,7 @@ Initialized AI Context System v2.1 with 4 core files + 1 AI header (claude.md). 
 ### Files
 
 **NEW:**
+
 - `context/claude.md` - AI header (entry point for Claude)
 - `context/CONTEXT.md` - Project orientation (platform-neutral)
 - `context/STATUS.md` - Single source of truth with auto-generated Quick Reference section
@@ -160,37 +168,46 @@ Initialized AI Context System v2.1 with 4 core files + 1 AI header (claude.md). 
 **Duration:** [X]h | **Focus:** [Brief] | **Status:** ✅/⏳
 
 ### TL;DR
+
 [MANDATORY - 2-3 sentences summary]
 
 ### Accomplishments
+
 - ✅ [Accomplishment 1]
 - ✅ [Accomplishment 2]
 
 ### Decisions
+
 - **[Topic]:** [Decision and why] → See DECISIONS.md [ID]
 
 ### Files
+
 **NEW:** `file` (+N lines) - [Purpose]
 **MOD:** `file:lines` (+N, -M) - [What changed]
 **DEL:** `file` - [Why removed]
 
 ### Work In Progress
+
 **Task:** [What's incomplete]
 **Location:** `file:line`
 **Approach:** [How you're solving it]
 **Next:** [Exact action to resume]
 
 ### Next Session
+
 **Priority:** [Most important next]
 **Blockers:** [None / List]
 
 ### Git Operations
+
 **MANDATORY - Auto-logged**
+
 - **Commits:** [N] commits
 - **Pushed:** [YES | NO | USER WILL PUSH]
 - **Approval:** ["User quote" | "Not pushed"]
 
 ### Tests & Build
+
 - **Tests:** [Status]
 - **Build:** [Status]
 ```
@@ -201,17 +218,18 @@ Initialized AI Context System v2.1 with 4 core files + 1 AI header (claude.md). 
 
 Quick navigation to specific work.
 
-| # | Date | Phase | Focus | Status |
-|---|------|-------|-------|--------|
-| 1 | YYYY-MM-DD | Phase | [Brief] | ✅ |
-| 2 | YYYY-MM-DD | Phase | [Brief] | ✅ |
-| N | YYYY-MM-DD | Phase | [Brief] | ⏳ |
+| #   | Date       | Phase | Focus   | Status |
+| --- | ---------- | ----- | ------- | ------ |
+| 1   | YYYY-MM-DD | Phase | [Brief] | ✅     |
+| 2   | YYYY-MM-DD | Phase | [Brief] | ✅     |
+| N   | YYYY-MM-DD | Phase | [Brief] | ⏳     |
 
 ---
 
 ## Tips
 
 **For AI Agent Review & Takeover:**
+
 - **Mental models are critical** - AI needs to understand your thinking
 - **Capture constraints** - AI should know what limitations existed
 - **Explain rationale** - WHY you chose this approach
@@ -219,12 +237,14 @@ Quick navigation to specific work.
 - **Show problem-solving** - AI learns from your approach
 
 **Be structured AND comprehensive:**
+
 - Use structured format (scannable sections)
 - But include depth (mental models, rationale, constraints)
 - 40-60 lines per session is appropriate for AI understanding
 - Structured ≠ minimal. AI needs context.
 
 **Key sections for AI:**
+
 1. **Problem Solved** - What issue existed, constraints, approach
 2. **Mental Models** - Your understanding of the system
 3. **Decisions** - Link to DECISIONS.md for full rationale

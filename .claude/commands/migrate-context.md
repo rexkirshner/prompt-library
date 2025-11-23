@@ -16,6 +16,7 @@ Migrate an existing project with documentation to the AI Context System. This co
 - Want to adopt AI Context System without losing existing work
 
 **Do NOT use if:**
+
 - Project has no documentation (use `/init-context` instead)
 - Already using AI Context System
 
@@ -121,6 +122,7 @@ fi
 **CRITICAL:** The `.claude/` directory MUST be in your actual project root, not in a parent container folder.
 
 **Correct structure:**
+
 ```
 my-project/               ← Open this in Claude Code
 ├── .claude/              ← Commands HERE
@@ -130,6 +132,7 @@ my-project/               ← Open this in Claude Code
 ```
 
 **WRONG structure:**
+
 ```
 parent-folder/
 ├── .claude/              ← ❌ Commands in WRONG place
@@ -193,18 +196,21 @@ fi
 ### Step 1: Scan Existing Project
 
 **Identify existing documentation:**
+
 ```bash
 ls -la
 ```
 
 Look for:
+
 - **Context docs (root):** CLAUDE.md, PRD.md, DECISIONS.md, KNOWN_ISSUES.md, ARCHITECTURE.md, CODE_STYLE.md, SESSIONS.md, README.md, DEPLOYMENT.md
 - **Task files (v1.x legacy):** tasks/, todo.md, next-steps.md (v2.0+ uses STATUS.md instead)
-- **Code reviews:** *code-review*.md, *review*.md
-- **Lighthouse reports:** lighthouse-*.json
+- **Code reviews:** _code-review_.md, _review_.md
+- **Lighthouse reports:** lighthouse-\*.json
 - **Other artifacts:** bundle-analysis/, coverage/, performance reports
 
 **Analyze what exists:**
+
 ```
 Create inventory:
 - ✅ Found: CLAUDE.md (25KB)
@@ -289,6 +295,7 @@ mv coverage/ artifacts/ 2>/dev/null || true
 ```
 
 **Clean up empty directories:**
+
 ```bash
 rmdir tasks 2>/dev/null || true
 ```
@@ -302,12 +309,14 @@ For each existing doc, add missing sections from templates while preserving all 
 This is critical - CLAUDE.md must be properly augmented with new sections.
 
 **Step 1: Read entire CLAUDE.md**
+
 ```bash
 # Read the file to understand current structure
 cat context/CLAUDE.md
 ```
 
 **Step 2: Check for missing sections:**
+
 - [ ] "Core Development Methodology" section
 - [ ] Reference to context/.context-config.json
 - [ ] Task file paths use context/tasks/
@@ -316,6 +325,7 @@ cat context/CLAUDE.md
 **Step 3: Add Core Development Methodology section**
 
 Check if "Core Development Methodology" heading exists:
+
 ```bash
 grep -n "Core Development Methodology" context/CLAUDE.md
 ```
@@ -337,6 +347,7 @@ If NOT found, use Edit tool to add after the "Working with You" section (or afte
 10. **Full Tracing:** Debug by tracing ENTIRE code flow - no assumptions
 
 **When Debugging:**
+
 - Trace through the ENTIRE code flow step by step
 - No assumptions - verify what you think you know
 - No shortcuts - follow the data from entry to issue
@@ -348,6 +359,7 @@ If NOT found, use Edit tool to add after the "Working with You" section (or afte
 **Step 4: Add config reference**
 
 Check if config reference exists:
+
 ```bash
 grep -n "context/.context-config.json" context/CLAUDE.md
 ```
@@ -362,6 +374,7 @@ If NOT found, use Edit tool to add at the beginning of "Working with You" sectio
 **Step 5: Update task file path references**
 
 Find all task file references:
+
 ```bash
 grep -n "tasks/todo.md\|tasks/next-steps.md" context/CLAUDE.md
 ```
@@ -369,30 +382,35 @@ grep -n "tasks/todo.md\|tasks/next-steps.md" context/CLAUDE.md
 For EACH occurrence found, use Edit tool to update the path:
 
 **Example Edit #1:**
+
 ```
 old_string: "Write a plan to `tasks/todo.md`"
 new_string: "Use TodoWrite tool for task tracking"
 ```
 
 **Example Edit #2:**
+
 ```
 old_string: "1. Write a plan to `tasks/todo.md`"
 new_string: "1. **Plan First:** Read codebase, think through problem, use TodoWrite tool for task tracking"
 ```
 
 **Example Edit #3:**
+
 ```
 old_string: "Add review section to todo.md"
 new_string: "Update STATUS.md with current state, run /save to capture session"
 ```
 
 **Process:**
+
 1. Find each occurrence with grep
 2. Read surrounding context with Read tool
 3. Use Edit tool with exact old_string and new_string
 4. Repeat for ALL occurrences (may be 3-5 references)
 
 **CRITICAL:**
+
 - Use Edit tool for EACH occurrence (multiple edits, not one big replacement)
 - Copy exact strings including backticks, quotes, punctuation
 - Verify each edit completes successfully before next one
@@ -400,10 +418,12 @@ new_string: "Update STATUS.md with current state, run /save to capture session"
 #### Augment context/PRD.md
 
 **Add if missing:**
+
 - Progress Log section (at end)
 - Session tracking references
 
 **Update structure to match template:**
+
 - Ensure has Executive Summary
 - Ensure has Current Status section
 - Ensure has Implementation Plan
@@ -411,6 +431,7 @@ new_string: "Update STATUS.md with current state, run /save to capture session"
 #### Augment context/DECISIONS.md
 
 **Ensure has:**
+
 - Last Updated date at top
 - Table of Contents (if long)
 - Proper categorization
@@ -472,6 +493,7 @@ Use ARCHITECTURE.template.md to create comprehensive overview.
 #### Create context/CODE_STYLE.md (if missing)
 
 Use CODE_STYLE.template.md and fill in:
+
 - Language (from package.json)
 - Framework patterns
 - Core development principles (from config)
@@ -484,23 +506,27 @@ Use SESSIONS.template.md and create first entry:
 # Session History
 
 ## Session 1 - Migration to AI Context System
+
 **Date:** [DATE]
 **Focus:** Project migration
 
 **Work Completed:**
+
 - Migrated existing documentation to context/ folder
 - Moved artifacts to proper locations
 - Created missing documentation files
 - Established AI Context System structure
 
 **Files Modified:**
+
 - Moved: CLAUDE.md, PRD.md, DECISIONS.md, KNOWN_ISSUES.md → context/
-- Moved: lighthouse-*.json → artifacts/lighthouse/
+- Moved: lighthouse-\*.json → artifacts/lighthouse/
 - Moved: code reviews → artifacts/code-reviews/
 - Created: ARCHITECTURE.md, CODE_STYLE.md, SESSIONS.md
 - Created: .context-config.json
 
 **State at End:**
+
 - AI Context System fully migrated
 - All existing content preserved
 - Ready to use /save-context for future sessions
@@ -602,9 +628,7 @@ Create `context/.context-config.json`:
   "migration": {
     "migrated_from": "root directory structure",
     "migration_date": "[TODAY]",
-    "preserved_files": [
-      "List of files that were moved"
-    ]
+    "preserved_files": ["List of files that were moved"]
   }
 }
 ```
@@ -622,6 +646,7 @@ grep -q "context/tasks/todo.md" context/CLAUDE.md && echo "✅ Task paths update
 ```
 
 **If any checks fail:**
+
 - Go back to Step 4 and complete the missing augmentations
 - Do NOT proceed to report until all augmentations are done
 - This is critical for system integrity
@@ -636,17 +661,20 @@ Create comprehensive report of what was done:
 ## Files Moved
 
 ### Documentation → context/
+
 - CLAUDE.md (augmented with Core Methodology)
 - PRD.md (augmented with Progress Log)
 - DECISIONS.md (reformatted)
 - KNOWN_ISSUES.md (categorized)
 
 ### Legacy Task Files (if preserving)
+
 - tasks/next-steps.md → context/tasks/next-steps.md (v1.x legacy)
 - tasks/todo.md → context/tasks/todo.md (v1.x legacy)
 - **Note:** v2.0+ uses STATUS.md instead; these preserved for reference only
 
 ### Artifacts → artifacts/
+
 - lighthouse-homepage.json → artifacts/lighthouse/
 - lighthouse-article.json → artifacts/lighthouse/
 - lighthouse-category.json → artifacts/lighthouse/
@@ -689,14 +717,14 @@ If user wants to preserve legacy task files, they'll be in context/tasks/ for re
 
 artifacts/
 ├── code-reviews/
-│   ├── session-7-code-review.md ➡️ moved
-│   ├── session-8-code-review.md ➡️ moved
-│   └── session-11-code-review.md ➡️ moved
+│ ├── session-7-code-review.md ➡️ moved
+│ ├── session-8-code-review.md ➡️ moved
+│ └── session-11-code-review.md ➡️ moved
 └── lighthouse/
-    ├── lighthouse-homepage.json ➡️ moved
-    ├── lighthouse-article.json ➡️ moved
-    ├── lighthouse-category.json ➡️ moved
-    └── lighthouse-article-optimized.json ➡️ moved
+├── lighthouse-homepage.json ➡️ moved
+├── lighthouse-article.json ➡️ moved
+├── lighthouse-category.json ➡️ moved
+└── lighthouse-article-optimized.json ➡️ moved
 
 ## Preserved Content
 
@@ -726,6 +754,7 @@ All existing content preserved, enhanced with new structure.
 ### Preservation First
 
 **NEVER delete or lose content:**
+
 - Always move, never delete original files
 - Augment existing docs, don't replace
 - Preserve all sections, add new ones
@@ -734,6 +763,7 @@ All existing content preserved, enhanced with new structure.
 ### Smart Augmentation
 
 **When adding sections to existing docs:**
+
 - Read entire file first
 - Identify what's missing vs template
 - Add missing sections without disrupting existing flow
@@ -741,6 +771,7 @@ All existing content preserved, enhanced with new structure.
 - Update references (tasks/ → context/tasks/)
 
 **What to augment:**
+
 - Add standardized headers/structure
 - Add missing categories
 - Add cross-references
@@ -748,6 +779,7 @@ All existing content preserved, enhanced with new structure.
 - Add config references
 
 **What NOT to change:**
+
 - Project-specific content
 - User's examples and workflows
 - Technical decisions already documented
@@ -756,27 +788,31 @@ All existing content preserved, enhanced with new structure.
 ### File Movement Strategy
 
 **Documentation (goes to context/):**
+
 - CLAUDE.md, PRD.md, ARCHITECTURE.md, DECISIONS.md
 - CODE_STYLE.md, KNOWN_ISSUES.md, SESSIONS.md
 - DEPLOYMENT.md, TROUBLESHOOTING.md
 - tasks/next-steps.md, tasks/todo.md
 
 **Artifacts (goes to artifacts/):**
-- lighthouse-*.json → artifacts/lighthouse/
-- *code-review*.md → artifacts/code-reviews/
+
+- lighthouse-\*.json → artifacts/lighthouse/
+- _code-review_.md → artifacts/code-reviews/
 - bundle-analysis/ → artifacts/bundle-analysis/
 - coverage/ → artifacts/coverage/
 - performance reports → artifacts/performance/
 - security scans → artifacts/security/
 
 **Leave in root:**
+
 - README.md (stays in root for GitHub)
 - package.json, tsconfig.json (project config)
-- .gitignore, .env* (project files)
+- .gitignore, .env\* (project files)
 
 ### Config Generation
 
 **Fill in from analysis:**
+
 - project.name: From README or package.json
 - project.type: Inferred from structure
 - project.initialized: From git log (first commit date)
@@ -785,6 +821,7 @@ All existing content preserved, enhanced with new structure.
 ### Migration Report
 
 **Be specific:**
+
 - List every file moved with → arrows
 - Show before/after structure
 - Note augmentations with ✏️
@@ -794,16 +831,19 @@ All existing content preserved, enhanced with new structure.
 ## Error Handling
 
 **If file conflicts:**
+
 - Report which files would conflict
 - Ask user how to proceed
 - Suggest: rename existing, merge content, skip
 
 **If can't determine structure:**
+
 - Show what was found
 - Ask user to clarify
 - Provide safe default
 
 **If unsure about file:**
+
 - List in "Unprocessed Files" section
 - Ask user where it should go
 - Don't move unless confident
@@ -811,6 +851,7 @@ All existing content preserved, enhanced with new structure.
 ## Success Criteria
 
 Migration succeeds when:
+
 - All documentation in context/
 - All artifacts in artifacts/
 - Existing content 100% preserved
@@ -821,6 +862,7 @@ Migration succeeds when:
 - Ready to use /save-context
 
 **Perfect migration:**
+
 - Zero content lost
 - All files in right place
 - Documentation enhanced not replaced
@@ -855,10 +897,12 @@ fi
 ```
 
 **What gets removed:**
+
 - `ai-context-system/` directory (GitHub repo contents)
 - `ai-context-system.zip` (if exists)
 
 **What gets kept:**
+
 - `.claude/` directory (slash commands)
 - `context/` directory (all your documentation)
 - `artifacts/` directory (all your reports)
