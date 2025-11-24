@@ -14,16 +14,24 @@ const prismaClientSingleton = () => {
     throw new Error('DATABASE_URL environment variable is not set')
   }
 
+  // Configure connection pool based on environment
+  const isDevelopment = process.env.NODE_ENV === 'development'
   const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
     // Explicit password configuration to avoid SASL issues
     ssl: false,
+    // Connection pool configuration
+    max: isDevelopment ? 5 : 20, // Maximum connections (5 for dev, 20 for prod)
+    idleTimeoutMillis: 30000, // Close idle connections after 30 seconds
+    connectionTimeoutMillis: 10000, // Timeout after 10 seconds if can't connect
+    // Allow graceful shutdown
+    allowExitOnIdle: isDevelopment,
   })
   const adapter = new PrismaPg(pool)
 
   return new PrismaClient({
     adapter,
-    log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+    log: isDevelopment ? ['query', 'error', 'warn'] : ['error'],
   })
 }
 
