@@ -11,7 +11,7 @@ async function makeAdmin(email: string) {
   try {
     console.log(`\nLooking for user with email: ${email}...`)
 
-    const user = await prisma.user.findUnique({
+    const user = await prisma.users.findUnique({
       where: { email },
     })
 
@@ -20,15 +20,15 @@ async function makeAdmin(email: string) {
       process.exit(1)
     }
 
-    if (user.role === 'ADMIN') {
+    if (user.is_admin) {
       console.log(`✅ User is already an admin: ${email}`)
       process.exit(0)
     }
 
     // Update user to admin
-    await prisma.user.update({
+    await prisma.users.update({
       where: { email },
-      data: { role: 'ADMIN' },
+      data: { is_admin: true },
     })
 
     console.log(`✅ Successfully granted admin privileges to: ${email}`)
