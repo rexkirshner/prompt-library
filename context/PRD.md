@@ -508,13 +508,13 @@ Each prompt contains:
 - [x] Initialize Next.js project with TypeScript
 - [x] Set up Vercel deployment pipeline
 - [x] Create base UI components with Tailwind
-- [ ] Configure PostgreSQL database (Vercel Postgres)
-- [ ] Set up Prisma ORM with initial schema
+- [x] Configure PostgreSQL database (Docker + local dev)
+- [x] Set up Prisma ORM with initial schema
 - [ ] Implement NextAuth.js with Google OAuth
 
 **Exit Criteria**: Dev environment working, auth functional, database connected
 
-**Progress:** 3/6 complete (50%)
+**Progress:** 5/6 complete (83%)
 
 ### Phase 1: MVP Core (Week 3-5)
 
