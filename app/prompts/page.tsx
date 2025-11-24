@@ -1,13 +1,15 @@
 /**
  * Prompts Listing Page
  *
- * Displays all approved prompts in a browseable list.
+ * Displays all approved prompts in a browseable list with search and filtering.
  * Server component for SEO optimization.
  */
 
 import { Metadata } from 'next'
 import Link from 'next/link'
 import { prisma } from '@/lib/db/client'
+import { buildSearchWhere, parseTagFilter } from '@/lib/prompts/search'
+import { PromptFilters } from '@/components/PromptFilters'
 
 export const metadata: Metadata = {
   title: 'Browse Prompts - AI Prompts Library',
@@ -17,13 +19,27 @@ export const metadata: Metadata = {
 // Force dynamic rendering - page requires database access
 export const dynamic = 'force-dynamic'
 
-export default async function PromptsPage() {
-  // Fetch all approved prompts with their tags
+interface PromptsPageProps {
+  searchParams: Promise<{
+    q?: string
+    category?: string
+    tags?: string
+  }>
+}
+
+export default async function PromptsPage({ searchParams }: PromptsPageProps) {
+  const params = await searchParams
+
+  // Build search filters
+  const filters = {
+    query: params.q,
+    category: params.category,
+    tags: parseTagFilter(params.tags),
+  }
+
+  // Fetch filtered prompts
   const prompts = await prisma.prompts.findMany({
-    where: {
-      status: 'APPROVED',
-      deleted_at: null,
-    },
+    where: buildSearchWhere(filters),
     include: {
       prompt_tags: {
         include: {
@@ -36,6 +52,29 @@ export default async function PromptsPage() {
     },
   })
 
+  // Fetch all unique categories for filter dropdown
+  const categories = await prisma.prompts.findMany({
+    where: {
+      status: 'APPROVED',
+      deleted_at: null,
+    },
+    select: {
+      category: true,
+    },
+    distinct: ['category'],
+    orderBy: {
+      category: 'asc',
+    },
+  })
+
+  // Fetch all tags for filter chips (ordered by usage)
+  const allTags = await prisma.tags.findMany({
+    orderBy: {
+      usage_count: 'desc',
+    },
+    take: 20, // Only show top 20 tags
+  })
+
   return (
     <div className="mx-auto max-w-7xl px-4 py-12">
       {/* Header */}
@@ -46,10 +85,19 @@ export default async function PromptsPage() {
         </p>
       </div>
 
+      {/* Search and Filters */}
+      <PromptFilters
+        categories={categories.map((c) => c.category)}
+        allTags={allTags.map((t) => ({ slug: t.slug, name: t.name }))}
+      />
+
       {/* Stats bar */}
       <div className="mb-8 flex items-center justify-between border-b border-gray-200 pb-4">
         <p className="text-sm text-gray-600">
-          {prompts.length} {prompts.length === 1 ? 'prompt' : 'prompts'} available
+          {prompts.length} {prompts.length === 1 ? 'prompt' : 'prompts'}{' '}
+          {filters.query || filters.category || filters.tags.length > 0
+            ? 'found'
+            : 'available'}
         </p>
         <Link
           href="/submit"
@@ -63,17 +111,23 @@ export default async function PromptsPage() {
       {prompts.length === 0 ? (
         <div className="rounded-lg border-2 border-dashed border-gray-300 p-12 text-center">
           <h3 className="text-lg font-semibold text-gray-900">
-            No prompts yet
+            {filters.query || filters.category || filters.tags.length > 0
+              ? 'No prompts found'
+              : 'No prompts yet'}
           </h3>
           <p className="mt-2 text-sm text-gray-600">
-            Be the first to submit a prompt to the library!
+            {filters.query || filters.category || filters.tags.length > 0
+              ? 'Try adjusting your search or filters'
+              : 'Be the first to submit a prompt to the library!'}
           </p>
-          <Link
-            href="/submit"
-            className="mt-4 inline-block rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-500"
-          >
-            Submit a Prompt
-          </Link>
+          {!(filters.query || filters.category || filters.tags.length > 0) && (
+            <Link
+              href="/submit"
+              className="mt-4 inline-block rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-500"
+            >
+              Submit a Prompt
+            </Link>
+          )}
         </div>
       ) : (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
