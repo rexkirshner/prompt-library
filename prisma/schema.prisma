@@ -81,6 +81,9 @@ model prompts {
   @@index([slug])
   @@index([status, created_at])
   @@index([status, featured, approved_at])
+  @@index([category])
+  @@index([deleted_at])
+  @@index([status, deleted_at])
 }
 
 model tags {
@@ -92,6 +95,7 @@ model tags {
   prompt_tags prompt_tags[]
 
   @@index([slug])
+  @@index([usage_count])
 }
 
 model users {
@@ -142,6 +146,7 @@ model Account {
   user users @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
+  @@index([userId])
   @@map("accounts")
 }
 
@@ -152,6 +157,7 @@ model Session {
   expires      DateTime
   user         users    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@index([userId])
   @@map("sessions")
 }
 
