@@ -125,7 +125,7 @@ export default async function PromptPage({ params }: PromptPageProps) {
       <div className="mb-8">
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-lg font-semibold">Prompt</h2>
-          <CopyButton text={prompt.prompt_text} />
+          <CopyButton text={prompt.prompt_text} promptId={prompt.id} />
         </div>
         <div className="rounded-lg border border-gray-300 bg-gray-50 p-4">
           <pre className="whitespace-pre-wrap font-mono text-sm text-gray-900">
