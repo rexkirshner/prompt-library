@@ -1,37 +1,44 @@
 # Product Requirements Document: AI Prompts Library v2
 
-**Last Updated:** 2025-11-23
-**Current Phase:** Phase 1 - MVP Core (Starting)
+**Last Updated:** 2025-11-24
+**Current Phase:** Phase 1 - MVP Core (In Progress)
 **Production URL:** https://prompt-library-alpha-inky.vercel.app/
 
 ## Progress Log
 
-### Session 1 | 2025-11-23 | Phase 0 Foundation - COMPLETE
+### Sessions 1-6 | 2025-11-23 | Phase 0 Foundation - ✅ COMPLETE
 
 **Completed:**
 
 - ✅ Next.js 16 project initialized with TypeScript, App Router, React 19
 - ✅ Testing infrastructure (Jest + React Testing Library) - 22/22 tests passing
 - ✅ Code quality tooling (ESLint + Prettier)
-- ✅ Modular architecture (lib, components, types, modules)
+- ✅ Modular architecture (lib/, components/, types/, modules/)
 - ✅ Simple branded homepage deployed to Vercel
 - ✅ Production deployment working
 - ✅ Docker Compose setup with PostgreSQL 17
 - ✅ Prisma ORM 7 configured with PostgreSQL adapter
 - ✅ Database schema implemented (9 models total including NextAuth tables)
-- ✅ Initial database migration successful
+- ✅ Initial database migration successful (20251124020013_add_password_field)
 - ✅ Database connection verified with test script
-- ✅ NextAuth.js v5 implemented with Google OAuth
+- ✅ NextAuth.js v5 implemented with email/password authentication
+- ✅ Bcrypt password hashing (12 salt rounds) with lib/auth/password.ts
+- ✅ JWT session strategy with custom callbacks (isAdmin, last_login_at)
 - ✅ Authentication module with utilities (requireAuth, requireAdmin, etc.)
-- ✅ Database sessions with Prisma adapter
-- ✅ Custom auth callbacks for last_login_at and isAdmin fields
 - ✅ Comprehensive auth documentation (lib/auth/README.md)
+- ✅ Vercel build fixed with postinstall script for Prisma generation
+- ✅ All code verified in production build
+
+**Key Decision:** Switched from Google OAuth to email/password to avoid Google verification/approval delays (See DECISIONS.md D002)
 
 **Next Steps (Phase 1):**
 
-- Build prompt submission form
-- Implement admin moderation dashboard
-- Create prompt listing and detail pages
+- Build user sign-up form (/auth/signup)
+- Build user sign-in form (/auth/signin)
+- Build prompt submission form (/submit)
+- Implement admin moderation dashboard (/admin)
+- Create prompt listing page (/prompts)
+- Create prompt detail pages (/prompts/[slug])
 
 ---
 
@@ -81,12 +88,13 @@ A lightweight, public-facing web application for saving, sharing, and discoverin
 
 ### Core Technologies
 
-- **Frontend & Backend**: Next.js 14+ (App Router) with React
-- **Database**: PostgreSQL (Vercel Postgres recommended for simplicity)
-- **Authentication**: NextAuth.js (Google OAuth only for MVP)
+- **Frontend & Backend**: Next.js 16 (App Router) with React 19
+- **Database**: PostgreSQL 17 (Docker local, Vercel Postgres production)
+- **ORM**: Prisma 7 with @prisma/adapter-pg
+- **Authentication**: NextAuth.js v5 (email/password with bcrypt)
 - **Deployment**: Vercel (leverages platform features for minimal ops)
-- **Styling**: Tailwind CSS + shadcn/ui components
-- **Email**: Resend or similar for transactional emails (optional for MVP)
+- **Styling**: Tailwind CSS v4
+- **Email**: Resend or similar for transactional emails (Phase 2+)
 
 ### Architecture Decisions
 
@@ -363,12 +371,13 @@ Each prompt contains:
 ```typescript
 {
   id: UUID (primary key)
-  email: String (unique)
-  name: String
-  image: String (avatar URL from OAuth)
+  email: String (unique, required)
+  password: String (bcrypt hashed, nullable for future OAuth support)
+  name: String (nullable)
+  image: String (nullable, avatar URL)
   is_admin: Boolean (default: false)
   created_at: Timestamp
-  last_login_at: Timestamp
+  last_login_at: Timestamp (nullable)
 }
 ```
 
@@ -496,7 +505,8 @@ Each prompt contains:
 ### Privacy Considerations
 
 - **Data Minimization**: Only collect necessary information
-- **Encryption**: HTTPS only, passwords never stored (OAuth only)
+- **Encryption**: HTTPS only, passwords hashed with bcrypt (12 salt rounds)
+- **Session Storage**: JWT tokens in HTTP-only cookies (not database sessions)
 - **Privacy Policy**: Clear statement about CC0 content and data usage
 - **Cookie Policy**: Session cookies only, no tracking
 - **GDPR Compliance**:
@@ -510,29 +520,41 @@ Each prompt contains:
 
 **Goal**: Set up development environment and core infrastructure
 
-- [x] Initialize Next.js project with TypeScript
-- [x] Set up Vercel deployment pipeline
-- [x] Create base UI components with Tailwind
-- [x] Configure PostgreSQL database (Docker + local dev)
-- [x] Set up Prisma ORM with initial schema
-- [x] Implement NextAuth.js with Google OAuth
+- [x] Initialize Next.js 16 project with TypeScript and React 19
+- [x] Set up Vercel deployment pipeline with production builds
+- [x] Create base UI components with Tailwind CSS v4
+- [x] Configure PostgreSQL 17 database (Docker local + Vercel Postgres production)
+- [x] Set up Prisma 7 ORM with initial schema (9 models)
+- [x] Implement NextAuth.js v5 with email/password authentication
+- [x] Add bcrypt password hashing utilities
+- [x] Implement JWT session strategy with custom callbacks
+- [x] Create comprehensive auth module with utilities (requireAuth, requireAdmin)
+- [x] Add testing infrastructure (Jest + React Testing Library, 22/22 passing)
+- [x] Set up code quality tools (ESLint, Prettier)
+- [x] Fix Vercel build issues (postinstall script for Prisma)
+- [x] Deploy and verify production build
 
 **Exit Criteria**: Dev environment working, auth functional, database connected ✅
 
-**Progress:** 6/6 complete (100%)
+**Progress:** 13/13 complete (100%)
 
-### Phase 1: MVP Core (Week 3-5)
+### Phase 1: MVP Core (Week 3-5) - 🔵 IN PROGRESS
 
 **Goal**: Basic submission and moderation flow
 
-- [ ] Prompt submission form
-- [ ] Admin moderation queue
-- [ ] Public browse page (no search yet)
-- [ ] Individual prompt pages
-- [ ] Basic admin dashboard
+- [ ] User sign-up form (/auth/signup) with validation
+- [ ] User sign-in form (/auth/signin) with NextAuth integration
+- [ ] Test authentication flow end-to-end
+- [ ] Prompt submission form (/submit) with markdown preview
+- [ ] Admin moderation queue (/admin/queue)
+- [ ] Public browse page (/prompts) - no search yet
+- [ ] Individual prompt pages (/prompts/[slug])
+- [ ] Basic admin dashboard (/admin)
 - [ ] Seed with 10-20 quality prompts
 
-**Exit Criteria**: Can submit, moderate, and display prompts
+**Exit Criteria**: Users can sign up/in, submit prompts, admins can moderate, public can view approved prompts
+
+**Progress:** 0/9 complete (0%)
 
 ### Phase 2: Discovery Features (Week 6-7)
 
@@ -608,10 +630,10 @@ Each prompt contains:
 
 ### External Dependencies
 
-- Vercel (hosting, deployments)
-- PostgreSQL database provider
-- Google OAuth
-- npm packages (Next.js, React, etc.)
+- Vercel (hosting, deployments, PostgreSQL)
+- Docker (local PostgreSQL development)
+- npm packages (Next.js, React, Prisma, NextAuth, bcrypt, etc.)
+- No external OAuth providers (self-managed authentication)
 
 ### Risks & Mitigations
 
