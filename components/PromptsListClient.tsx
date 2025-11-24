@@ -10,6 +10,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { ViewMode, ViewModeToggle } from './ViewModeToggle'
+import { CopyButton } from './CopyButton'
 
 interface Tag {
   id: string
@@ -21,6 +22,7 @@ interface Prompt {
   id: string
   slug: string
   title: string
+  prompt_text: string
   description: string | null
   category: string
   author_name: string
@@ -54,54 +56,67 @@ export function PromptsListClient({ prompts }: PromptsListClientProps) {
       {viewMode === 'grid' && (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {prompts.map((prompt) => (
-            <Link
+            <div
               key={prompt.id}
-              href={`/prompts/${prompt.slug}`}
-              className="group block rounded-lg border border-gray-200 p-6 transition-shadow hover:shadow-lg"
+              className="group relative rounded-lg border border-gray-200 p-6 transition-shadow hover:shadow-lg"
             >
-              {/* Category badge */}
-              <div className="mb-3">
-                <span className="inline-block rounded-md bg-gray-100 px-2 py-1 text-xs font-medium text-gray-700">
-                  {prompt.category}
-                </span>
-              </div>
-
-              {/* Title */}
-              <h2 className="mb-2 text-lg font-semibold text-gray-900 group-hover:text-blue-600">
-                {prompt.title}
-              </h2>
-
-              {/* Description */}
-              {prompt.description && (
-                <p className="mb-4 line-clamp-2 text-sm text-gray-600">
-                  {prompt.description}
-                </p>
-              )}
-
-              {/* Tags */}
-              {prompt.prompt_tags.length > 0 && (
-                <div className="mb-4 flex flex-wrap gap-1">
-                  {prompt.prompt_tags.slice(0, 3).map(({ tags }) => (
-                    <span
-                      key={tags.id}
-                      className="rounded bg-blue-50 px-2 py-0.5 text-xs text-blue-700"
-                    >
-                      {tags.name}
-                    </span>
-                  ))}
-                  {prompt.prompt_tags.length > 3 && (
-                    <span className="rounded bg-gray-50 px-2 py-0.5 text-xs text-gray-600">
-                      +{prompt.prompt_tags.length - 3} more
-                    </span>
-                  )}
+              <Link
+                href={`/prompts/${prompt.slug}`}
+                className="block"
+              >
+                {/* Category badge */}
+                <div className="mb-3">
+                  <span className="inline-block rounded-md bg-gray-100 px-2 py-1 text-xs font-medium text-gray-700">
+                    {prompt.category}
+                  </span>
                 </div>
-              )}
 
-              {/* Author */}
-              <p className="text-xs text-gray-500">
-                by {prompt.author_name}
-              </p>
-            </Link>
+                {/* Title */}
+                <h2 className="mb-2 text-lg font-semibold text-gray-900 group-hover:text-blue-600">
+                  {prompt.title}
+                </h2>
+
+                {/* Description */}
+                {prompt.description && (
+                  <p className="mb-4 line-clamp-2 text-sm text-gray-600">
+                    {prompt.description}
+                  </p>
+                )}
+
+                {/* Tags */}
+                {prompt.prompt_tags.length > 0 && (
+                  <div className="mb-4 flex flex-wrap gap-1">
+                    {prompt.prompt_tags.slice(0, 3).map(({ tags }) => (
+                      <span
+                        key={tags.id}
+                        className="rounded bg-blue-50 px-2 py-0.5 text-xs text-blue-700"
+                      >
+                        {tags.name}
+                      </span>
+                    ))}
+                    {prompt.prompt_tags.length > 3 && (
+                      <span className="rounded bg-gray-50 px-2 py-0.5 text-xs text-gray-600">
+                        +{prompt.prompt_tags.length - 3} more
+                      </span>
+                    )}
+                  </div>
+                )}
+
+                {/* Author */}
+                <p className="mb-4 text-xs text-gray-500">
+                  by {prompt.author_name}
+                </p>
+              </Link>
+
+              {/* Copy Button */}
+              <div onClick={(e) => e.stopPropagation()}>
+                <CopyButton
+                  text={prompt.prompt_text}
+                  label="Copy Prompt"
+                  promptId={prompt.id}
+                />
+              </div>
+            </div>
           ))}
         </div>
       )}
@@ -110,14 +125,16 @@ export function PromptsListClient({ prompts }: PromptsListClientProps) {
       {viewMode === 'list' && (
         <div className="space-y-4">
           {prompts.map((prompt) => (
-            <Link
+            <div
               key={prompt.id}
-              href={`/prompts/${prompt.slug}`}
-              className="group block rounded-lg border border-gray-200 p-6 transition-shadow hover:shadow-lg"
+              className="group rounded-lg border border-gray-200 p-6 transition-shadow hover:shadow-lg"
             >
               <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                 {/* Main content */}
-                <div className="flex-1">
+                <Link
+                  href={`/prompts/${prompt.slug}`}
+                  className="flex-1"
+                >
                   <div className="mb-2 flex flex-wrap items-center gap-3">
                     {/* Category badge */}
                     <span className="inline-block rounded-md bg-gray-100 px-2 py-1 text-xs font-medium text-gray-700">
@@ -163,27 +180,36 @@ export function PromptsListClient({ prompts }: PromptsListClientProps) {
                       by {prompt.author_name}
                     </p>
                   </div>
-                </div>
+                </Link>
 
-                {/* Arrow icon */}
-                <div className="flex-shrink-0">
-                  <svg
-                    className="h-6 w-6 text-gray-400 transition-colors group-hover:text-blue-600"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth="1.5"
-                    stroke="currentColor"
-                    aria-hidden="true"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M8.25 4.5l7.5 7.5-7.5 7.5"
+                {/* Copy Button and Arrow */}
+                <div className="flex flex-shrink-0 items-center gap-3">
+                  <div onClick={(e) => e.stopPropagation()}>
+                    <CopyButton
+                      text={prompt.prompt_text}
+                      label="Copy"
+                      promptId={prompt.id}
                     />
-                  </svg>
+                  </div>
+                  <Link href={`/prompts/${prompt.slug}`}>
+                    <svg
+                      className="h-6 w-6 text-gray-400 transition-colors group-hover:text-blue-600"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth="1.5"
+                      stroke="currentColor"
+                      aria-hidden="true"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M8.25 4.5l7.5 7.5-7.5 7.5"
+                      />
+                    </svg>
+                  </Link>
                 </div>
               </div>
-            </Link>
+            </div>
           ))}
         </div>
       )}
