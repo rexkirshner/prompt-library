@@ -17,8 +17,49 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'AI Prompts Library',
-  description: 'A curated collection of high-quality AI prompts for the community',
+  metadataBase: new URL('https://prompt-library.vercel.app'),
+  title: {
+    default: 'AI Prompts Library',
+    template: '%s | AI Prompts Library',
+  },
+  description: 'A curated collection of high-quality AI prompts for the community. Browse, discover, and share prompts for ChatGPT, Claude, and other AI assistants. All content is CC0 public domain.',
+  keywords: ['AI prompts', 'ChatGPT prompts', 'Claude prompts', 'prompt engineering', 'AI assistant', 'prompt library', 'public domain prompts'],
+  authors: [{ name: 'AI Prompts Library' }],
+  creator: 'AI Prompts Library',
+  publisher: 'AI Prompts Library',
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: 'https://prompt-library.vercel.app',
+    siteName: 'AI Prompts Library',
+    title: 'AI Prompts Library',
+    description: 'A curated collection of high-quality AI prompts for the community',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'AI Prompts Library',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'AI Prompts Library',
+    description: 'A curated collection of high-quality AI prompts for the community',
+    images: ['/og-image.png'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
 }
 
 export default function RootLayout({

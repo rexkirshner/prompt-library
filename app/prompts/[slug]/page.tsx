@@ -29,17 +29,43 @@ export async function generateMetadata({
   const { slug } = await params
   const prompt = await prisma.prompts.findUnique({
     where: { slug },
+    include: {
+      prompt_tags: {
+        include: {
+          tags: true,
+        },
+      },
+    },
   })
 
   if (!prompt) {
     return {
-      title: 'Prompt Not Found - AI Prompts Library',
+      title: 'Prompt Not Found',
     }
   }
 
+  const description = prompt.description || prompt.prompt_text.substring(0, 160)
+  const tags = prompt.prompt_tags.map((pt) => pt.tags.name)
+
   return {
-    title: `${prompt.title} - AI Prompts Library`,
-    description: prompt.description || prompt.prompt_text.substring(0, 160),
+    title: prompt.title,
+    description,
+    keywords: ['AI prompt', prompt.category, ...tags],
+    authors: [{ name: prompt.author_name }],
+    openGraph: {
+      title: prompt.title,
+      description,
+      type: 'article',
+      publishedTime: prompt.created_at.toISOString(),
+      modifiedTime: prompt.updated_at.toISOString(),
+      authors: [prompt.author_name],
+      tags,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: prompt.title,
+      description,
+    },
   }
 }
 
