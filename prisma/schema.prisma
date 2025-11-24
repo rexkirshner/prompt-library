@@ -101,12 +101,14 @@ model users {
   image                                                 String?
   is_admin                                              Boolean         @default(false)
   created_at                                            DateTime        @default(now())
-  last_login_at                                         DateTime
+  last_login_at                                         DateTime?
   admin_actions                                         admin_actions[]
   prompt_edits_prompt_edits_reviewed_by_user_idTousers  prompt_edits[]  @relation("prompt_edits_reviewed_by_user_idTousers")
   prompt_edits_prompt_edits_suggested_by_user_idTousers prompt_edits[]  @relation("prompt_edits_suggested_by_user_idTousers")
   prompts_prompts_approved_by_user_idTousers            prompts[]       @relation("prompts_approved_by_user_idTousers")
   prompts_prompts_submitted_by_user_idTousers           prompts[]       @relation("prompts_submitted_by_user_idTousers")
+  accounts                                              Account[]
+  sessions                                              Session[]
 }
 
 enum PromptStatus {
@@ -119,4 +121,44 @@ enum ReviewStatus {
   PENDING
   APPROVED
   REJECTED
+}
+
+// NextAuth.js Models
+model Account {
+  id                String  @id @default(cuid())
+  userId            String  @map("user_id")
+  type              String
+  provider          String
+  providerAccountId String  @map("provider_account_id")
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user users @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique @map("session_token")
+  userId       String   @map("user_id")
+  expires      DateTime
+  user         users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
 }

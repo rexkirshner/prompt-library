@@ -40,5 +40,5 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 // Export Prisma types for convenience
-export type { Prompt, User, Tag, PromptEdit, AdminAction } from '@prisma/client'
+export type { prompts, users, tags, prompt_edits, admin_actions } from '@prisma/client'
 export { PromptStatus, ReviewStatus } from '@prisma/client'
