@@ -67,7 +67,7 @@ export async function signUpUser(
         password: hashedPassword,
         name: name.trim(),
         is_admin: false,
-        created_at: new Date(),
+        // created_at uses database default (@default(now()))
       },
     })
 

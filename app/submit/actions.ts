@@ -48,7 +48,7 @@ async function ensureTags(tagNames: string[]): Promise<string[]> {
           name: normalizedName,
           slug,
           usage_count: 0,
-          created_at: new Date(),
+          // created_at uses database default (@default(now()))
         },
       })
     }
@@ -130,7 +130,6 @@ export async function submitPrompt(
     const tagIds = await ensureTags(formData.tags)
 
     // Create prompt
-    const now = new Date()
     const prompt = await prisma.prompts.create({
       data: {
         id: crypto.randomUUID(),
@@ -147,8 +146,8 @@ export async function submitPrompt(
         featured: false,
         view_count: 0,
         copy_count: 0,
-        created_at: now,
-        updated_at: now,
+        // created_at uses database default (@default(now()))
+        updated_at: new Date(), // No @updatedAt directive, must set manually
       },
     })
 
