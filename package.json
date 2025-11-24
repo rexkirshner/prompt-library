@@ -19,7 +19,8 @@
     "type-check": "tsc --noEmit",
     "db:migrate": "dotenv -e .env.local -- prisma migrate dev",
     "db:push": "dotenv -e .env.local -- prisma db push",
-    "db:studio": "dotenv -e .env.local -- prisma studio"
+    "db:studio": "dotenv -e .env.local -- prisma studio",
+    "db:seed": "dotenv -e .env.local -- tsx scripts/seed-prompts.ts"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.1",
