@@ -1,10 +1,27 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 
 export function NavBar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsMenuOpen(false)
+      }
+    }
+
+    if (isMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside)
+      }
+    }
+  }, [isMenuOpen])
 
   return (
     <nav className="border-b border-gray-200 bg-white">
@@ -17,104 +34,65 @@ export function NavBar() {
             </Link>
           </div>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex md:items-center md:gap-6">
-            <Link
-              href="/prompts"
-              className="text-sm font-medium text-gray-700 hover:text-gray-900"
-            >
-              Browse Prompts
-            </Link>
-            <Link
-              href="/submit"
-              className="text-sm font-medium text-gray-700 hover:text-gray-900"
-            >
-              Submit a Prompt
-            </Link>
-            <Link
-              href="/auth/login"
-              className="rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-500"
-            >
-              Login
-            </Link>
-          </div>
-
-          {/* Mobile menu button */}
-          <div className="flex md:hidden">
+          {/* Dropdown Menu */}
+          <div className="relative" ref={dropdownRef}>
             <button
               type="button"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="inline-flex items-center justify-center rounded-md p-2 text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+              className="inline-flex items-center gap-2 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-50"
               aria-expanded={isMenuOpen}
               aria-label="Toggle navigation menu"
             >
-              <span className="sr-only">Open main menu</span>
-              {/* Hamburger icon */}
-              {!isMenuOpen ? (
-                <svg
-                  className="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="1.5"
-                  stroke="currentColor"
-                  aria-hidden="true"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
-                  />
-                </svg>
-              ) : (
-                // Close icon
-                <svg
-                  className="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="1.5"
-                  stroke="currentColor"
-                  aria-hidden="true"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              )}
+              Menu
+              {/* Chevron icon */}
+              <svg
+                className={`h-5 w-5 transition-transform ${isMenuOpen ? 'rotate-180' : ''}`}
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth="1.5"
+                stroke="currentColor"
+                aria-hidden="true"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M19.5 8.25l-7.5 7.5-7.5-7.5"
+                />
+              </svg>
             </button>
+
+            {/* Dropdown menu */}
+            {isMenuOpen && (
+              <div className="absolute right-0 mt-2 w-56 origin-top-right rounded-md border border-gray-200 bg-white shadow-lg">
+                <div className="py-1">
+                  <Link
+                    href="/prompts"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Browse Prompts
+                  </Link>
+                  <Link
+                    href="/submit"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Submit a Prompt
+                  </Link>
+                  <div className="border-t border-gray-200"></div>
+                  <Link
+                    href="/auth/login"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Login
+                  </Link>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
-
-      {/* Mobile menu */}
-      {isMenuOpen && (
-        <div className="border-t border-gray-200 md:hidden">
-          <div className="space-y-1 px-4 pb-3 pt-2">
-            <Link
-              href="/prompts"
-              className="block rounded-md px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Browse Prompts
-            </Link>
-            <Link
-              href="/submit"
-              className="block rounded-md px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Submit a Prompt
-            </Link>
-            <Link
-              href="/auth/login"
-              className="block rounded-md px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Login
-            </Link>
-          </div>
-        </div>
-      )}
     </nav>
   )
 }
