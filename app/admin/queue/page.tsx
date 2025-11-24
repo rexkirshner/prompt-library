@@ -14,6 +14,9 @@ export const metadata: Metadata = {
   title: 'Moderation Queue - Admin',
 }
 
+// Force dynamic rendering - page requires authentication and database access
+export const dynamic = 'force-dynamic'
+
 export default async function AdminQueuePage() {
   await requireAdmin()
 

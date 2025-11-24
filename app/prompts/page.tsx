@@ -14,6 +14,9 @@ export const metadata: Metadata = {
   description: 'Discover and explore AI prompts shared by the community',
 }
 
+// Force dynamic rendering - page requires database access
+export const dynamic = 'force-dynamic'
+
 export default async function PromptsPage() {
   // Fetch all approved prompts with their tags
   const prompts = await prisma.prompts.findMany({

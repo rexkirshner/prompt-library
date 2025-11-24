@@ -14,6 +14,9 @@ export const metadata: Metadata = {
   description: 'Share your AI prompt with the community',
 }
 
+// Force dynamic rendering - page checks authentication
+export const dynamic = 'force-dynamic'
+
 export default async function SubmitPage() {
   const user = await getCurrentUser()
 

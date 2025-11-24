@@ -17,6 +17,9 @@ interface PromptPageProps {
   }>
 }
 
+// Force dynamic rendering - page requires database access
+export const dynamic = 'force-dynamic'
+
 /**
  * Generate metadata for SEO
  */
