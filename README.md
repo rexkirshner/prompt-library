@@ -1,36 +1,132 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AI Prompts Library
+
+A lightweight, public-facing web application for saving, sharing, and discovering AI prompts. Built for a small community with emphasis on quality curation through manual moderation.
+
+**Production:** https://prompt-library-alpha-inky.vercel.app/
+
+**Status:** Phase 0 Complete - Phase 1 Starting (User authentication forms)
+
+## Tech Stack
+
+- **Framework:** Next.js 16 with React 19 (App Router)
+- **Language:** TypeScript
+- **Database:** PostgreSQL 17 (Docker local, Vercel Postgres production)
+- **ORM:** Prisma 7
+- **Authentication:** NextAuth.js v5 (email/password)
+- **Styling:** Tailwind CSS v4
+- **Hosting:** Vercel
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 20+
+- Docker (for local PostgreSQL)
+
+### Installation
 
 ```bash
+# 1. Install dependencies
+npm install
+
+# 2. Configure environment variables
+# Create .env.local with:
+# - DATABASE_URL (local: postgresql://postgres:postgres@localhost:54320/prompt_library_dev)
+# - NEXTAUTH_URL (local: http://localhost:3000)
+# - NEXTAUTH_SECRET (generate: openssl rand -base64 32)
+
+# 3. Start PostgreSQL
+docker compose up -d
+
+# 4. Run database migrations
+npm run db:migrate
+
+# 5. Start development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) to view the application.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Available Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run dev           # Development server (port 3000)
+npm test              # Run tests (Jest)
+npm run build         # Production build
+npm run db:migrate    # Run Prisma migrations
+npm run test:db       # Test database connection
+npm run lint          # Run ESLint
+npm run format        # Format with Prettier
+```
 
-## Learn More
+## Project Structure
 
-To learn more about Next.js, take a look at the following resources:
+```
+prompt-library/
+├── app/              # Next.js App Router (pages & API routes)
+├── lib/              # Shared modules
+│   ├── auth/         # Authentication (NextAuth.js)
+│   └── db/           # Database client (Prisma)
+├── components/       # React components
+├── types/            # TypeScript types
+├── prisma/           # Database schema & migrations
+└── context/          # AI Context System documentation
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Documentation
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+For comprehensive project documentation, see the `context/` directory:
 
-## Deploy on Vercel
+- **[context/STATUS.md](context/STATUS.md)** - Current status, active tasks, quick reference
+- **[context/CONTEXT.md](context/CONTEXT.md)** - Project architecture and setup
+- **[context/DECISIONS.md](context/DECISIONS.md)** - Technical decisions and rationale
+- **[context/SESSIONS.md](context/SESSIONS.md)** - Development session history
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Database
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Local development uses PostgreSQL 17 running in Docker on port 54320.
+
+```bash
+# Start PostgreSQL
+docker compose up -d
+
+# Stop PostgreSQL
+docker compose down
+
+# View database in Prisma Studio
+npm run db:studio
+```
+
+## Authentication
+
+NextAuth.js v5 with email/password authentication. See [lib/auth/README.md](lib/auth/README.md) for implementation details.
+
+**Key features:**
+- Bcrypt password hashing (12 salt rounds)
+- JWT sessions with HTTP-only cookies
+- Admin role support
+- Server-side auth utilities
+
+## Testing
+
+```bash
+npm test              # Run all tests
+npm run test:watch    # Watch mode
+npm run test:coverage # Coverage report
+```
+
+Current test status: 22/22 tests passing
+
+## Deployment
+
+Automatically deployed to Vercel on push to `main` branch.
+
+**Production URL:** https://prompt-library-alpha-inky.vercel.app/
+
+## Contributing
+
+This is a personal project. For questions or suggestions, please open an issue.
+
+## License
+
+MIT

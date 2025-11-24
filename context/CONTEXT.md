@@ -59,15 +59,16 @@ Recommended: Complete 30-minute orientation above + review last 3 sessions in SE
 
 **Core Technologies:**
 
-- **Framework:** Next.js 14+ (App Router) - SSR/ISR for SEO and performance
+- **Framework:** Next.js 16 (App Router) with React 19 - SSR/ISR for SEO and performance
 - **Language:** TypeScript - Type safety and better developer experience
-- **Database:** PostgreSQL (Vercel Postgres) - Reliable, full-text search support
+- **Database:** PostgreSQL 17 (Docker local, Vercel Postgres production) - Reliable, full-text search support
+- **ORM:** Prisma 7 with @prisma/adapter-pg - Type-safe database access
 - **Hosting:** Vercel - Zero-config deployment with built-in optimizations
-- **Authentication:** NextAuth.js with Google OAuth - Simple, secure auth
-- **Styling:** Tailwind CSS + shadcn/ui - Rapid development with consistent design
+- **Authentication:** NextAuth.js v5 with email/password (Credentials provider) - Simple auth without external approval
+- **Styling:** Tailwind CSS v4 - Rapid development with consistent design
 
 **Why these choices?**
-Optimized for small-scale operation with minimal maintenance overhead. Vercel platform features reduce operational complexity. PostgreSQL full-text search adequate for <10K prompts. Manual moderation keeps quality high without complex automation.
+Optimized for small-scale operation with minimal maintenance overhead. Email/password auth avoids Google OAuth approval delays. Vercel platform features reduce operational complexity. PostgreSQL full-text search adequate for <10K prompts. Manual moderation keeps quality high without complex automation. Prisma 7 provides excellent TypeScript integration.
 
 <!-- END TEMPLATE SECTION -->
 
@@ -123,23 +124,32 @@ Anonymous users browse approved prompts via SSR/ISR pages. Submissions enter pen
 ## Directory Structure
 
 ```
-[project-root]/
-├── [key-directory]/     # [Purpose]
-├── [key-directory]/     # [Purpose]
-├── [key-directory]/     # [Purpose]
+prompt-library/
+├── app/                 # Next.js App Router pages and API routes
+├── lib/                 # Shared utilities and modules
+│   ├── auth/            # Authentication module (NextAuth.js)
+│   ├── db/              # Database client and utilities
+│   └── utils/           # Helper functions
+├── components/          # React components
+├── types/               # TypeScript type definitions
+├── prisma/              # Database schema and migrations
+│   ├── schema.prisma    # Database model definitions
+│   └── migrations/      # Version-controlled database migrations
+├── scripts/             # Utility scripts (test-db.ts, etc.)
 ├── context/             # AI Context System docs
 │   ├── CONTEXT.md       # This file
 │   ├── STATUS.md        # Current state
 │   ├── DECISIONS.md     # Decision log
 │   └── SESSIONS.md      # History
-└── [other-directories]  # [Purpose]
+└── docker-compose.yml   # Local PostgreSQL setup
 ```
 
 **File Organization Principles:**
 
-- [Principle 1, e.g., "Colocation - tests next to source"]
-- [Principle 2, e.g., "Feature folders, not type folders"]
-- [Principle 3, e.g., "Shared code in /lib"]
+- **Modular by feature** - Related code grouped in modules (lib/auth/, lib/db/)
+- **App Router structure** - Pages in app/, components in components/
+- **Type safety first** - Shared types in types/, Prisma generates models
+- **Clear separation** - Business logic in lib/, UI in components/
 
 ---
 
@@ -177,32 +187,40 @@ Anonymous users browse approved prompts via SSR/ISR pages. Submissions enter pen
 
 **Prerequisites:**
 
-- [e.g., Node.js 20+]
-- [e.g., PostgreSQL 15+]
-- [e.g., Other tools]
+- Node.js 20+
+- Docker (for local PostgreSQL)
+- npm or pnpm
 
 **Initial Setup:**
 
 ```bash
 # 1. Install dependencies
-[install command]
+npm install
 
 # 2. Configure environment
-cp .env.example .env.local
-# Edit .env.local with your values
+# Copy .env.local template and set values
+# DATABASE_URL: Local PostgreSQL connection string
+# NEXTAUTH_URL: http://localhost:3000
+# NEXTAUTH_SECRET: Generate with `openssl rand -base64 32`
 
-# 3. Setup database (if applicable)
-[database setup command]
+# 3. Start PostgreSQL via Docker
+docker compose up -d
 
-# 4. Run development server
-[dev command]
+# 4. Run database migrations
+npm run db:migrate
+
+# 5. Run development server
+npm run dev
 ```
 
 **Environment Variables:**
 
-- Template: `.env.example` (committed)
+- Template: No `.env.example` (sensitive values)
 - Local config: `.env.local` (gitignored, never commit)
-- Critical vars: [List key variables and what they do]
+- Critical vars:
+  - `DATABASE_URL`: PostgreSQL connection string (local: localhost:54320)
+  - `NEXTAUTH_URL`: Application URL (local: http://localhost:3000)
+  - `NEXTAUTH_SECRET`: Random secret for JWT signing (generate with openssl)
 
 ---
 
@@ -218,16 +236,17 @@ cp .env.example .env.local
 
 **External Resources:**
 
-- [Framework Docs]: [URL]
-- [Key Dependency]: [URL]
-- [API Reference]: [URL if applicable]
+- [Next.js Docs](https://nextjs.org/docs)
+- [NextAuth.js v5](https://authjs.dev/)
+- [Prisma Docs](https://www.prisma.io/docs)
+- [Tailwind CSS](https://tailwindcss.com/docs)
 
 **Project URLs:**
 (Also available in STATUS.md Quick Reference)
 
-- **Production:** [URL or N/A]
-- **Staging:** [URL or N/A]
-- **Repository:** [GitHub/GitLab URL]
+- **Production:** https://prompt-library-alpha-inky.vercel.app/
+- **Staging:** N/A (preview deployments via Vercel)
+- **Repository:** https://github.com/rexkirshner/prompt-library
 
 ---
 
@@ -269,27 +288,36 @@ cp .env.example .env.local
 
 **Dependencies:**
 
-- [Critical dependency 1 and why it matters]
-- [External service requirements]
+- **Docker PostgreSQL must be running** for local development (`docker compose up -d`)
+- **Prisma Client must be regenerated** after schema changes (`npx prisma generate`)
+- **postinstall script** required for Vercel builds (already in package.json)
 
 **Known Limitations:**
 
-- [Limitation 1 and workaround if any]
-- [Limitation 2]
+- **JWT sessions** cannot be revoked server-side (required by Credentials provider)
+- **No email verification** in MVP (Phase 2+ feature)
+- **No password reset flow** yet (Phase 2+ feature)
+- Manual moderation required for all submissions (by design)
 
 **Common Pitfalls:**
 
-- [Gotcha 1 that developers should know]
-- [Gotcha 2]
+- **Forgetting to run Prisma generate** after schema changes (causes TypeScript errors)
+- **Wrong DATABASE_URL** - local uses port 54320, production uses Vercel Postgres
+- **NextAuth callbacks** - Must use jwt() callback with Credentials provider, not just session()
+- **Password field is nullable** in schema (supports future OAuth providers)
 
 **Performance Considerations:**
 
-- [If any critical performance constraints]
+- ISR caching reduces database load for public pages
+- Full-text search adequate for <10K prompts
+- PostgreSQL connection pooling handled by Prisma
 
 **Security Notes:**
 
 - Never commit credentials (use .env.local)
-- [Any other security considerations]
+- Passwords hashed with bcrypt (12 salt rounds)
+- JWTs stored in HTTP-only cookies
+- Admin status stored in JWT (validated from database on sign-in)
 
 ---
 

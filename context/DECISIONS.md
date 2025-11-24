@@ -171,12 +171,96 @@ Use PostgreSQL with Prisma ORM instead of MongoDB.
 
 ---
 
+## D002 - Email/Password Authentication over Google OAuth
+
+**Date:** 2025-11-23
+**Status:** Accepted
+**Session:** 6
+
+### Context
+
+Need authentication for users to submit prompts and for admins to moderate. Initial plan was Google OAuth via NextAuth.js, but discovered that Google OAuth requires app verification/approval for production use. Project timeline doesn't allow for lengthy approval process.
+
+### Decision
+
+Use email/password authentication via NextAuth.js v5 Credentials provider with bcrypt password hashing instead of Google OAuth.
+
+### Rationale
+
+**Key factors:**
+
+- Avoid Google OAuth verification process (can take weeks)
+- Maintain control over authentication flow
+- Simpler setup for MVP phase
+- User owns their credentials directly
+- Standard security practices with bcrypt hashing
+
+### Alternatives Considered
+
+1. **Google OAuth (Original Plan)**
+   - Pros: Users don't need new password, familiar UX, no password management burden
+   - Cons: Requires Google approval for production, adds external dependency, limits user base to Google account holders
+   - Why not: Approval process would delay project timeline significantly
+
+2. **Magic Link (Email-only)**
+   - Pros: No password management, simpler for users, no password security concerns
+   - Cons: Requires email infrastructure, more complex to implement, slower sign-in flow
+   - Why not: Adds complexity and external dependencies (email service) for MVP
+
+3. **NextAuth Database Sessions**
+   - Pros: More secure than JWT, can revoke sessions server-side
+   - Cons: Credentials provider doesn't support database sessions (NextAuth limitation)
+   - Why not: Technical incompatibility with Credentials provider
+
+### Tradeoffs Accepted
+
+- ✅ Full control over authentication, no external approval needed, standard security practices
+- ❌ Users must manage passwords, need password reset flow later, potential security burden
+
+### Consequences
+
+**Positive:**
+
+- Project can move forward without delays
+- Standard bcrypt implementation (12 salt rounds) provides strong security
+- JWT sessions include custom fields (isAdmin) for authorization
+- Complete control over authentication logic
+
+**Negative:**
+
+- Must build password reset flow in future (Phase 2+)
+- Users must remember another password
+- Password security responsibility on our implementation
+- Email verification not included in MVP (should add later)
+
+### When to Reconsider
+
+**Triggers:**
+
+- User complaints about password management
+- Security incident related to passwords
+- Need for SSO for enterprise customers
+- Want to support multiple auth providers (Google + Email)
+- Google approval process becomes feasible
+
+**Possible future:** Add Google OAuth as *additional* option alongside email/password (NextAuth supports multiple providers). Users could then choose their preferred method.
+
+### Related
+
+- See: `SESSIONS.md` Session 6
+- See: `lib/auth/README.md` for implementation details
+- Related code: `lib/auth/config.ts`, `lib/auth/password.ts`
+
+**For AI agents:** This decision prioritizes shipping speed over convenience features. The Credentials provider requires JWT sessions (not database sessions) - this is a technical constraint, not a choice. When adding future auth providers, NextAuth supports multiple providers simultaneously, so we can add Google OAuth later without removing email/password.
+
+---
+
 ## Active Decisions
 
-| ID   | Title                   | Date       | Status           |
-| ---- | ----------------------- | ---------- | ---------------- |
-| D001 | PostgreSQL over MongoDB | 2025-01-15 | ✅ Accepted      |
-| D002 | [Next decision]         | [Date]     | 🔄 Reconsidering |
+| ID   | Title                              | Date       | Status      |
+| ---- | ---------------------------------- | ---------- | ----------- |
+| D001 | PostgreSQL over MongoDB            | 2025-01-15 | ✅ Accepted |
+| D002 | Email/Password Auth over Google    | 2025-11-23 | ✅ Accepted |
 
 ---
 
