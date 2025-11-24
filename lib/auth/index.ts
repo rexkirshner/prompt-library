@@ -23,5 +23,8 @@ export {
   checkIsAdmin,
 } from './utils'
 
+// Export password utilities
+export { hashPassword, verifyPassword } from './password'
+
 // Export types for convenience
 export type { Session } from 'next-auth'

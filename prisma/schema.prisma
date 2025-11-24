@@ -97,6 +97,7 @@ model tags {
 model users {
   id                                                    String          @id
   email                                                 String          @unique
+  password                                              String?
   name                                                  String?
   image                                                 String?
   is_admin                                              Boolean         @default(false)
