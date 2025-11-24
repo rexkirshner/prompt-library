@@ -1,0 +1,254 @@
+[
+  {
+    "id": "C1",
+    "severity": "CRITICAL",
+    "category": "Data Integrity",
+    "message": "Database schema field mismatch - Prisma schema uses is_admin but documentation references role field",
+    "file": "prisma/schema.prisma",
+    "line": 103,
+    "impact": "Confusion for future developers, documentation inconsistency"
+  },
+  {
+    "id": "C2",
+    "severity": "CRITICAL",
+    "category": "Security",
+    "message": "Missing email verification - users can create accounts without verifying email",
+    "file": "app/auth/signup/actions.ts",
+    "line": 63,
+    "impact": "Spam accounts, email harvesting, impersonation, no user accountability"
+  },
+  {
+    "id": "H1",
+    "severity": "HIGH",
+    "category": "Documentation",
+    "message": "Missing core documentation files - CODE_STYLE.md, ARCHITECTURE.md, KNOWN_ISSUES.md don't exist",
+    "file": "context/",
+    "line": null,
+    "impact": "Lack of context for future developers and AI agents"
+  },
+  {
+    "id": "H2",
+    "severity": "HIGH",
+    "category": "Security",
+    "message": "No rate limiting on authentication endpoints - allows brute force and spam",
+    "file": "app/auth/signup/actions.ts",
+    "line": null,
+    "impact": "Brute force attacks, account enumeration, spam, DoS vulnerability"
+  },
+  {
+    "id": "H3",
+    "severity": "HIGH",
+    "category": "Security",
+    "message": "SQL injection risk in tag search - no explicit input validation before DB queries",
+    "file": "app/submit/actions.ts",
+    "line": 39,
+    "impact": "Low immediate risk but lacks defense-in-depth"
+  },
+  {
+    "id": "H4",
+    "severity": "HIGH",
+    "category": "Security",
+    "message": "No CSRF protection on server actions - sensitive operations not explicitly protected",
+    "file": "app/*/actions.ts",
+    "line": null,
+    "impact": "Potential Cross-Site Request Forgery attacks"
+  },
+  {
+    "id": "H5",
+    "severity": "HIGH",
+    "category": "Data Integrity",
+    "message": "Timestamps use new Date() instead of database defaults - causes clock skew issues",
+    "file": "app/submit/actions.ts",
+    "line": 115,
+    "impact": "Timestamp integrity issues, timezone problems, harder debugging"
+  },
+  {
+    "id": "H6",
+    "severity": "HIGH",
+    "category": "Operations",
+    "message": "No logging/monitoring strategy - console.error throughout, no structured logging",
+    "file": "Entire codebase",
+    "line": null,
+    "impact": "Unable to monitor production, slow incident response"
+  },
+  {
+    "id": "H7",
+    "severity": "HIGH",
+    "category": "Security",
+    "message": "Missing input sanitization for XSS - URL scheme not validated, could be javascript:",
+    "file": "app/prompts/[slug]/page.tsx",
+    "line": 100,
+    "impact": "Potential XSS via crafted URLs"
+  },
+  {
+    "id": "H8",
+    "severity": "HIGH",
+    "category": "Security",
+    "message": "Weak password requirements - no special characters, no common password check",
+    "file": "lib/auth/validation.ts",
+    "line": 28,
+    "impact": "Users choose weak passwords, account compromise risk"
+  },
+  {
+    "id": "M1",
+    "severity": "MEDIUM",
+    "category": "Performance",
+    "message": "Database connection pool not optimized - using defaults",
+    "file": "lib/db/client.ts",
+    "line": 17,
+    "impact": "Potential connection exhaustion, resource waste"
+  },
+  {
+    "id": "M2",
+    "severity": "MEDIUM",
+    "category": "Performance",
+    "message": "No pagination on browse page - fetches all prompts",
+    "file": "app/prompts/page.tsx",
+    "line": 19,
+    "impact": "Slow performance as database grows"
+  },
+  {
+    "id": "M3",
+    "severity": "MEDIUM",
+    "category": "Performance",
+    "message": "Prisma queries not optimized - selecting all fields unnecessarily",
+    "file": "app/prompts/page.tsx",
+    "line": 19,
+    "impact": "Unnecessary data transfer, slower queries"
+  },
+  {
+    "id": "M4",
+    "severity": "MEDIUM",
+    "category": "Performance",
+    "message": "No caching strategy - pages regenerate on every request",
+    "file": "Entire application",
+    "line": null,
+    "impact": "Unnecessary database load, slow response times"
+  },
+  {
+    "id": "M5",
+    "severity": "MEDIUM",
+    "category": "Accessibility",
+    "message": "Missing accessibility features - no ARIA labels, poor keyboard navigation",
+    "file": "components/TagInput.tsx",
+    "line": 31,
+    "impact": "Unusable for users with disabilities, WCAG non-compliance"
+  },
+  {
+    "id": "M6",
+    "severity": "MEDIUM",
+    "category": "SEO",
+    "message": "No SEO optimization - missing Open Graph, sitemap, structured data",
+    "file": "app/page.tsx",
+    "line": null,
+    "impact": "Poor search visibility, low discoverability"
+  },
+  {
+    "id": "M7",
+    "severity": "MEDIUM",
+    "category": "UX",
+    "message": "Inconsistent error messages - generic errors throughout",
+    "file": "app/submit/actions.ts",
+    "line": 162,
+    "impact": "Poor UX, harder to debug"
+  },
+  {
+    "id": "M8",
+    "severity": "MEDIUM",
+    "category": "UX",
+    "message": "No email notifications - users don't know submission status",
+    "file": "Feature not implemented",
+    "line": null,
+    "impact": "Users must manually check status"
+  },
+  {
+    "id": "M9",
+    "severity": "MEDIUM",
+    "category": "Documentation",
+    "message": "Missing API documentation - server actions not documented",
+    "file": "No API.md",
+    "line": null,
+    "impact": "Harder to integrate and maintain"
+  },
+  {
+    "id": "M10",
+    "severity": "MEDIUM",
+    "category": "Reliability",
+    "message": "Infinite loop risk in slug generation - while(true) without max attempts",
+    "file": "app/submit/actions.ts",
+    "line": 72,
+    "impact": "Request timeout, potential DoS"
+  },
+  {
+    "id": "M11",
+    "severity": "MEDIUM",
+    "category": "Security",
+    "message": "No admin audit log - admin_actions table exists but not used",
+    "file": "Admin actions",
+    "line": null,
+    "impact": "No accountability, compliance issues"
+  },
+  {
+    "id": "M12",
+    "severity": "MEDIUM",
+    "category": "UX",
+    "message": "Password reset flow missing - users locked out if they forget password",
+    "file": "Feature not implemented",
+    "line": null,
+    "impact": "Poor UX, support burden"
+  },
+  {
+    "id": "L1",
+    "severity": "LOW",
+    "category": "Documentation",
+    "message": "Environment variables in .env.example outdated - references Google OAuth",
+    "file": ".env.example",
+    "line": 14,
+    "impact": "Confusing for new developers"
+  },
+  {
+    "id": "L2",
+    "severity": "LOW",
+    "category": "Testing",
+    "message": "Test coverage could be improved - missing integration and E2E tests",
+    "file": "Overall testing",
+    "line": null,
+    "impact": "Potential bugs in untested paths"
+  },
+  {
+    "id": "L3",
+    "severity": "LOW",
+    "category": "Code Quality",
+    "message": "Component reusability low - form patterns duplicated across components",
+    "file": "Multiple form components",
+    "line": null,
+    "impact": "Code duplication, inconsistent UX"
+  },
+  {
+    "id": "L4",
+    "severity": "LOW",
+    "category": "UX",
+    "message": "No dark mode support - only light mode available",
+    "file": "Entire UI",
+    "line": null,
+    "impact": "UX issue for users who prefer dark mode"
+  },
+  {
+    "id": "L5",
+    "severity": "LOW",
+    "category": "Performance",
+    "message": "Bundle size not optimized - no analysis or monitoring",
+    "file": "Build output",
+    "line": null,
+    "impact": "Slower page loads"
+  },
+  {
+    "id": "L6",
+    "severity": "LOW",
+    "category": "DevEx",
+    "message": "Docker Compose missing environment variables - not fully integrated",
+    "file": "docker-compose.yml",
+    "line": null,
+    "impact": "Inconsistent local development"
+  }
+]

@@ -62,25 +62,43 @@ async function ensureTags(tagNames: string[]): Promise<string[]> {
 /**
  * Generate unique slug for prompt
  * Appends number suffix if slug already exists
+ *
+ * @throws Error if unable to generate unique slug after MAX_SLUG_ATTEMPTS
  */
 async function generateUniqueSlug(title: string): Promise<string> {
+  const MAX_SLUG_ATTEMPTS = 100
   const baseSlug = generateSlug(title)
   let slug = baseSlug
   let counter = 1
 
-  // Keep trying until we find a unique slug
-  while (true) {
+  // Try to find unique slug with max attempts limit
+  for (let attempt = 0; attempt < MAX_SLUG_ATTEMPTS; attempt++) {
     const existing = await prisma.prompts.findUnique({
       where: { slug },
     })
 
     if (!existing) {
+      // Log warning if took many attempts
+      if (attempt > 10) {
+        console.warn(`Slug generation took ${attempt} attempts for title: "${title}"`)
+      }
       return slug
     }
 
-    slug = `${baseSlug}-${counter}`
-    counter++
+    // After 50 attempts, add randomness to avoid infinite collision
+    if (attempt >= 50) {
+      const randomSuffix = Math.random().toString(36).substring(2, 8)
+      slug = `${baseSlug}-${randomSuffix}`
+    } else {
+      slug = `${baseSlug}-${counter}`
+      counter++
+    }
   }
+
+  // If we exhausted all attempts, throw error
+  throw new Error(
+    `Unable to generate unique slug after ${MAX_SLUG_ATTEMPTS} attempts for title: "${title}"`
+  )
 }
 
 /**
