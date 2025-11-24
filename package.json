@@ -15,6 +15,7 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "test:db": "dotenv -e .env.local -- tsx scripts/test-db.ts",
+    "test:auth": "dotenv -e .env.local -- tsx scripts/test-auth-flow.ts",
     "type-check": "tsc --noEmit",
     "db:migrate": "dotenv -e .env.local -- prisma migrate dev",
     "db:push": "dotenv -e .env.local -- prisma db push",
