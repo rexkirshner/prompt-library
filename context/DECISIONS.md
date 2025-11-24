@@ -255,12 +255,102 @@ Use email/password authentication via NextAuth.js v5 Credentials provider with b
 
 ---
 
+## D003 - Boolean Admin Flag over Role-Based System
+
+**Date:** 2025-11-24
+**Status:** Accepted
+**Session:** 8
+
+### Context
+
+Need to implement admin authorization for content moderation. Two approaches considered:
+1. Role-based system with enum (USER, ADMIN, MODERATOR, etc.)
+2. Simple boolean `is_admin` flag
+
+Project is small scale (<1K users) with only two permission levels needed: regular users and admins.
+
+### Decision
+
+Use simple boolean `is_admin` field instead of role-based permission system.
+
+### Rationale
+
+**Key factors:**
+
+- Only two permission levels needed for MVP (user vs admin)
+- Small user base doesn't require complex RBAC
+- Simpler to implement and maintain
+- Easier to reason about in queries and code
+- Can migrate to roles later if needed
+- YAGNI principle - don't build what we don't need yet
+
+### Alternatives Considered
+
+1. **Role Enum (USER, ADMIN, MODERATOR)**
+   - Pros: More flexible, room for future growth, industry standard pattern
+   - Cons: Over-engineering for current needs, more complex queries, harder to migrate from later
+   - Why not: Don't need multiple permission levels now, premature optimization
+
+2. **Permission Flags (can_moderate, can_delete, etc.)**
+   - Pros: Maximum flexibility, fine-grained control
+   - Cons: Way too complex for current scale, hard to maintain consistency
+   - Why not: Massive over-engineering for simple needs
+
+### Tradeoffs Accepted
+
+- ✅ Simplicity, easy to understand, faster to implement, minimal complexity
+- ❌ Less flexible if we need multiple admin tiers later, would require migration
+
+### Consequences
+
+**Positive:**
+
+- Clean boolean checks: `user.is_admin === true`
+- Simple Prisma schema: `is_admin Boolean @default(false)`
+- Easy to understand for any developer
+- Fast queries (indexed boolean)
+- Straightforward authorization logic
+
+**Negative:**
+
+- If we need MODERATOR role later, requires schema migration
+- Can't easily distinguish between admin levels (super admin vs regular admin)
+- Permission granularity limited to all-or-nothing
+
+### When to Reconsider
+
+**Triggers:**
+
+- Need for multiple admin permission levels (moderator, super admin, etc.)
+- User base grows beyond 1K and needs more granular permissions
+- Business requirements emerge for role-based access control
+- Need to audit specific permission usage patterns
+
+**Migration path if needed:**
+1. Add `role` enum column to users table
+2. Migrate existing `is_admin=true` users to `role='ADMIN'`
+3. Migrate `is_admin=false` users to `role='USER'`
+4. Update all authorization checks from `is_admin` to `role`
+5. Remove `is_admin` column after migration complete
+
+### Related
+
+- See: `prisma/schema.prisma` line 103 (`is_admin Boolean`)
+- See: `lib/auth/types.ts` (extends session with `isAdmin` boolean)
+- See: `lib/auth/admin.ts` (admin authorization utilities)
+- Related decisions: D002 (authentication method)
+
+**For AI agents:** The field is named `is_admin` in the database schema (snake_case) but exposed as `isAdmin` in TypeScript types (camelCase). This is intentional for consistency with JavaScript naming conventions. All authorization checks should use the boolean pattern `user?.isAdmin === true`, not role comparisons.
+
+---
+
 ## Active Decisions
 
 | ID   | Title                              | Date       | Status      |
 | ---- | ---------------------------------- | ---------- | ----------- |
 | D001 | PostgreSQL over MongoDB            | 2025-01-15 | ✅ Accepted |
 | D002 | Email/Password Auth over Google    | 2025-11-23 | ✅ Accepted |
+| D003 | Boolean Admin Flag over Roles      | 2025-11-24 | ✅ Accepted |
 
 ---
 
