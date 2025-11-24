@@ -10,6 +10,7 @@ import Link from 'next/link'
 import { prisma } from '@/lib/db/client'
 import { buildSearchWhere, parseTagFilter } from '@/lib/prompts/search'
 import { PromptFilters } from '@/components/PromptFilters'
+import { Pagination } from '@/components/Pagination'
 
 export const metadata: Metadata = {
   title: 'Browse Prompts - AI Prompts Library',
@@ -24,8 +25,11 @@ interface PromptsPageProps {
     q?: string
     category?: string
     tags?: string
+    page?: string
   }>
 }
+
+const ITEMS_PER_PAGE = 20
 
 export default async function PromptsPage({ searchParams }: PromptsPageProps) {
   const params = await searchParams
@@ -37,9 +41,22 @@ export default async function PromptsPage({ searchParams }: PromptsPageProps) {
     tags: parseTagFilter(params.tags),
   }
 
-  // Fetch filtered prompts
+  // Parse page number
+  const currentPage = Math.max(1, parseInt(params.page || '1', 10))
+
+  // Build where clause
+  const where = buildSearchWhere(filters)
+
+  // Fetch total count for pagination
+  const totalCount = await prisma.prompts.count({ where })
+
+  // Calculate pagination
+  const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE)
+  const skip = (currentPage - 1) * ITEMS_PER_PAGE
+
+  // Fetch filtered prompts with pagination
   const prompts = await prisma.prompts.findMany({
-    where: buildSearchWhere(filters),
+    where,
     include: {
       prompt_tags: {
         include: {
@@ -50,6 +67,8 @@ export default async function PromptsPage({ searchParams }: PromptsPageProps) {
     orderBy: {
       created_at: 'desc',
     },
+    skip,
+    take: ITEMS_PER_PAGE,
   })
 
   // Fetch all unique categories for filter dropdown
@@ -182,6 +201,16 @@ export default async function PromptsPage({ searchParams }: PromptsPageProps) {
             </Link>
           ))}
         </div>
+      )}
+
+      {/* Pagination */}
+      {prompts.length > 0 && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalItems={totalCount}
+          itemsPerPage={ITEMS_PER_PAGE}
+        />
       )}
     </div>
   )
