@@ -13,18 +13,37 @@ import {
 } from '../validation'
 
 describe('isValidUrl', () => {
-  it('should accept valid URLs', () => {
+  it('should accept valid http/https URLs', () => {
     expect(isValidUrl('https://example.com')).toBe(true)
     expect(isValidUrl('http://example.com')).toBe(true)
     expect(isValidUrl('https://example.com/path')).toBe(true)
     expect(isValidUrl('https://subdomain.example.com')).toBe(true)
+    expect(isValidUrl('https://example.com:8080/path?query=value')).toBe(true)
   })
 
-  it('should reject invalid URLs', () => {
+  it('should reject invalid URL formats', () => {
     expect(isValidUrl('not-a-url')).toBe(false)
     expect(isValidUrl('example.com')).toBe(false)
     expect(isValidUrl('//example.com')).toBe(false)
     expect(isValidUrl('')).toBe(false)
+  })
+
+  it('should reject dangerous URL schemes (XSS prevention)', () => {
+    // javascript: protocol - XSS risk
+    expect(isValidUrl('javascript:alert(1)')).toBe(false)
+    expect(isValidUrl('javascript:void(0)')).toBe(false)
+
+    // data: protocol - can contain base64 encoded JavaScript
+    expect(isValidUrl('data:text/html,<script>alert(1)</script>')).toBe(false)
+
+    // file: protocol - local file access
+    expect(isValidUrl('file:///etc/passwd')).toBe(false)
+
+    // vbscript: protocol - legacy XSS vector
+    expect(isValidUrl('vbscript:msgbox(1)')).toBe(false)
+
+    // ftp: protocol - not appropriate for author links
+    expect(isValidUrl('ftp://example.com')).toBe(false)
   })
 })
 

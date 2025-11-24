@@ -51,12 +51,19 @@ const MAX_TAGS = 5
 const TAG_MAX_LENGTH = 50
 
 /**
- * Validate URL format
+ * Allowed URL schemes for author URLs
+ * Only http and https are safe for external links
+ */
+const ALLOWED_URL_SCHEMES = ['http:', 'https:']
+
+/**
+ * Validate URL format and scheme
+ * Only allows http: and https: protocols to prevent XSS via javascript: URLs
  */
 export function isValidUrl(url: string): boolean {
   try {
-    new URL(url)
-    return true
+    const parsed = new URL(url)
+    return ALLOWED_URL_SCHEMES.includes(parsed.protocol)
   } catch {
     return false
   }
