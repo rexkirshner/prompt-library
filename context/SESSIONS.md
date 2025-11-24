@@ -430,3 +430,113 @@ Quick navigation to specific work.
 **Blockers:** None - Phase 0 complete, ready to build UI
 
 ---
+
+## Session 9 - 2025-11-24
+
+**Duration:** 3.5h | **Focus:** Code review fixes - Security, documentation, and data integrity | **Status:** ✅
+
+### TL;DR
+- Fixed 9 out of 9 code review issues from Session 8
+- Created comprehensive project documentation (CODE_STYLE.md, ARCHITECTURE.md, KNOWN_ISSUES.md)
+- Improved security (URL scheme validation, slug generation safety)
+- Enhanced data integrity (database timestamps, connection pooling)
+- All 81 tests passing ✅
+
+### Problem Solved
+**Issue:** Session 8 code review identified 28 issues across critical, high, medium, and low priority categories. Needed to systematically address all fixable issues without external dependencies.
+
+**Constraints:**
+- Cannot implement email verification (requires email service)
+- Cannot add rate limiting (requires Redis/Vercel KV)
+- Must maintain backward compatibility
+- All changes must pass existing test suite
+- No schema migrations (avoid breaking changes)
+
+**Approach:** Prioritized issues by:
+1. Quick wins (documentation, .env.example)
+2. Security improvements (XSS prevention, infinite loop protection)
+3. Performance (connection pooling)
+4. Data integrity (timestamp handling)
+
+**Why this approach:** Maximizes impact while minimizing risk. Documentation provides long-term value for AI agents and developers. Security fixes prevent immediate vulnerabilities. Performance and data integrity improvements are low-risk with high benefit.
+
+### Decisions
+- **Database timestamps:** Remove explicit created_at in favor of database defaults - prevents clock skew issues → See implementation in app/submit/actions.ts:149, app/auth/signup/actions.ts:70
+- **URL scheme validation:** Whitelist http:/https: only - prevents XSS via javascript:, data:, file: URLs → See DECISIONS.md (not formally documented, but captured in KNOWN_ISSUES.md as fixed)
+- **Slug generation safety:** Bounded retry with 100 max attempts - prevents infinite loops on collision → See app/submit/actions.ts:68-101
+
+### Files
+**NEW:** `context/CODE_STYLE.md` (555 lines) - Comprehensive coding standards covering TypeScript conventions, React patterns, database conventions, security guidelines, testing patterns, and anti-patterns to avoid
+
+**NEW:** `context/ARCHITECTURE.md` (714 lines) - System architecture documentation with tech stack, App Router structure, database design (ERD + schemas), authentication flows, data flow patterns, security architecture, and performance considerations
+
+**NEW:** `context/KNOWN_ISSUES.md` (699 lines) - Tracked all 28 issues from Session 8 review, organized by severity (Critical/High/Medium/Low), documented 6 fixed issues, listed remaining work with effort estimates
+
+**MOD:** `.env.example` - Removed outdated Google OAuth references, updated NEXTAUTH_URL to port 3001, added explanatory note about email/password auth
+
+**MOD:** `context/DECISIONS.md` - Added D003 documenting boolean admin flag vs role-based system choice, with YAGNI rationale and future migration path
+
+**MOD:** `app/submit/actions.ts:68-101` - Added MAX_SLUG_ATTEMPTS=100 limit, randomness after 50 attempts, warning logging for >10 attempts, descriptive error on exhaustion
+
+**MOD:** `lib/prompts/validation.ts:57-70` - Added ALLOWED_URL_SCHEMES constant, protocol validation to prevent XSS attacks
+
+**MOD:** `lib/prompts/__tests__/validation.test.ts:31-47` - Added comprehensive tests for dangerous URL schemes (javascript:, data:, file:, vbscript:, ftp:)
+
+**MOD:** `lib/db/client.ts:17-29` - Added connection pool configuration with environment-based limits (5 dev, 20 prod), timeouts (30s idle, 10s connection), graceful shutdown support
+
+**MOD:** `app/auth/signup/actions.ts:70` - Removed explicit created_at, letting database @default(now()) generate timestamp
+
+**MOD:** `app/submit/actions.ts:51,149` - Removed explicit created_at from tag and prompt creation, kept updated_at (no @updatedAt directive in schema)
+
+### Mental Models
+**Current understanding:**
+The project follows a simplicity-first philosophy with YAGNI principles. Server Components are default, Client Components only when needed for interactivity. Database is single source of truth for timestamps on creation. Event timestamps (approved_at, deleted_at, last_login_at) still use application time since they lack database defaults.
+
+**Key insights:**
+1. **Defense in depth:** Even though Prisma prevents SQL injection, added explicit validation for defense in depth
+2. **Database vs application timestamps:** Fields with @default(now()) should be set by database, not application - prevents clock skew in distributed systems
+3. **Documentation for AI agents:** Comprehensive documentation (40-60 lines per section) enables AI agent review and takeover, not just human developers
+4. **Updated_at dilemma:** Schema lacks @updatedAt directive, so must manually set. Future improvement: add @updatedAt to schema for automatic handling
+
+**Gotchas discovered:**
+- Prisma's created_at field with @default(now()) will auto-generate if omitted from create() data
+- URL validation must check protocol explicitly - URL constructor accepts any valid URL including dangerous schemes
+- last_login_at, approved_at, deleted_at are event timestamps without defaults - must still use new Date()
+- Jest has issues with next-auth ES modules - skipped integration tests for slug generation, relied on unit tests + manual code review
+
+### Work In Progress
+**Task:** All planned tasks completed ✅
+
+**Location:** N/A - clean working tree
+
+**Current approach:** Session 9 successfully addressed all 9 fixable code review issues. Remaining issues in KNOWN_ISSUES.md require:
+- External services (email verification, rate limiting)
+- Product decisions (pagination strategy, caching approach)
+- Accessibility audit (WCAG compliance)
+- Future phase work (SEO optimization, monitoring setup)
+
+**Next specific action:** Review KNOWN_ISSUES.md with user to prioritize next phase of work.
+
+**Context needed:** All code review findings documented in artifacts/code-reviews/session-8-review.md and context/KNOWN_ISSUES.md. Priority should be email verification (C2 critical) and rate limiting (H2 high) when ready to add external dependencies.
+
+### TodoWrite State
+**Completed:**
+- ✅ Fix .env.example - Remove outdated Google OAuth references (L1)
+- ✅ Document is_admin vs role decision in DECISIONS.md (C1)
+- ✅ Add max attempts limit to slug generation to prevent infinite loop (M10)
+- ✅ Add URL scheme validation to prevent javascript: URLs (H7)
+- ✅ Configure database connection pool settings (M1)
+- ✅ Create CODE_STYLE.md documentation (H1)
+- ✅ Create ARCHITECTURE.md documentation (H1)
+- ✅ Create KNOWN_ISSUES.md from review findings (H1)
+- ✅ Fix timestamps to use database defaults instead of new Date() (H5)
+
+**In Progress:**
+- None - all tasks completed
+
+### Next Session
+**Priority:** Review KNOWN_ISSUES.md with user to prioritize Phase 2 work (email verification, rate limiting, pagination, caching)
+
+**Blockers:** None - clean working tree, all tests passing, comprehensive documentation complete
+
+---
