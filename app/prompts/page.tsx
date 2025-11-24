@@ -11,6 +11,7 @@ import { prisma } from '@/lib/db/client'
 import { buildSearchWhere, parseTagFilter } from '@/lib/prompts/search'
 import { PromptFilters } from '@/components/PromptFilters'
 import { Pagination } from '@/components/Pagination'
+import { PromptsListClient } from '@/components/PromptsListClient'
 
 export const metadata: Metadata = {
   title: 'Browse Prompts - AI Prompts Library',
@@ -126,7 +127,7 @@ export default async function PromptsPage({ searchParams }: PromptsPageProps) {
         </Link>
       </div>
 
-      {/* Prompts grid */}
+      {/* Prompts list with view toggle */}
       {prompts.length === 0 ? (
         <div className="rounded-lg border-2 border-dashed border-gray-300 p-12 text-center">
           <h3 className="text-lg font-semibold text-gray-900">
@@ -149,58 +150,7 @@ export default async function PromptsPage({ searchParams }: PromptsPageProps) {
           )}
         </div>
       ) : (
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {prompts.map((prompt) => (
-            <Link
-              key={prompt.id}
-              href={`/prompts/${prompt.slug}`}
-              className="group block rounded-lg border border-gray-200 p-6 transition-shadow hover:shadow-lg"
-            >
-              {/* Category badge */}
-              <div className="mb-3">
-                <span className="inline-block rounded-md bg-gray-100 px-2 py-1 text-xs font-medium text-gray-700">
-                  {prompt.category}
-                </span>
-              </div>
-
-              {/* Title */}
-              <h2 className="mb-2 text-lg font-semibold text-gray-900 group-hover:text-blue-600">
-                {prompt.title}
-              </h2>
-
-              {/* Description */}
-              {prompt.description && (
-                <p className="mb-4 line-clamp-2 text-sm text-gray-600">
-                  {prompt.description}
-                </p>
-              )}
-
-              {/* Tags */}
-              {prompt.prompt_tags.length > 0 && (
-                <div className="mb-4 flex flex-wrap gap-1">
-                  {prompt.prompt_tags.slice(0, 3).map(({ tags }) => (
-                    <span
-                      key={tags.id}
-                      className="rounded bg-blue-50 px-2 py-0.5 text-xs text-blue-700"
-                    >
-                      {tags.name}
-                    </span>
-                  ))}
-                  {prompt.prompt_tags.length > 3 && (
-                    <span className="rounded bg-gray-50 px-2 py-0.5 text-xs text-gray-600">
-                      +{prompt.prompt_tags.length - 3} more
-                    </span>
-                  )}
-                </div>
-              )}
-
-              {/* Author */}
-              <p className="text-xs text-gray-500">
-                by {prompt.author_name}
-              </p>
-            </Link>
-          ))}
-        </div>
+        <PromptsListClient prompts={prompts} />
       )}
 
       {/* Pagination */}
