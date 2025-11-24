@@ -12,9 +12,9 @@ import { prisma } from '@/lib/db/client'
 import { CopyButton } from '@/components/CopyButton'
 
 interface PromptPageProps {
-  params: {
+  params: Promise<{
     slug: string
-  }
+  }>
 }
 
 /**
@@ -23,8 +23,9 @@ interface PromptPageProps {
 export async function generateMetadata({
   params,
 }: PromptPageProps): Promise<Metadata> {
+  const { slug } = await params
   const prompt = await prisma.prompts.findUnique({
-    where: { slug: params.slug },
+    where: { slug },
   })
 
   if (!prompt) {
@@ -40,9 +41,11 @@ export async function generateMetadata({
 }
 
 export default async function PromptPage({ params }: PromptPageProps) {
+  const { slug } = await params
+
   // Fetch prompt with tags
   const prompt = await prisma.prompts.findUnique({
-    where: { slug: params.slug },
+    where: { slug },
     include: {
       prompt_tags: {
         include: {
