@@ -46,26 +46,34 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ]
 
   // Dynamic prompt pages
-  const prompts = await prisma.prompts.findMany({
-    where: {
-      status: 'APPROVED',
-      deleted_at: null,
-    },
-    select: {
-      slug: true,
-      updated_at: true,
-    },
-    orderBy: {
-      updated_at: 'desc',
-    },
-  })
+  // Gracefully handle database unavailability during build
+  let promptPages: MetadataRoute.Sitemap = []
 
-  const promptPages: MetadataRoute.Sitemap = prompts.map((prompt) => ({
-    url: `${baseUrl}/prompts/${prompt.slug}`,
-    lastModified: prompt.updated_at,
-    changeFrequency: 'weekly' as const,
-    priority: 0.7,
-  }))
+  try {
+    const prompts = await prisma.prompts.findMany({
+      where: {
+        status: 'APPROVED',
+        deleted_at: null,
+      },
+      select: {
+        slug: true,
+        updated_at: true,
+      },
+      orderBy: {
+        updated_at: 'desc',
+      },
+    })
+
+    promptPages = prompts.map((prompt) => ({
+      url: `${baseUrl}/prompts/${prompt.slug}`,
+      lastModified: prompt.updated_at,
+      changeFrequency: 'weekly' as const,
+      priority: 0.7,
+    }))
+  } catch (error) {
+    // Database unavailable (likely during build) - return static pages only
+    console.warn('Sitemap: Database unavailable, returning static pages only')
+  }
 
   return [...staticPages, ...promptPages]
 }
