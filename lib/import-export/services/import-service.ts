@@ -211,6 +211,7 @@ export class ImportService {
             if (!tag) {
               tag = await tx.tags.create({
                 data: {
+                  id: crypto.randomUUID(),
                   name: tagName,
                   slug: tagSlug,
                 },
@@ -264,6 +265,7 @@ export class ImportService {
             // Create new prompt
             const newPrompt = await tx.prompts.create({
               data: {
+                id: crypto.randomUUID(),
                 title: prompt.title,
                 slug: prompt.slug,
                 prompt_text: prompt.prompt_text,

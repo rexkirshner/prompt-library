@@ -8,6 +8,7 @@ import { Metadata } from 'next'
 import Link from 'next/link'
 import { requireAdmin } from '@/lib/auth/admin'
 import { ExportButton } from './ExportButton'
+import { ImportButton } from './ImportButton'
 
 export const metadata: Metadata = {
   title: 'Backup & Recovery - Admin',
@@ -76,22 +77,9 @@ export default async function AdminBackupPage() {
         <ExportButton />
       </div>
 
-      {/* Import section - placeholder for Phase 2 */}
-      <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 p-6 shadow-sm">
-        <div className="mb-4">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            Import Prompts
-          </h2>
-          <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-            Import functionality coming soon
-          </p>
-        </div>
-        <div className="rounded-md bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 p-4">
-          <p className="text-sm text-blue-800 dark:text-blue-200">
-            The import feature is currently under development. Once complete, you&apos;ll be able
-            to restore prompts from exported JSON files.
-          </p>
-        </div>
+      {/* Import section */}
+      <div className="mb-8">
+        <ImportButton />
       </div>
     </div>
   )
