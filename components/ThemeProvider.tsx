@@ -22,11 +22,9 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setThemeState] = useState<Theme>('system')
   const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>('light')
-  const [mounted, setMounted] = useState(false)
 
-  // Load theme from localStorage on mount
+  // Load theme from localStorage and apply immediately on mount
   useEffect(() => {
-    setMounted(true)
     const stored = localStorage.getItem('theme') as Theme | null
     if (stored && ['light', 'dark', 'system'].includes(stored)) {
       setThemeState(stored)
@@ -35,8 +33,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   // Update resolved theme based on theme setting and system preference
   useEffect(() => {
-    if (!mounted) return
-
     const updateResolvedTheme = () => {
       if (theme === 'system') {
         const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches
@@ -62,16 +58,11 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
     mediaQuery.addEventListener('change', handleChange)
     return () => mediaQuery.removeEventListener('change', handleChange)
-  }, [theme, mounted])
+  }, [theme])
 
   const setTheme = (newTheme: Theme) => {
     setThemeState(newTheme)
     localStorage.setItem('theme', newTheme)
-  }
-
-  // Prevent flash of unstyled content
-  if (!mounted) {
-    return null
   }
 
   return (
