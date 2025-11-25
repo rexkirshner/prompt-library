@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { signOut } from 'next-auth/react'
+import { ThemeToggle } from './ThemeToggle'
 
 interface NavBarClientProps {
   isLoggedIn: boolean
@@ -34,22 +35,26 @@ export function NavBarClient({ isLoggedIn }: NavBarClientProps) {
   }
 
   return (
-    <nav className="border-b border-gray-200 bg-white">
+    <nav className="border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           {/* Logo/Brand */}
           <div className="flex items-center">
-            <Link href="/" className="text-xl font-bold text-gray-900">
+            <Link href="/" className="text-xl font-bold text-gray-900 dark:text-gray-100">
               AI Prompts Library
             </Link>
           </div>
 
-          {/* Dropdown Menu */}
-          <div className="relative" ref={dropdownRef}>
+          {/* Right side: Theme toggle + Dropdown Menu */}
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+
+            {/* Dropdown Menu */}
+            <div className="relative" ref={dropdownRef}>
             <button
               type="button"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="inline-flex items-center gap-2 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-50"
+              className="inline-flex items-center gap-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-4 py-2 text-sm font-semibold text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-600"
               aria-expanded={isMenuOpen}
               aria-label="Toggle navigation menu"
             >
@@ -73,34 +78,34 @@ export function NavBarClient({ isLoggedIn }: NavBarClientProps) {
 
             {/* Dropdown menu */}
             {isMenuOpen && (
-              <div className="absolute right-0 mt-2 w-56 origin-top-right rounded-md border border-gray-200 bg-white shadow-lg">
+              <div className="absolute right-0 mt-2 w-56 origin-top-right rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-lg">
                 <div className="py-1">
                   <Link
                     href="/prompts"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Browse Prompts
                   </Link>
                   <Link
                     href="/submit"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Submit a Prompt
                   </Link>
-                  <div className="border-t border-gray-200"></div>
+                  <div className="border-t border-gray-200 dark:border-gray-700"></div>
                   {isLoggedIn ? (
                     <button
                       onClick={handleLogout}
-                      className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
+                      className="block w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                     >
                       Logout
                     </button>
                   ) : (
                     <Link
                       href="/auth/login"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       Login
@@ -109,6 +114,7 @@ export function NavBarClient({ isLoggedIn }: NavBarClientProps) {
                 </div>
               </div>
             )}
+            </div>
           </div>
         </div>
       </div>

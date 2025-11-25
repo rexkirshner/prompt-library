@@ -10,15 +10,15 @@ export function Footer() {
   const currentYear = new Date().getFullYear()
 
   return (
-    <footer className="border-t border-gray-200 bg-white mt-auto">
+    <footer className="border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 mt-auto">
       <div className="mx-auto max-w-7xl px-4 py-8">
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
           {/* About */}
           <div>
-            <h3 className="mb-4 text-sm font-semibold text-gray-900">
+            <h3 className="mb-4 text-sm font-semibold text-gray-900 dark:text-gray-100">
               AI Prompts Library
             </h3>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-600 dark:text-gray-400">
               A curated collection of high-quality AI prompts for the community.
               All content released under CC0 (Public Domain).
             </p>
@@ -26,14 +26,14 @@ export function Footer() {
 
           {/* Navigation */}
           <div>
-            <h3 className="mb-4 text-sm font-semibold text-gray-900">
+            <h3 className="mb-4 text-sm font-semibold text-gray-900 dark:text-gray-100">
               Explore
             </h3>
             <ul className="space-y-2 text-sm">
               <li>
                 <Link
                   href="/prompts"
-                  className="text-gray-600 hover:text-gray-900"
+                  className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
                 >
                   Browse Prompts
                 </Link>
@@ -41,7 +41,7 @@ export function Footer() {
               <li>
                 <Link
                   href="/submit"
-                  className="text-gray-600 hover:text-gray-900"
+                  className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
                 >
                   Submit a Prompt
                 </Link>
@@ -49,7 +49,7 @@ export function Footer() {
               <li>
                 <Link
                   href="/auth/login"
-                  className="text-gray-600 hover:text-gray-900"
+                  className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
                 >
                   Login
                 </Link>
@@ -59,12 +59,12 @@ export function Footer() {
 
           {/* Legal */}
           <div>
-            <h3 className="mb-4 text-sm font-semibold text-gray-900">Legal</h3>
+            <h3 className="mb-4 text-sm font-semibold text-gray-900 dark:text-gray-100">Legal</h3>
             <ul className="space-y-2 text-sm">
               <li>
                 <Link
                   href="/privacy"
-                  className="text-gray-600 hover:text-gray-900"
+                  className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
                 >
                   Privacy Policy
                 </Link>
@@ -72,7 +72,7 @@ export function Footer() {
               <li>
                 <Link
                   href="/terms"
-                  className="text-gray-600 hover:text-gray-900"
+                  className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
                 >
                   Terms of Service
                 </Link>
@@ -82,7 +82,7 @@ export function Footer() {
                   href="https://creativecommons.org/publicdomain/zero/1.0/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-600 hover:text-gray-900"
+                  className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
                 >
                   CC0 License
                 </a>
@@ -92,7 +92,7 @@ export function Footer() {
 
           {/* Resources */}
           <div>
-            <h3 className="mb-4 text-sm font-semibold text-gray-900">
+            <h3 className="mb-4 text-sm font-semibold text-gray-900 dark:text-gray-100">
               Resources
             </h3>
             <ul className="space-y-2 text-sm">
@@ -101,7 +101,7 @@ export function Footer() {
                   href="https://github.com/rexkirshner/prompt-library"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-600 hover:text-gray-900"
+                  className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
                 >
                   GitHub
                 </a>
@@ -111,7 +111,7 @@ export function Footer() {
                   href="https://github.com/rexkirshner/prompt-library/issues"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-600 hover:text-gray-900"
+                  className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
                 >
                   Report an Issue
                 </a>
@@ -121,7 +121,7 @@ export function Footer() {
         </div>
 
         {/* Copyright */}
-        <div className="mt-8 border-t border-gray-200 pt-8 text-center text-sm text-gray-500">
+        <div className="mt-8 border-t border-gray-200 dark:border-gray-700 pt-8 text-center text-sm text-gray-500 dark:text-gray-400">
           <p>
             © {currentYear} AI Prompts Library. All prompts are public domain under CC0.
           </p>

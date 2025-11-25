@@ -540,3 +540,146 @@ The project follows a simplicity-first philosophy with YAGNI principles. Server 
 **Blockers:** None - clean working tree, all tests passing, comprehensive documentation complete
 
 ---
+## Session 8 - 2025-01-24
+
+**Duration:** 3h | **Focus:** Phase 3 Polish & UX Enhancements | **Status:** ✅
+
+### TL;DR
+- Completed entire Phase 3 (Polish & Launch): error handling, loading states, legal pages, SEO, performance
+- Added grid/list view toggle for prompts browse page with localStorage persistence
+- Added copy buttons directly on browse page cards for faster workflow
+- 21 commits ahead of origin - ready for deployment review
+
+### Problem Solved
+**Issue:** Phase 3 requirements for production readiness - needed error handling, loading states, legal compliance, SEO optimization, and UX polish before launch.
+
+**Constraints:**
+- Must maintain existing functionality while adding polish
+- Loading skeletons need to match actual layouts to prevent layout shift
+- Legal pages required for GDPR compliance and CC0 licensing clarity
+- SEO improvements needed without breaking existing SSR patterns
+- Performance optimization via database indexes without migrations breaking
+
+**Approach:** Systematic completion of Phase 3 checklist, then user-requested UX improvements:
+1. Error boundaries and custom error pages
+2. Loading states with skeleton screens
+3. Legal documentation (Privacy, Terms)
+4. Site-wide footer with navigation
+5. Database performance indexes
+6. Vercel Analytics integration
+7. Comprehensive SEO metadata, sitemap, robots.txt
+8. Grid/list view toggle with localStorage
+9. Direct copy buttons on browse cards
+
+**Why this approach:**
+- Followed PRD Phase 3 structure for systematic coverage
+- Used modular components (reusable Skeleton components) for maintainability
+- Append-only SESSIONS.md strategy for performance
+- Client-side state management for view mode (no server round-trips)
+- Event propagation control for copy buttons (prevents navigation conflicts)
+
+### Decisions
+- **View Mode Persistence:** localStorage for user preference → Immediate load, no flash, works offline
+- **Copy Button Placement:** Integrated into cards vs. separate actions → Better discoverability, faster workflow
+- **Database Indexes:** Added before launch vs. reactive → Proactive performance, scales better
+- **SEO Strategy:** Dynamic metadata per page vs. static → Better social sharing, search results
+
+### Files
+**NEW:**
+- `app/not-found.tsx` - Custom 404 page with helpful navigation
+- `app/error.tsx` - Runtime error boundary with recovery
+- `app/global-error.tsx` - Root-level error fallback
+- `components/Skeleton.tsx` - Reusable loading skeleton components (4 variants)
+- `app/loading.tsx` + 4 page-specific loading states
+- `app/privacy/page.tsx` - GDPR-compliant privacy policy
+- `app/terms/page.tsx` - Terms of service with CC0 licensing
+- `components/Footer.tsx` - Site-wide footer with 4-column layout
+- `prisma/migrations/*_add_performance_indexes/` - Database optimization migration
+- `app/sitemap.ts` - Dynamic sitemap generation
+- `app/robots.ts` - Search engine crawler directives
+- `components/ViewModeToggle.tsx` - Grid/list toggle with icons
+- `components/PromptsListClient.tsx` - Client component for view mode switching
+
+**MOD:**
+- `app/layout.tsx:19-62` - Enhanced metadata with Open Graph, Twitter Cards, metadataBase
+- `app/prompts/[slug]/page.tsx:26-70` - Dynamic metadata per prompt with article tags
+- `prisma/schema.prisma:84-99` - Added 6 performance indexes
+- `app/prompts/page.tsx:153` - Replaced static grid with PromptsListClient component
+- `package.json` - Added @vercel/analytics and @vercel/speed-insights
+
+### Mental Models
+
+**Current understanding:**
+The application follows a hybrid SSR/client architecture:
+- Server components for SEO-critical pages (prompts detail, browse)
+- Client components for interactive features (view toggle, copy buttons)
+- Database queries optimized with strategic indexes on filter columns
+- Loading states use Suspense boundaries with skeleton screens
+- Error boundaries at multiple levels (page, global) for graceful degradation
+
+**Key insights:**
+1. **View Mode Toggle Pattern:** Client component receives server-rendered data, manages display state client-side. No re-fetch needed, just DOM reorganization.
+
+2. **Copy Button Event Handling:** Must stop propagation to prevent card navigation. Wrapping in div with onClick={(e) => e.stopPropagation()} prevents Link click.
+
+3. **Database Index Strategy:** Index columns used in WHERE clauses (status, category, deleted_at) and ORDER BY (usage_count). Compound indexes for common filter combinations.
+
+4. **SEO Metadata Flow:** Root layout sets metadataBase and defaults, page-level generateMetadata() overrides with dynamic content, Next.js merges hierarchically.
+
+5. **Skeleton Component Design:** Reusable base Skeleton + composed variants (PromptCardSkeleton, PromptCardGridSkeleton) mirrors actual component structure.
+
+**Gotchas discovered:**
+- localStorage access must be in useEffect (SSR doesn't have localStorage)
+- Need to pass prompt_text to client component for copy functionality
+- Event propagation from nested buttons requires explicit stopPropagation
+- metadataBase warning appears without explicit URL set in root layout
+- SESSIONS.md append-only strategy crucial for large files (>25K tokens)
+
+### Work In Progress
+**Task:** None - session complete and committed
+
+**Current State:**
+- 21 commits ahead of origin/main
+- All Phase 3 tasks completed
+- UX enhancements (grid/list, copy buttons) implemented
+- Working tree clean
+
+**Next Session Priority:**
+- User review of UX enhancements in browser
+- Potential push to GitHub (awaiting explicit permission)
+- Begin Phase 4 or additional polish as directed
+
+### TodoWrite State
+**Completed:**
+- ✅ Create custom 404 (not-found) page
+- ✅ Create custom error page with error boundary
+- ✅ Add loading states to async pages
+- ✅ Create loading skeletons for prompt cards
+- ✅ Create Privacy Policy page
+- ✅ Create Terms of Service page
+- ✅ Add Footer component to root layout
+- ✅ Add performance optimizations (database indexes)
+- ✅ Add Vercel Analytics for monitoring
+- ✅ Verify and improve SEO metadata
+- ✅ Mobile responsiveness audit
+- ✅ Create view mode selector component
+- ✅ Create client wrapper for prompts list
+- ✅ Update prompts page to use new components
+- ✅ Add CopyButton to grid view cards
+- ✅ Add CopyButton to list view items
+- ✅ Verify build passes with changes
+
+**In Progress:** None
+
+### Next Session
+**Priority:** User testing and deployment decision
+
+**Blockers:** None - awaiting user direction
+
+**Suggested Actions:**
+1. Manual UI testing of new features (view toggle, copy buttons)
+2. Review legal page content
+3. Decision on GitHub push and deployment
+4. Discuss Phase 4 priorities or additional polish
+
+---
