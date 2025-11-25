@@ -12,7 +12,7 @@ interface SkeletonProps {
 export function Skeleton({ className = '' }: SkeletonProps) {
   return (
     <div
-      className={`animate-pulse rounded-md bg-gray-200 ${className}`}
+      className={`animate-pulse rounded-md bg-gray-200 dark:bg-gray-700 ${className}`}
       aria-hidden="true"
     />
   )
@@ -23,7 +23,7 @@ export function Skeleton({ className = '' }: SkeletonProps) {
  */
 export function PromptCardSkeleton() {
   return (
-    <div className="rounded-lg border border-gray-200 p-6">
+    <div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
       {/* Category badge */}
       <Skeleton className="mb-3 h-6 w-24" />
 
@@ -109,7 +109,7 @@ export function PromptDetailSkeleton() {
       {/* Prompt text */}
       <div className="mb-8">
         <Skeleton className="mb-3 h-6 w-32" />
-        <div className="rounded-lg border border-gray-300 bg-gray-50 p-4">
+        <div className="rounded-lg border border-gray-300 bg-gray-50 p-4 dark:border-gray-600 dark:bg-gray-900">
           <Skeleton className="mb-2 h-4 w-full" />
           <Skeleton className="mb-2 h-4 w-full" />
           <Skeleton className="mb-2 h-4 w-3/4" />

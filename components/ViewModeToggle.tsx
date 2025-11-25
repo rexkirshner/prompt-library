@@ -38,15 +38,15 @@ export function ViewModeToggle({
   }
 
   return (
-    <div className="flex items-center gap-1 rounded-md border border-gray-300 bg-white p-1">
+    <div className="flex items-center gap-1 rounded-md border border-gray-300 bg-white p-1 dark:border-gray-600 dark:bg-gray-800">
       {/* Grid View Button */}
       <button
         type="button"
         onClick={() => handleToggle('grid')}
         className={`rounded px-3 py-1.5 text-sm font-medium transition-colors ${
           viewMode === 'grid'
-            ? 'bg-gray-900 text-white'
-            : 'text-gray-700 hover:bg-gray-100'
+            ? 'bg-gray-900 text-white dark:bg-gray-700'
+            : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'
         }`}
         aria-label="Grid view"
         aria-pressed={viewMode === 'grid'}
@@ -73,8 +73,8 @@ export function ViewModeToggle({
         onClick={() => handleToggle('list')}
         className={`rounded px-3 py-1.5 text-sm font-medium transition-colors ${
           viewMode === 'list'
-            ? 'bg-gray-900 text-white'
-            : 'text-gray-700 hover:bg-gray-100'
+            ? 'bg-gray-900 text-white dark:bg-gray-700'
+            : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'
         }`}
         aria-label="List view"
         aria-pressed={viewMode === 'list'}

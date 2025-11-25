@@ -99,8 +99,8 @@ export default async function PromptsPage({ searchParams }: PromptsPageProps) {
     <div className="mx-auto max-w-7xl px-4 py-12">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">Browse Prompts</h1>
-        <p className="mt-2 text-gray-600">
+        <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-100">Browse Prompts</h1>
+        <p className="mt-2 text-gray-600 dark:text-gray-400">
           Discover AI prompts shared by the community
         </p>
       </div>
@@ -112,8 +112,8 @@ export default async function PromptsPage({ searchParams }: PromptsPageProps) {
       />
 
       {/* Stats bar */}
-      <div className="mb-8 flex items-center justify-between border-b border-gray-200 pb-4">
-        <p className="text-sm text-gray-600">
+      <div className="mb-8 flex items-center justify-between border-b border-gray-200 dark:border-gray-700 pb-4">
+        <p className="text-sm text-gray-600 dark:text-gray-400">
           {prompts.length} {prompts.length === 1 ? 'prompt' : 'prompts'}{' '}
           {filters.query || filters.category || filters.tags.length > 0
             ? 'found'
@@ -121,7 +121,7 @@ export default async function PromptsPage({ searchParams }: PromptsPageProps) {
         </p>
         <Link
           href="/submit"
-          className="rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-500"
+          className="rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-500 dark:bg-blue-500 dark:hover:bg-blue-400"
         >
           Submit a Prompt
         </Link>
@@ -129,13 +129,13 @@ export default async function PromptsPage({ searchParams }: PromptsPageProps) {
 
       {/* Prompts list with view toggle */}
       {prompts.length === 0 ? (
-        <div className="rounded-lg border-2 border-dashed border-gray-300 p-12 text-center">
-          <h3 className="text-lg font-semibold text-gray-900">
+        <div className="rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-700 p-12 text-center">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
             {filters.query || filters.category || filters.tags.length > 0
               ? 'No prompts found'
               : 'No prompts yet'}
           </h3>
-          <p className="mt-2 text-sm text-gray-600">
+          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
             {filters.query || filters.category || filters.tags.length > 0
               ? 'Try adjusting your search or filters'
               : 'Be the first to submit a prompt to the library!'}
@@ -143,7 +143,7 @@ export default async function PromptsPage({ searchParams }: PromptsPageProps) {
           {!(filters.query || filters.category || filters.tags.length > 0) && (
             <Link
               href="/submit"
-              className="mt-4 inline-block rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-500"
+              className="mt-4 inline-block rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-500 dark:bg-blue-500 dark:hover:bg-blue-400"
             >
               Submit a Prompt
             </Link>
