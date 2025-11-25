@@ -2,13 +2,13 @@
  * Submit Prompt Form Component
  *
  * Client component for prompt submission with progressive enhancement.
- * Uses React's useFormState and useFormStatus for optimistic updates.
+ * Uses React's useActionState and useFormStatus for optimistic updates.
  */
 
 'use client'
 
-import { useState } from 'react'
-import { useFormState, useFormStatus } from 'react-dom'
+import { useState, useActionState } from 'react'
+import { useFormStatus } from 'react-dom'
 import { handleSubmitPrompt, type SubmitPromptResult } from './actions'
 import { TagInput } from '@/components/TagInput'
 import { CATEGORIES } from '@/lib/prompts/validation'
@@ -38,7 +38,7 @@ interface SubmitPromptFormProps {
  * Prompt submission form with validation and error handling
  */
 export function SubmitPromptForm({ defaultAuthorName = '' }: SubmitPromptFormProps) {
-  const [state, formAction] = useFormState<SubmitPromptResult | null, FormData>(
+  const [state, formAction] = useActionState<SubmitPromptResult | null, FormData>(
     handleSubmitPrompt,
     null,
   )
