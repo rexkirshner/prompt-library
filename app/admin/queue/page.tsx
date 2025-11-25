@@ -43,15 +43,15 @@ export default async function AdminQueuePage() {
       {/* Header */}
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Moderation Queue</h1>
-          <p className="mt-2 text-gray-600">
+          <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-100">Moderation Queue</h1>
+          <p className="mt-2 text-gray-600 dark:text-gray-400">
             {pendingPrompts.length} {pendingPrompts.length === 1 ? 'prompt' : 'prompts'}{' '}
             awaiting review
           </p>
         </div>
         <Link
           href="/admin"
-          className="rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold hover:bg-gray-50"
+          className="rounded-md border border-gray-300 dark:border-gray-600 px-4 py-2 text-sm font-semibold text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-800"
         >
           ← Back to Dashboard
         </Link>
@@ -59,9 +59,9 @@ export default async function AdminQueuePage() {
 
       {/* Queue list */}
       {pendingPrompts.length === 0 ? (
-        <div className="rounded-lg border-2 border-dashed border-gray-300 p-12 text-center">
-          <h3 className="text-lg font-semibold text-gray-900">Queue is empty</h3>
-          <p className="mt-2 text-sm text-gray-600">
+        <div className="rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-700 p-12 text-center">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Queue is empty</h3>
+          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
             No prompts are currently awaiting moderation.
           </p>
         </div>
@@ -70,21 +70,21 @@ export default async function AdminQueuePage() {
           {pendingPrompts.map((prompt) => (
             <div
               key={prompt.id}
-              className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm"
+              className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 shadow-sm"
             >
               {/* Header */}
               <div className="mb-4 flex items-start justify-between">
                 <div className="flex-1">
                   <div className="mb-2 flex items-center gap-3">
-                    <span className="inline-block rounded-md bg-yellow-100 px-2 py-1 text-xs font-medium text-yellow-800">
+                    <span className="inline-block rounded-md bg-yellow-100 dark:bg-yellow-900/30 px-2 py-1 text-xs font-medium text-yellow-800 dark:text-yellow-300">
                       PENDING
                     </span>
-                    <span className="inline-block rounded-md bg-gray-100 px-2 py-1 text-xs font-medium text-gray-700">
+                    <span className="inline-block rounded-md bg-gray-100 dark:bg-gray-700 px-2 py-1 text-xs font-medium text-gray-700 dark:text-gray-300">
                       {prompt.category}
                     </span>
                   </div>
-                  <h2 className="text-xl font-semibold">{prompt.title}</h2>
-                  <p className="mt-1 text-sm text-gray-600">
+                  <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">{prompt.title}</h2>
+                  <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
                     by {prompt.author_name} •{' '}
                     {new Date(prompt.created_at).toLocaleDateString()}
                   </p>
@@ -94,15 +94,15 @@ export default async function AdminQueuePage() {
               {/* Description */}
               {prompt.description && (
                 <div className="mb-4">
-                  <p className="text-sm text-gray-700">{prompt.description}</p>
+                  <p className="text-sm text-gray-700 dark:text-gray-300">{prompt.description}</p>
                 </div>
               )}
 
               {/* Prompt text preview */}
               <div className="mb-4">
-                <h3 className="mb-2 text-sm font-semibold">Prompt Text:</h3>
-                <div className="rounded-lg border border-gray-300 bg-gray-50 p-4">
-                  <pre className="line-clamp-6 whitespace-pre-wrap font-mono text-sm text-gray-900">
+                <h3 className="mb-2 text-sm font-semibold text-gray-900 dark:text-gray-100">Prompt Text:</h3>
+                <div className="rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 p-4">
+                  <pre className="line-clamp-6 whitespace-pre-wrap font-mono text-sm text-gray-900 dark:text-gray-100">
                     {prompt.prompt_text}
                   </pre>
                 </div>
@@ -111,9 +111,9 @@ export default async function AdminQueuePage() {
               {/* Example output */}
               {prompt.example_output && (
                 <div className="mb-4">
-                  <h3 className="mb-2 text-sm font-semibold">Example Output:</h3>
-                  <div className="rounded-lg border border-gray-300 bg-gray-50 p-4">
-                    <pre className="line-clamp-4 whitespace-pre-wrap font-mono text-sm text-gray-700">
+                  <h3 className="mb-2 text-sm font-semibold text-gray-900 dark:text-gray-100">Example Output:</h3>
+                  <div className="rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 p-4">
+                    <pre className="line-clamp-4 whitespace-pre-wrap font-mono text-sm text-gray-700 dark:text-gray-300">
                       {prompt.example_output}
                     </pre>
                   </div>
@@ -123,12 +123,12 @@ export default async function AdminQueuePage() {
               {/* Tags */}
               {prompt.prompt_tags.length > 0 && (
                 <div className="mb-4">
-                  <h3 className="mb-2 text-sm font-semibold">Tags:</h3>
+                  <h3 className="mb-2 text-sm font-semibold text-gray-900 dark:text-gray-100">Tags:</h3>
                   <div className="flex flex-wrap gap-2">
                     {prompt.prompt_tags.map(({ tags }) => (
                       <span
                         key={tags.id}
-                        className="rounded-md bg-blue-100 px-2 py-1 text-xs font-medium text-blue-800"
+                        className="rounded-md bg-blue-100 dark:bg-blue-900/30 px-2 py-1 text-xs font-medium text-blue-800 dark:text-blue-300"
                       >
                         {tags.name}
                       </span>
@@ -142,7 +142,7 @@ export default async function AdminQueuePage() {
                 {/* Edit button */}
                 <Link
                   href={`/admin/prompts/${prompt.id}/edit`}
-                  className="inline-flex items-center gap-2 rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50"
+                  className="inline-flex items-center gap-2 rounded-md border border-gray-300 dark:border-gray-600 px-4 py-2 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
                 >
                   <svg
                     className="h-4 w-4"
