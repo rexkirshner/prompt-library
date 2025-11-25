@@ -10,6 +10,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { prisma } from '@/lib/db/client'
 import { auth } from '@/lib/auth'
+import { getCurrentUser } from '@/lib/auth'
 import { CopyButton } from '@/components/CopyButton'
 import { CopyPreview } from '@/components/CopyPreview'
 
@@ -76,6 +77,8 @@ export default async function PromptPage({ params }: PromptPageProps) {
 
   // Get current session to pass userId to CopyButton
   const session = await auth()
+  const currentUser = await getCurrentUser()
+  const isAdmin = currentUser?.isAdmin === true
 
   // Fetch prompt with tags
   const prompt = await prisma.prompts.findUnique({
@@ -104,13 +107,36 @@ export default async function PromptPage({ params }: PromptPageProps) {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-12">
-      {/* Back link */}
-      <Link
-        href="/prompts"
-        className="mb-6 inline-block text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
-      >
-        ← Back to all prompts
-      </Link>
+      {/* Back link and admin controls */}
+      <div className="mb-6 flex items-center justify-between">
+        <Link
+          href="/prompts"
+          className="inline-block text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+        >
+          ← Back to all prompts
+        </Link>
+        {isAdmin && (
+          <Link
+            href={`/admin/prompts/${prompt.id}/edit`}
+            className="inline-flex items-center gap-2 rounded-md bg-blue-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-blue-500"
+          >
+            <svg
+              className="h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth="1.5"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
+              />
+            </svg>
+            Edit
+          </Link>
+        )}
+      </div>
 
       {/* Header */}
       <div className="mb-8">
