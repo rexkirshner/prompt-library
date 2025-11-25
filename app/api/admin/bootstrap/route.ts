@@ -1,18 +1,27 @@
 /**
  * Bootstrap Admin API Route
  *
- * Creates the first admin user in production.
- * This endpoint can only be used when NO users exist in the database.
- * It's protected by a secret token from environment variables.
+ * Creates the first admin user in production when the database is empty.
  *
- * Usage:
+ * SECURITY FEATURES:
+ * - Only works when user count = 0 (self-disabling after first use)
+ * - Requires BOOTSTRAP_SECRET environment variable (256-bit entropy)
+ * - No way to bypass the zero-user check
+ * - Safe to leave in production - cannot be exploited once users exist
+ *
+ * USAGE:
+ * See comprehensive documentation: docs/BOOTSTRAP_ADMIN.md
+ *
+ * Quick reference:
  * POST https://your-domain.com/api/admin/bootstrap
  * Body: {
  *   "secret": "your-bootstrap-secret-from-env",
  *   "email": "admin@example.com",
- *   "password": "secure-password",
+ *   "password": "secure-password",  // min 8 chars
  *   "name": "Admin Name"
  * }
+ *
+ * Helper script: ./scripts/bootstrap-production-admin.sh
  */
 
 import { NextRequest, NextResponse } from 'next/server'
@@ -47,7 +56,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid secret' }, { status: 403 })
     }
 
-    // Check if any users exist
+    // CRITICAL SECURITY CHECK: Only allow bootstrap when database is empty
+    // This makes the endpoint self-disabling after first use
+    // Once any user exists (including the admin we're about to create),
+    // this endpoint becomes permanently disabled - no bypasses possible
     const userCount = await prisma.users.count()
     if (userCount > 0) {
       return NextResponse.json(
