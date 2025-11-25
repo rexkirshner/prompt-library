@@ -82,6 +82,10 @@ async function generateUniqueSlug(title: string, excludeId: string): Promise<str
 export async function updatePrompt(
   data: EditPromptData,
 ): Promise<EditPromptResult> {
+  // Declare variables outside try-catch for use in redirect
+  let existingPrompt: any
+  let newSlug: string = data.slug
+
   try {
     const admin = await getAdminUser()
     if (!admin) {
@@ -120,7 +124,7 @@ export async function updatePrompt(
     }
 
     // Check if prompt exists
-    const existingPrompt = await prisma.prompts.findUnique({
+    existingPrompt = await prisma.prompts.findUnique({
       where: { id: data.id },
       include: {
         prompt_tags: true,
@@ -132,7 +136,7 @@ export async function updatePrompt(
     }
 
     // Generate new slug if title changed
-    let newSlug = existingPrompt.slug
+    newSlug = existingPrompt.slug
     if (data.title !== existingPrompt.title) {
       newSlug = await generateUniqueSlug(data.title, data.id)
     }
@@ -186,23 +190,24 @@ export async function updatePrompt(
       })
     })
 
-    // Revalidate relevant pages
-    revalidatePath(`/prompts/${existingPrompt.slug}`)
-    revalidatePath(`/prompts/${newSlug}`)
-    revalidatePath('/prompts')
-    revalidatePath('/admin')
-    revalidatePath('/admin/queue')
-
-    // Redirect based on prompt status
-    // If pending, go back to queue; if approved, go to prompt page
-    if (data.status === 'PENDING') {
-      redirect('/admin/queue')
-    } else {
-      redirect(`/prompts/${newSlug}`)
-    }
   } catch (error) {
     console.error('Failed to update prompt:', error)
     return { success: false, errors: { form: 'Failed to update prompt' } }
+  }
+
+  // Revalidate relevant pages (outside try-catch to avoid catching redirect)
+  revalidatePath(`/prompts/${existingPrompt.slug}`)
+  revalidatePath(`/prompts/${newSlug}`)
+  revalidatePath('/prompts')
+  revalidatePath('/admin')
+  revalidatePath('/admin/queue')
+
+  // Redirect based on prompt status
+  // If pending, go back to queue; if approved, go to prompt page
+  if (data.status === 'PENDING') {
+    redirect('/admin/queue')
+  } else {
+    redirect(`/prompts/${newSlug}`)
   }
 }
 
