@@ -79,7 +79,7 @@ export function NavBarClient({ isLoggedIn, isAdmin }: NavBarClientProps) {
 
             {/* Dropdown menu */}
             {isMenuOpen && (
-              <div className="absolute right-0 mt-2 w-56 origin-top-right rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-lg">
+              <div className="absolute right-0 mt-2 w-56 origin-top-right rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-lg z-50">
                 <div className="py-1">
                   <Link
                     href="/prompts"
