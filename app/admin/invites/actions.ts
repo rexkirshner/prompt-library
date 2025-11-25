@@ -27,8 +27,16 @@ export async function createInviteAction(): Promise<CreateInviteActionResult> {
       return { success: false, error: 'Unauthorized: Admin access required' }
     }
 
-    // Get base URL from environment or construct from headers
-    const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3001'
+    // Get base URL from environment variable
+    // Fail fast if NEXTAUTH_URL is not configured to prevent broken invite links
+    const baseUrl = process.env.NEXTAUTH_URL
+    if (!baseUrl) {
+      console.error('NEXTAUTH_URL environment variable is not set')
+      return {
+        success: false,
+        error: 'Server configuration error: Base URL not configured',
+      }
+    }
 
     // Create invite code
     const result = await createInviteCode(admin.id, baseUrl)
