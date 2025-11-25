@@ -96,13 +96,22 @@ export function NavBarClient({ isLoggedIn, isAdmin }: NavBarClientProps) {
                     Submit a Prompt
                   </Link>
                   {isAdmin && (
-                    <Link
-                      href="/admin"
-                      className="block px-4 py-2 text-sm text-blue-700 dark:text-blue-400 font-semibold hover:bg-gray-100 dark:hover:bg-gray-700"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      Admin Panel
-                    </Link>
+                    <>
+                      <Link
+                        href="/admin"
+                        className="block px-4 py-2 text-sm text-blue-700 dark:text-blue-400 font-semibold hover:bg-gray-100 dark:hover:bg-gray-700"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        Admin Panel
+                      </Link>
+                      <Link
+                        href="/admin/invites"
+                        className="block px-4 py-2 text-sm text-blue-700 dark:text-blue-400 font-semibold hover:bg-gray-100 dark:hover:bg-gray-700"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        Manage Invites
+                      </Link>
+                    </>
                   )}
                   <div className="border-t border-gray-200 dark:border-gray-700"></div>
                   {isLoggedIn ? (
