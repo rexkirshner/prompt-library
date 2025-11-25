@@ -30,7 +30,7 @@ function SubmitButton() {
 /**
  * Sign-up form with validation and error handling
  */
-export function SignUpForm() {
+export function SignUpForm({ inviteCode }: { inviteCode: string }) {
   const [state, formAction] = useFormState<SignUpResult | null, FormData>(
     handleSignUp,
     null,
@@ -38,6 +38,8 @@ export function SignUpForm() {
 
   return (
     <form action={formAction} className="space-y-6">
+      {/* Hidden invite code field */}
+      <input type="hidden" name="inviteCode" value={inviteCode} />
       {/* Form-level error */}
       {state?.errors?.form && (
         <div className="rounded-md bg-red-50 p-4">

@@ -2,7 +2,7 @@
  * Sign-up Server Actions
  *
  * Server-side actions for user registration.
- * Handles validation, password hashing, and user creation.
+ * Handles validation, password hashing, invite code validation, and user creation.
  */
 
 'use server'
@@ -14,6 +14,7 @@ import {
   validateSignUpForm,
   type SignUpFormData,
 } from '@/lib/auth/validation'
+import { validateInviteCode, redeemInviteCode } from '@/lib/invites'
 
 export interface SignUpResult {
   success: boolean
@@ -25,10 +26,12 @@ export interface SignUpResult {
  * Create a new user account
  *
  * @param formData - Sign-up form data
+ * @param inviteCode - Required invite code for registration
  * @returns Result with success status and any errors
  */
 export async function signUpUser(
   formData: SignUpFormData,
+  inviteCode: string,
 ): Promise<SignUpResult> {
   // Validate form data
   const validation = validateSignUpForm(formData)
@@ -42,6 +45,17 @@ export async function signUpUser(
   const { name, email, password } = formData
 
   try {
+    // Validate invite code
+    const inviteValidation = await validateInviteCode(inviteCode)
+    if (!inviteValidation.valid) {
+      return {
+        success: false,
+        errors: {
+          form: `Invalid invite code: ${inviteValidation.error}`,
+        },
+      }
+    }
+
     // Check if user already exists
     const existingUser = await prisma.users.findUnique({
       where: { email: email.trim().toLowerCase() },
@@ -59,16 +73,46 @@ export async function signUpUser(
     // Hash password
     const hashedPassword = await hashPassword(password)
 
-    // Create user
-    await prisma.users.create({
-      data: {
-        id: crypto.randomUUID(),
-        email: email.trim().toLowerCase(),
-        password: hashedPassword,
-        name: name.trim(),
-        is_admin: false,
-        // created_at uses database default (@default(now()))
-      },
+    // Get invite creator for invited_by field
+    const invite = await prisma.invite_codes.findUnique({
+      where: { code: inviteCode },
+      select: { created_by: true },
+    })
+
+    if (!invite) {
+      return {
+        success: false,
+        errors: {
+          form: 'Invite code not found',
+        },
+      }
+    }
+
+    // Create user and redeem invite in a transaction
+    const newUser = await prisma.$transaction(async (tx) => {
+      // Create user
+      const user = await tx.users.create({
+        data: {
+          id: crypto.randomUUID(),
+          email: email.trim().toLowerCase(),
+          password: hashedPassword,
+          name: name.trim(),
+          is_admin: false,
+          invited_by: invite.created_by, // Track who invited this user
+          // created_at uses database default (@default(now()))
+        },
+      })
+
+      // Mark invite as used
+      await tx.invite_codes.update({
+        where: { code: inviteCode },
+        data: {
+          used_by: user.id,
+          used_at: new Date(),
+        },
+      })
+
+      return user
     })
 
     return {
@@ -91,6 +135,18 @@ export async function signUpUser(
  * Redirects to sign-in on success
  */
 export async function handleSignUp(prevState: unknown, formData: FormData) {
+  const inviteCode = formData.get('inviteCode') as string
+
+  // Require invite code
+  if (!inviteCode) {
+    return {
+      success: false,
+      errors: {
+        form: 'Invite code is required to sign up',
+      },
+    }
+  }
+
   const data: SignUpFormData = {
     name: formData.get('name') as string,
     email: formData.get('email') as string,
@@ -98,7 +154,7 @@ export async function handleSignUp(prevState: unknown, formData: FormData) {
     confirmPassword: formData.get('confirmPassword') as string,
   }
 
-  const result = await signUpUser(data)
+  const result = await signUpUser(data, inviteCode)
 
   if (result.success) {
     // Redirect to sign-in page on success
