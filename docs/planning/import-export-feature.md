@@ -37,15 +37,35 @@
 
 ### Phase 2: Import Functionality 🚧 IN PROGRESS
 **Started:** 2025-11-25
+**Last Updated:** 2025-11-25
+
+**Completed so far:**
+- ✅ Zod package installed for schema validation
+- ✅ JSON schema validator (`validators/json-validator.ts`)
+  - Zod schemas for PromptData and ExportData
+  - parseAndValidateJSON() convenience function
+  - Comprehensive error messages
+- ✅ Prompt data validator (`validators/prompt-validator.ts`)
+  - Business logic validation
+  - XSS prevention via sanitization
+  - Duplicate slug detection
+  - Batch validation support
+- ✅ JSONImporter class (`importers/json-importer.ts`)
+  - Validation and preparation layer
+  - Duplicate handling (skip/update/error)
+  - Helper methods for filtering and sanitizing
+- ✅ Comprehensive validator tests (29/29 passing)
+
+**Commits:**
+- `0cc7fe3` - Add validation layer for import functionality
+- `669ea17` - Add comprehensive JSON validator tests with Zod fix
 
 **To be built:**
-- [ ] JSON schema validator
-- [ ] Prompt data validator
-- [ ] JSONImporter implementation
 - [ ] ImportService with transaction handling
 - [ ] Import server actions (upload, preview, execute)
 - [ ] Import UI components
-- [ ] Comprehensive tests
+- [ ] Importer tests
+- [ ] Import service tests
 - [ ] Integration and round-trip tests
 
 ---
