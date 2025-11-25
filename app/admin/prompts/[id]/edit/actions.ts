@@ -30,6 +30,8 @@ export interface EditPromptResult {
 
 export interface EditPromptData {
   id: string
+  slug: string
+  status: string
   title: string
   promptText: string
   category: string
@@ -189,9 +191,15 @@ export async function updatePrompt(
     revalidatePath(`/prompts/${newSlug}`)
     revalidatePath('/prompts')
     revalidatePath('/admin')
+    revalidatePath('/admin/queue')
 
-    // Redirect to updated prompt page
-    redirect(`/prompts/${newSlug}`)
+    // Redirect based on prompt status
+    // If pending, go back to queue; if approved, go to prompt page
+    if (data.status === 'PENDING') {
+      redirect('/admin/queue')
+    } else {
+      redirect(`/prompts/${newSlug}`)
+    }
   } catch (error) {
     console.error('Failed to update prompt:', error)
     return { success: false, errors: { form: 'Failed to update prompt' } }

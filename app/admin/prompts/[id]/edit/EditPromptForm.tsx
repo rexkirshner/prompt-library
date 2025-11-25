@@ -34,6 +34,7 @@ interface EditPromptFormProps {
     id: string
     title: string
     slug: string
+    status: string
     promptText: string
     category: string
     description: string
@@ -58,6 +59,8 @@ export function EditPromptForm({ prompt }: EditPromptFormProps) {
   ): Promise<EditPromptResult> => {
     const data = {
       id: prompt.id,
+      slug: prompt.slug,
+      status: prompt.status,
       title: formData.get('title') as string,
       promptText: formData.get('promptText') as string,
       category: formData.get('category') as string,

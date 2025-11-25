@@ -49,6 +49,14 @@ export default async function EditPromptPage({ params }: EditPromptPageProps) {
   // Extract tag names for the form
   const tagNames = prompt.prompt_tags.map((pt) => pt.tags.name)
 
+  // Determine back link based on prompt status
+  const backLink = prompt.status === 'PENDING'
+    ? '/admin/queue'
+    : `/prompts/${prompt.slug}`
+  const backText = prompt.status === 'PENDING'
+    ? '← Back to Queue'
+    : '← Back to Prompt'
+
   return (
     <div className="mx-auto max-w-4xl px-4 py-12">
       {/* Header */}
@@ -60,10 +68,10 @@ export default async function EditPromptPage({ params }: EditPromptPageProps) {
           </p>
         </div>
         <Link
-          href={`/prompts/${prompt.slug}`}
+          href={backLink}
           className="rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold hover:bg-gray-50"
         >
-          ← Back to Prompt
+          {backText}
         </Link>
       </div>
 
@@ -73,6 +81,7 @@ export default async function EditPromptPage({ params }: EditPromptPageProps) {
           id: prompt.id,
           title: prompt.title,
           slug: prompt.slug,
+          status: prompt.status,
           promptText: prompt.prompt_text,
           category: prompt.category,
           description: prompt.description || '',
