@@ -17,11 +17,11 @@ export const metadata: Metadata = {
 }
 
 interface SignUpPageProps {
-  searchParams: { invite?: string }
+  searchParams: Promise<{ invite?: string }>
 }
 
-export default function SignUpPage({ searchParams }: SignUpPageProps) {
-  const inviteCode = searchParams.invite
+export default async function SignUpPage({ searchParams }: SignUpPageProps) {
+  const { invite: inviteCode } = await searchParams
 
   // Show error if no invite code provided
   if (!inviteCode) {

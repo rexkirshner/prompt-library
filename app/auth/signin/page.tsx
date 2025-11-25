@@ -15,14 +15,14 @@ export const metadata: Metadata = {
 }
 
 interface SignInPageProps {
-  searchParams: {
+  searchParams: Promise<{
     registered?: string
     redirectTo?: string
-  }
+  }>
 }
 
-export default function SignInPage({ searchParams }: SignInPageProps) {
-  const { registered, redirectTo } = searchParams
+export default async function SignInPage({ searchParams }: SignInPageProps) {
+  const { registered, redirectTo } = await searchParams
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 px-4 py-12">
