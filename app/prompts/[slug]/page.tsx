@@ -102,7 +102,7 @@ export default async function PromptPage({ params }: PromptPageProps) {
       {/* Back link */}
       <Link
         href="/prompts"
-        className="mb-6 inline-block text-sm text-blue-600 hover:text-blue-800"
+        className="mb-6 inline-block text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
       >
         ← Back to all prompts
       </Link>
@@ -110,17 +110,17 @@ export default async function PromptPage({ params }: PromptPageProps) {
       {/* Header */}
       <div className="mb-8">
         {/* Category */}
-        <span className="inline-block rounded-md bg-gray-100 px-3 py-1 text-sm font-medium text-gray-700">
+        <span className="inline-block rounded-md bg-gray-100 dark:bg-gray-800 px-3 py-1 text-sm font-medium text-gray-700 dark:text-gray-300">
           {prompt.category}
         </span>
 
         {/* Title */}
-        <h1 className="mt-4 text-3xl font-bold tracking-tight">
+        <h1 className="mt-4 text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-100">
           {prompt.title}
         </h1>
 
         {/* Metadata */}
-        <div className="mt-4 flex flex-wrap items-center gap-4 text-sm text-gray-600">
+        <div className="mt-4 flex flex-wrap items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
           <span>by {prompt.author_name}</span>
           {prompt.author_url && (
             <>
@@ -129,7 +129,7 @@ export default async function PromptPage({ params }: PromptPageProps) {
                 href={prompt.author_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-blue-600 hover:text-blue-800"
+                className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
               >
                 Visit website →
               </a>
@@ -143,18 +143,18 @@ export default async function PromptPage({ params }: PromptPageProps) {
       {/* Description */}
       {prompt.description && (
         <div className="mb-8">
-          <p className="text-gray-700">{prompt.description}</p>
+          <p className="text-gray-700 dark:text-gray-300">{prompt.description}</p>
         </div>
       )}
 
       {/* Prompt text */}
       <div className="mb-8">
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-lg font-semibold">Prompt</h2>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Prompt</h2>
           <CopyButton text={prompt.prompt_text} promptId={prompt.id} />
         </div>
-        <div className="rounded-lg border border-gray-300 bg-gray-50 p-4">
-          <pre className="whitespace-pre-wrap font-mono text-sm text-gray-900">
+        <div className="rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-4">
+          <pre className="whitespace-pre-wrap font-mono text-sm text-gray-900 dark:text-gray-100">
             {prompt.prompt_text}
           </pre>
         </div>
@@ -163,9 +163,9 @@ export default async function PromptPage({ params }: PromptPageProps) {
       {/* Example output */}
       {prompt.example_output && (
         <div className="mb-8">
-          <h2 className="mb-3 text-lg font-semibold">Example Output</h2>
-          <div className="rounded-lg border border-gray-300 bg-gray-50 p-4">
-            <pre className="whitespace-pre-wrap font-mono text-sm text-gray-700">
+          <h2 className="mb-3 text-lg font-semibold text-gray-900 dark:text-gray-100">Example Output</h2>
+          <div className="rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-4">
+            <pre className="whitespace-pre-wrap font-mono text-sm text-gray-700 dark:text-gray-300">
               {prompt.example_output}
             </pre>
           </div>
@@ -175,12 +175,12 @@ export default async function PromptPage({ params }: PromptPageProps) {
       {/* Tags */}
       {prompt.prompt_tags.length > 0 && (
         <div className="mb-8">
-          <h2 className="mb-3 text-lg font-semibold">Tags</h2>
+          <h2 className="mb-3 text-lg font-semibold text-gray-900 dark:text-gray-100">Tags</h2>
           <div className="flex flex-wrap gap-2">
             {prompt.prompt_tags.map(({ tags }) => (
               <span
                 key={tags.id}
-                className="rounded-md bg-blue-100 px-3 py-1 text-sm font-medium text-blue-800"
+                className="rounded-md bg-blue-100 dark:bg-blue-900 px-3 py-1 text-sm font-medium text-blue-800 dark:text-blue-200"
               >
                 {tags.name}
               </span>
@@ -190,14 +190,14 @@ export default async function PromptPage({ params }: PromptPageProps) {
       )}
 
       {/* License notice */}
-      <div className="mt-12 rounded-md border border-gray-200 bg-gray-50 p-4">
-        <p className="text-sm text-gray-600">
+      <div className="mt-12 rounded-md border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-4">
+        <p className="text-sm text-gray-600 dark:text-gray-400">
           This prompt is released under{' '}
           <a
             href="https://creativecommons.org/publicdomain/zero/1.0/"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-blue-600 hover:text-blue-800"
+            className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
           >
             CC0 (Public Domain)
           </a>
@@ -209,7 +209,7 @@ export default async function PromptPage({ params }: PromptPageProps) {
       <div className="mt-8 text-center">
         <Link
           href="/submit"
-          className="inline-block rounded-md bg-blue-600 px-6 py-3 text-sm font-semibold text-white hover:bg-blue-500"
+          className="inline-block rounded-md bg-blue-600 px-6 py-3 text-sm font-semibold text-white hover:bg-blue-500 dark:bg-blue-500 dark:hover:bg-blue-400"
         >
           Submit Your Own Prompt
         </Link>
