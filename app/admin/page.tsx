@@ -39,6 +39,7 @@ export default async function AdminDashboardPage() {
         select: {
           id: true,
           title: true,
+          slug: true,
           status: true,
           created_at: true,
           author_name: true,
@@ -152,8 +153,17 @@ export default async function AdminDashboardPage() {
               ) : (
                 recentSubmissions.map((prompt) => (
                   <tr key={prompt.id}>
-                    <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                      {prompt.title}
+                    <td className="px-6 py-4 text-sm font-medium">
+                      {prompt.status === 'APPROVED' ? (
+                        <Link
+                          href={`/prompts/${prompt.slug}`}
+                          className="text-blue-600 hover:text-blue-800 hover:underline"
+                        >
+                          {prompt.title}
+                        </Link>
+                      ) : (
+                        <span className="text-gray-900">{prompt.title}</span>
+                      )}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-600">{prompt.author_name}</td>
                     <td className="px-6 py-4">
