@@ -105,6 +105,7 @@ model users {
   name                                                  String?
   image                                                 String?
   is_admin                                              Boolean         @default(false)
+  invited_by                                            String?
   created_at                                            DateTime        @default(now())
   last_login_at                                         DateTime?
   admin_actions                                         admin_actions[]
@@ -114,6 +115,12 @@ model users {
   prompts_prompts_submitted_by_user_idTousers           prompts[]       @relation("prompts_submitted_by_user_idTousers")
   accounts                                              Account[]
   sessions                                              Session[]
+  inviter                                               users?          @relation("UserInvites", fields: [invited_by], references: [id])
+  invited_users                                         users[]         @relation("UserInvites")
+  created_invites                                       invite_codes[]  @relation("InviteCreator")
+  redeemed_invite                                       invite_codes?   @relation("InviteRedeemer")
+
+  @@index([invited_by])
 }
 
 enum PromptStatus {
@@ -168,4 +175,19 @@ model VerificationToken {
 
   @@unique([identifier, token])
   @@map("verification_tokens")
+}
+
+model invite_codes {
+  id         String    @id @default(uuid())
+  code       String    @unique @default(uuid())
+  created_by String
+  created_at DateTime  @default(now())
+  used_by    String?   @unique
+  used_at    DateTime?
+  creator    users     @relation("InviteCreator", fields: [created_by], references: [id], onDelete: Cascade)
+  redeemer   users?    @relation("InviteRedeemer", fields: [used_by], references: [id], onDelete: SetNull)
+
+  @@index([code])
+  @@index([created_by])
+  @@index([used_by])
 }
