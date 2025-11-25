@@ -97,8 +97,10 @@ export async function changePassword(
       }
     }
 
-    // Check that new password is different from current
-    if (currentPassword === newPassword) {
+    // Check that new password is different from current password
+    // Use hash comparison to avoid keeping plaintext password in memory
+    const newPasswordMatchesCurrent = await verifyPassword(newPassword, dbUser.password)
+    if (newPasswordMatchesCurrent) {
       return {
         success: false,
         errors: { newPassword: 'New password must be different from current password' },
