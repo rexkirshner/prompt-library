@@ -9,7 +9,9 @@ import { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { prisma } from '@/lib/db/client'
+import { auth } from '@/lib/auth'
 import { CopyButton } from '@/components/CopyButton'
+import { CopyPreview } from '@/components/CopyPreview'
 
 interface PromptPageProps {
   params: Promise<{
@@ -71,6 +73,9 @@ export async function generateMetadata({
 
 export default async function PromptPage({ params }: PromptPageProps) {
   const { slug } = await params
+
+  // Get current session to pass userId to CopyButton
+  const session = await auth()
 
   // Fetch prompt with tags
   const prompt = await prisma.prompts.findUnique({
@@ -151,7 +156,11 @@ export default async function PromptPage({ params }: PromptPageProps) {
       <div className="mb-8">
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Prompt</h2>
-          <CopyButton text={prompt.prompt_text} promptId={prompt.id} />
+          <CopyButton
+            text={prompt.prompt_text}
+            promptId={prompt.id}
+            userId={session?.user?.id}
+          />
         </div>
         <div className="rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-4">
           <pre className="whitespace-pre-wrap font-mono text-sm text-gray-900 dark:text-gray-100">
@@ -160,17 +169,8 @@ export default async function PromptPage({ params }: PromptPageProps) {
         </div>
       </div>
 
-      {/* Example output */}
-      {prompt.example_output && (
-        <div className="mb-8">
-          <h2 className="mb-3 text-lg font-semibold text-gray-900 dark:text-gray-100">Example Output</h2>
-          <div className="rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-4">
-            <pre className="whitespace-pre-wrap font-mono text-sm text-gray-700 dark:text-gray-300">
-              {prompt.example_output}
-            </pre>
-          </div>
-        </div>
-      )}
+      {/* Copy Preview */}
+      <CopyPreview text={prompt.prompt_text} promptId={prompt.id} userId={session?.user?.id} />
 
       {/* Tags */}
       {prompt.prompt_tags.length > 0 && (

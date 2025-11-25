@@ -52,7 +52,7 @@ export default function NotFound() {
               Submit a Prompt
             </Link>
             <span>•</span>
-            <Link href="/auth/login" className="text-blue-600 hover:text-blue-800">
+            <Link href="/auth/signin" className="text-blue-600 hover:text-blue-800">
               Login
             </Link>
           </div>

@@ -1,0 +1,92 @@
+/**
+ * User Preferences Actions
+ *
+ * Server actions for managing user copy preferences.
+ */
+
+'use server'
+
+import { auth } from '@/lib/auth'
+import { prisma } from '@/lib/db/client'
+
+export interface CopyPreferences {
+  copyPrefix: string
+  copySuffix: string
+  copyAddPrefix: boolean
+  copyAddSuffix: boolean
+  copyUseUltrathink: boolean
+  copyGithubReminder: boolean
+}
+
+/**
+ * Get user's copy preferences from database
+ */
+export async function getCopyPreferences(): Promise<CopyPreferences | null> {
+  const session = await auth()
+
+  if (!session?.user?.id) {
+    return null
+  }
+
+  try {
+    const user = await prisma.users.findUnique({
+      where: { id: session.user.id },
+      select: {
+        copy_prefix: true,
+        copy_suffix: true,
+        copy_add_prefix: true,
+        copy_add_suffix: true,
+        copy_use_ultrathink: true,
+        copy_github_reminder: true,
+      },
+    })
+
+    if (!user) {
+      return null
+    }
+
+    return {
+      copyPrefix: user.copy_prefix || '',
+      copySuffix: user.copy_suffix || '',
+      copyAddPrefix: user.copy_add_prefix,
+      copyAddSuffix: user.copy_add_suffix,
+      copyUseUltrathink: user.copy_use_ultrathink,
+      copyGithubReminder: user.copy_github_reminder,
+    }
+  } catch (error) {
+    console.error('Failed to get copy preferences:', error)
+    return null
+  }
+}
+
+/**
+ * Save user's copy preferences to database
+ */
+export async function saveCopyPreferences(
+  preferences: CopyPreferences
+): Promise<boolean> {
+  const session = await auth()
+
+  if (!session?.user?.id) {
+    return false
+  }
+
+  try {
+    await prisma.users.update({
+      where: { id: session.user.id },
+      data: {
+        copy_prefix: preferences.copyPrefix,
+        copy_suffix: preferences.copySuffix,
+        copy_add_prefix: preferences.copyAddPrefix,
+        copy_add_suffix: preferences.copyAddSuffix,
+        copy_use_ultrathink: preferences.copyUseUltrathink,
+        copy_github_reminder: preferences.copyGithubReminder,
+      },
+    })
+
+    return true
+  } catch (error) {
+    console.error('Failed to save copy preferences:', error)
+    return false
+  }
+}

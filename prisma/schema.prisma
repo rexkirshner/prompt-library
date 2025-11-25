@@ -75,8 +75,9 @@ model prompts {
   deleted_at                                DateTime?
   prompt_edits                              prompt_edits[]
   prompt_tags                               prompt_tags[]
-  users_prompts_approved_by_user_idTousers  users?         @relation("prompts_approved_by_user_idTousers", fields: [approved_by_user_id], references: [id])
-  users_prompts_submitted_by_user_idTousers users?         @relation("prompts_submitted_by_user_idTousers", fields: [submitted_by_user_id], references: [id])
+  users_prompts_approved_by_user_idTousers  users?                      @relation("prompts_approved_by_user_idTousers", fields: [approved_by_user_id], references: [id])
+  users_prompts_submitted_by_user_idTousers users?                      @relation("prompts_submitted_by_user_idTousers", fields: [submitted_by_user_id], references: [id])
+  user_preferences                          user_prompt_preferences[]
 
   @@index([slug])
   @@index([status, created_at])
@@ -108,6 +109,12 @@ model users {
   invited_by                                            String?
   created_at                                            DateTime        @default(now())
   last_login_at                                         DateTime?
+  copy_prefix                                           String?
+  copy_suffix                                           String?
+  copy_add_prefix                                       Boolean         @default(false)
+  copy_add_suffix                                       Boolean         @default(false)
+  copy_use_ultrathink                                   Boolean         @default(false)
+  copy_github_reminder                                  Boolean         @default(false)
   admin_actions                                         admin_actions[]
   prompt_edits_prompt_edits_reviewed_by_user_idTousers  prompt_edits[]  @relation("prompt_edits_reviewed_by_user_idTousers")
   prompt_edits_prompt_edits_suggested_by_user_idTousers prompt_edits[]  @relation("prompt_edits_suggested_by_user_idTousers")
@@ -115,10 +122,11 @@ model users {
   prompts_prompts_submitted_by_user_idTousers           prompts[]       @relation("prompts_submitted_by_user_idTousers")
   accounts                                              Account[]
   sessions                                              Session[]
-  inviter                                               users?          @relation("UserInvites", fields: [invited_by], references: [id])
-  invited_users                                         users[]         @relation("UserInvites")
-  created_invites                                       invite_codes[]  @relation("InviteCreator")
-  redeemed_invite                                       invite_codes?   @relation("InviteRedeemer")
+  inviter                                               users?                      @relation("UserInvites", fields: [invited_by], references: [id])
+  invited_users                                         users[]                     @relation("UserInvites")
+  created_invites                                       invite_codes[]              @relation("InviteCreator")
+  redeemed_invite                                       invite_codes?               @relation("InviteRedeemer")
+  prompt_preferences                                    user_prompt_preferences[]
 
   @@index([invited_by])
 }
@@ -190,4 +198,24 @@ model invite_codes {
   @@index([code])
   @@index([created_by])
   @@index([used_by])
+}
+
+model user_prompt_preferences {
+  id                   String   @id @default(uuid())
+  user_id              String
+  prompt_id            String
+  copy_prefix          String?
+  copy_suffix          String?
+  copy_add_prefix      Boolean  @default(false)
+  copy_add_suffix      Boolean  @default(false)
+  copy_use_ultrathink  Boolean  @default(false)
+  copy_github_reminder Boolean  @default(false)
+  created_at           DateTime @default(now())
+  updated_at           DateTime @updatedAt
+  user                 users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  prompt               prompts  @relation(fields: [prompt_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, prompt_id])
+  @@index([user_id])
+  @@index([prompt_id])
 }

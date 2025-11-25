@@ -4,23 +4,30 @@
  * Client component for copying text to clipboard with feedback.
  * Supports optional prefix/suffix customization.
  * Optionally tracks copy count if promptId is provided.
+ * Stores preferences in database for logged-in users, localStorage otherwise.
  */
 
 'use client'
 
 import { useState, useEffect } from 'react'
 import { incrementCopyCount } from '@/lib/prompts/actions'
+import {
+  getPromptCopyPreferences,
+  savePromptCopyPreferences,
+} from '@/lib/prompts/copy-preferences'
 
 interface CopyButtonProps {
   text: string
   label?: string
-  promptId?: string
+  promptId: string // Now required for per-prompt settings
+  userId?: string // Pass user ID if user is logged in
 }
 
 export function CopyButton({
   text,
   label = 'Copy to Clipboard',
   promptId,
+  userId,
 }: CopyButtonProps) {
   const [copied, setCopied] = useState(false)
   const [showOptions, setShowOptions] = useState(false)
@@ -28,59 +35,117 @@ export function CopyButton({
   const [addSuffix, setAddSuffix] = useState(false)
   const [prefix, setPrefix] = useState('')
   const [suffix, setSuffix] = useState('')
+  const [useUltrathink, setUseUltrathink] = useState(false)
+  const [githubReminder, setGithubReminder] = useState(false)
   const [mounted, setMounted] = useState(false)
 
-  // Load saved preferences from localStorage on mount
+  // Load saved preferences on mount
+  // For logged-in users: fetch from database
+  // For anonymous users: load from localStorage
   useEffect(() => {
     setMounted(true)
-    const savedPrefix = localStorage.getItem('prompt-copy-prefix')
-    const savedSuffix = localStorage.getItem('prompt-copy-suffix')
-    const savedAddPrefix = localStorage.getItem('prompt-copy-add-prefix') === 'true'
-    const savedAddSuffix = localStorage.getItem('prompt-copy-add-suffix') === 'true'
 
-    if (savedPrefix !== null) setPrefix(savedPrefix)
-    if (savedSuffix !== null) setSuffix(savedSuffix)
-    setAddPrefix(savedAddPrefix)
-    setAddSuffix(savedAddSuffix)
-  }, [])
-
-  // Save prefix to localStorage when it changes
-  useEffect(() => {
-    if (mounted) {
-      localStorage.setItem('prompt-copy-prefix', prefix)
+    const loadPreferences = async () => {
+      if (userId) {
+        // User is logged in - load from database for this specific prompt
+        try {
+          const prefs = await getPromptCopyPreferences(promptId)
+          if (prefs) {
+            setPrefix(prefs.copyPrefix)
+            setSuffix(prefs.copySuffix)
+            setAddPrefix(prefs.copyAddPrefix)
+            setAddSuffix(prefs.copyAddSuffix)
+            setUseUltrathink(prefs.copyUseUltrathink)
+            setGithubReminder(prefs.copyGithubReminder)
+          }
+        } catch (error) {
+          console.error('Failed to load preferences from database:', error)
+          // Fall back to localStorage on error
+          loadFromLocalStorage()
+        }
+      } else {
+        // Anonymous user - load from localStorage for this specific prompt
+        loadFromLocalStorage()
+      }
     }
-  }, [prefix, mounted])
 
-  // Save suffix to localStorage when it changes
-  useEffect(() => {
-    if (mounted) {
-      localStorage.setItem('prompt-copy-suffix', suffix)
-    }
-  }, [suffix, mounted])
+    const loadFromLocalStorage = () => {
+      // Use prompt-specific keys
+      const savedPrefix = localStorage.getItem(`prompt-${promptId}-copy-prefix`)
+      const savedSuffix = localStorage.getItem(`prompt-${promptId}-copy-suffix`)
+      const savedAddPrefix = localStorage.getItem(`prompt-${promptId}-copy-add-prefix`) === 'true'
+      const savedAddSuffix = localStorage.getItem(`prompt-${promptId}-copy-add-suffix`) === 'true'
+      const savedUseUltrathink =
+        localStorage.getItem(`prompt-${promptId}-copy-use-ultrathink`) === 'true'
+      const savedGithubReminder =
+        localStorage.getItem(`prompt-${promptId}-copy-github-reminder`) === 'true'
 
-  // Save addPrefix setting to localStorage when it changes
-  useEffect(() => {
-    if (mounted) {
-      localStorage.setItem('prompt-copy-add-prefix', String(addPrefix))
+      if (savedPrefix !== null) setPrefix(savedPrefix)
+      if (savedSuffix !== null) setSuffix(savedSuffix)
+      setAddPrefix(savedAddPrefix)
+      setAddSuffix(savedAddSuffix)
+      setUseUltrathink(savedUseUltrathink)
+      setGithubReminder(savedGithubReminder)
     }
-  }, [addPrefix, mounted])
 
-  // Save addSuffix setting to localStorage when it changes
+    loadPreferences()
+  }, [userId, promptId])
+
+  // Save preferences when they change
+  // For logged-in users: save to database AND localStorage (for instant updates)
+  // For anonymous users: save to localStorage only
   useEffect(() => {
-    if (mounted) {
-      localStorage.setItem('prompt-copy-add-suffix', String(addSuffix))
+    if (!mounted) return
+
+    const savePreferences = async () => {
+      const prefs = {
+        copyPrefix: prefix,
+        copySuffix: suffix,
+        copyAddPrefix: addPrefix,
+        copyAddSuffix: addSuffix,
+        copyUseUltrathink: useUltrathink,
+        copyGithubReminder: githubReminder,
+      }
+
+      // Always save to localStorage for instant updates using prompt-specific keys
+      localStorage.setItem(`prompt-${promptId}-copy-prefix`, prefix)
+      localStorage.setItem(`prompt-${promptId}-copy-suffix`, suffix)
+      localStorage.setItem(`prompt-${promptId}-copy-add-prefix`, String(addPrefix))
+      localStorage.setItem(`prompt-${promptId}-copy-add-suffix`, String(addSuffix))
+      localStorage.setItem(`prompt-${promptId}-copy-use-ultrathink`, String(useUltrathink))
+      localStorage.setItem(`prompt-${promptId}-copy-github-reminder`, String(githubReminder))
+
+      // Emit event to notify other components (like CopyPreview)
+      window.dispatchEvent(new Event('copySettingsChanged'))
+
+      // If user is logged in, also save to database
+      if (userId) {
+        try {
+          await savePromptCopyPreferences(promptId, prefs)
+        } catch (error) {
+          console.error('Failed to save preferences to database:', error)
+        }
+      }
     }
-  }, [addSuffix, mounted])
+
+    savePreferences()
+  }, [prefix, suffix, addPrefix, addSuffix, useUltrathink, githubReminder, mounted, userId, promptId])
 
   const handleCopy = async () => {
     try {
-      // Build final text with prefix/suffix
+      // Build final text with prefix/suffix and additional options
       let finalText = text
       if (addPrefix && prefix.trim()) {
         finalText = prefix.trim() + '\n\n' + finalText
       }
       if (addSuffix && suffix.trim()) {
         finalText = finalText + '\n\n' + suffix.trim()
+      }
+      if (useUltrathink) {
+        finalText = finalText + '\n\nUse ultrathink.'
+      }
+      if (githubReminder) {
+        finalText = finalText + '\n\nI want you to commit liberally and often, but do not push to github without my permission.'
       }
 
       await navigator.clipboard.writeText(finalText)
@@ -169,6 +234,36 @@ export function CopyButton({
                 rows={2}
               />
             )}
+          </div>
+
+          {/* Use ultrathink option */}
+          <div>
+            <label className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={useUltrathink}
+                onChange={(e) => setUseUltrathink(e.target.checked)}
+                className="h-4 w-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500"
+              />
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                Use ultrathink
+              </span>
+            </label>
+          </div>
+
+          {/* GitHub reminder option */}
+          <div>
+            <label className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={githubReminder}
+                onChange={(e) => setGithubReminder(e.target.checked)}
+                className="h-4 w-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500"
+              />
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                GitHub reminder
+              </span>
+            </label>
           </div>
         </div>
       )}

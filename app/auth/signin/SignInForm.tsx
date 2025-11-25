@@ -2,12 +2,12 @@
  * Sign-In Form Component
  *
  * Client component for user authentication with progressive enhancement.
- * Uses React's useFormState and useFormStatus for optimistic updates.
+ * Uses React's useActionState and useFormStatus for optimistic updates.
  */
 
 'use client'
 
-import { useFormState, useFormStatus } from 'react-dom'
+import { useActionState, useFormStatus } from 'react'
 import { handleSignIn, type SignInResult } from './actions'
 
 /**
@@ -20,7 +20,7 @@ function SubmitButton() {
     <button
       type="submit"
       disabled={pending}
-      className="w-full rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:cursor-not-allowed disabled:opacity-50"
+      className="w-full rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 dark:bg-blue-500 dark:hover:bg-blue-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:cursor-not-allowed disabled:opacity-50"
     >
       {pending ? 'Signing in...' : 'Sign in'}
     </button>
@@ -35,7 +35,7 @@ interface SignInFormProps {
  * Sign-in form with validation and error handling
  */
 export function SignInForm({ redirectTo }: SignInFormProps) {
-  const [state, formAction] = useFormState<SignInResult | null, FormData>(
+  const [state, formAction] = useActionState<SignInResult | null, FormData>(
     handleSignIn,
     null,
   )
@@ -49,8 +49,8 @@ export function SignInForm({ redirectTo }: SignInFormProps) {
 
       {/* Form-level error */}
       {state?.errors?.form && (
-        <div className="rounded-md bg-red-50 p-4">
-          <p className="text-sm text-red-800">{state.errors.form}</p>
+        <div className="rounded-md bg-red-50 dark:bg-red-900 p-4">
+          <p className="text-sm text-red-800 dark:text-red-200">{state.errors.form}</p>
         </div>
       )}
 
@@ -58,7 +58,7 @@ export function SignInForm({ redirectTo }: SignInFormProps) {
       <div>
         <label
           htmlFor="email"
-          className="block text-sm font-medium leading-6 text-gray-900"
+          className="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-100"
         >
           Email address
         </label>
@@ -69,13 +69,13 @@ export function SignInForm({ redirectTo }: SignInFormProps) {
             type="email"
             autoComplete="email"
             required
-            className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
+            className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6"
             aria-invalid={state?.errors?.email ? 'true' : 'false'}
             aria-describedby={state?.errors?.email ? 'email-error' : undefined}
           />
         </div>
         {state?.errors?.email && (
-          <p id="email-error" className="mt-2 text-sm text-red-600">
+          <p id="email-error" className="mt-2 text-sm text-red-600 dark:text-red-400">
             {state.errors.email}
           </p>
         )}
@@ -86,7 +86,7 @@ export function SignInForm({ redirectTo }: SignInFormProps) {
         <div className="flex items-center justify-between">
           <label
             htmlFor="password"
-            className="block text-sm font-medium leading-6 text-gray-900"
+            className="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-100"
           >
             Password
           </label>
@@ -107,7 +107,7 @@ export function SignInForm({ redirectTo }: SignInFormProps) {
             type="password"
             autoComplete="current-password"
             required
-            className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
+            className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6"
             aria-invalid={state?.errors?.password ? 'true' : 'false'}
             aria-describedby={
               state?.errors?.password ? 'password-error' : undefined
@@ -115,7 +115,7 @@ export function SignInForm({ redirectTo }: SignInFormProps) {
           />
         </div>
         {state?.errors?.password && (
-          <p id="password-error" className="mt-2 text-sm text-red-600">
+          <p id="password-error" className="mt-2 text-sm text-red-600 dark:text-red-400">
             {state.errors.password}
           </p>
         )}

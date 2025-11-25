@@ -8,6 +8,7 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
 import { prisma } from '@/lib/db/client'
+import { auth } from '@/lib/auth'
 import { buildSearchWhere, parseTagFilter } from '@/lib/prompts/search'
 import { PromptFilters } from '@/components/PromptFilters'
 import { Pagination } from '@/components/Pagination'
@@ -34,6 +35,9 @@ const ITEMS_PER_PAGE = 20
 
 export default async function PromptsPage({ searchParams }: PromptsPageProps) {
   const params = await searchParams
+
+  // Get current session
+  const session = await auth()
 
   // Build search filters
   const filters = {
@@ -150,7 +154,7 @@ export default async function PromptsPage({ searchParams }: PromptsPageProps) {
           )}
         </div>
       ) : (
-        <PromptsListClient prompts={prompts} />
+        <PromptsListClient prompts={prompts} userId={session?.user?.id} />
       )}
 
       {/* Pagination */}

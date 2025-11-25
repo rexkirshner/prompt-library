@@ -33,9 +33,10 @@ interface Prompt {
 
 interface PromptsListClientProps {
   prompts: Prompt[]
+  userId?: string
 }
 
-export function PromptsListClient({ prompts }: PromptsListClientProps) {
+export function PromptsListClient({ prompts, userId }: PromptsListClientProps) {
   const [viewMode, setViewMode] = useState<ViewMode>('grid')
 
   if (prompts.length === 0) {
@@ -114,6 +115,7 @@ export function PromptsListClient({ prompts }: PromptsListClientProps) {
                   text={prompt.prompt_text}
                   label="Copy Prompt"
                   promptId={prompt.id}
+                  userId={userId}
                 />
               </div>
             </div>
@@ -189,6 +191,7 @@ export function PromptsListClient({ prompts }: PromptsListClientProps) {
                       text={prompt.prompt_text}
                       label="Copy"
                       promptId={prompt.id}
+                      userId={userId}
                     />
                   </div>
                   <Link href={`/prompts/${prompt.slug}`}>

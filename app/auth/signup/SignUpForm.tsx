@@ -2,12 +2,12 @@
  * Sign-Up Form Component
  *
  * Client component for user registration with progressive enhancement.
- * Uses React's useFormState and useFormStatus for optimistic updates.
+ * Uses React's useActionState and useFormStatus for optimistic updates.
  */
 
 'use client'
 
-import { useFormState, useFormStatus } from 'react-dom'
+import { useActionState, useFormStatus } from 'react'
 import { handleSignUp, type SignUpResult } from './actions'
 
 /**
@@ -31,7 +31,7 @@ function SubmitButton() {
  * Sign-up form with validation and error handling
  */
 export function SignUpForm({ inviteCode }: { inviteCode: string }) {
-  const [state, formAction] = useFormState<SignUpResult | null, FormData>(
+  const [state, formAction] = useActionState<SignUpResult | null, FormData>(
     handleSignUp,
     null,
   )
