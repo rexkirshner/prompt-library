@@ -1,5 +1,10 @@
 import '@testing-library/jest-dom'
 
+// Load environment variables from .env.local for tests
+import { config } from 'dotenv'
+import { resolve } from 'path'
+config({ path: resolve(process.cwd(), '.env.local') })
+
 // Polyfill TextEncoder/TextDecoder for Prisma in Jest
 // https://github.com/prisma/prisma/issues/8558
 import { TextEncoder, TextDecoder } from 'util'
