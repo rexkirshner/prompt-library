@@ -20,6 +20,20 @@ model admin_actions {
   @@index([user_id, created_at])
 }
 
+model user_actions {
+  id         String   @id
+  user_id    String
+  action     String
+  ip_address String?
+  user_agent String?
+  metadata   Json?
+  created_at DateTime @default(now())
+  users      users    @relation(fields: [user_id], references: [id])
+
+  @@index([user_id, created_at])
+  @@index([action, created_at])
+}
+
 model prompt_edits {
   id                                             String       @id
   prompt_id                                      String
@@ -116,6 +130,7 @@ model users {
   copy_use_ultrathink                                   Boolean         @default(false)
   copy_github_reminder                                  Boolean         @default(false)
   admin_actions                                         admin_actions[]
+  user_actions                                          user_actions[]
   prompt_edits_prompt_edits_reviewed_by_user_idTousers  prompt_edits[]  @relation("prompt_edits_reviewed_by_user_idTousers")
   prompt_edits_prompt_edits_suggested_by_user_idTousers prompt_edits[]  @relation("prompt_edits_suggested_by_user_idTousers")
   prompts_prompts_approved_by_user_idTousers            prompts[]       @relation("prompts_approved_by_user_idTousers")

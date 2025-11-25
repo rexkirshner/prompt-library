@@ -11,6 +11,7 @@ import { getCurrentUser } from '@/lib/auth'
 import { hashPassword, verifyPassword } from '@/lib/auth/password'
 import { validatePassword } from '@/lib/auth/validation'
 import { passwordChangeRateLimiter } from '@/lib/utils/rate-limit'
+import { logUserAction, USER_ACTIONS } from '@/lib/audit'
 
 export interface ChangePasswordResult {
   success: boolean
@@ -114,6 +115,18 @@ export async function changePassword(
     await prisma.users.update({
       where: { id: user.id },
       data: { password: hashedPassword },
+    })
+
+    // Log successful password change for security audit trail
+    // Non-blocking: Don't fail password change if logging fails
+    await logUserAction(user.id, USER_ACTIONS.PASSWORD_CHANGED, {
+      details: {
+        method: 'self-service',
+        timestamp: new Date().toISOString(),
+      },
+    }).catch((error) => {
+      // Log error but don't propagate to user
+      console.error('Failed to log password change audit:', error)
     })
 
     return {
