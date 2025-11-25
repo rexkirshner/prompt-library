@@ -10,6 +10,7 @@ import { prisma } from '@/lib/db/client'
 import { getCurrentUser } from '@/lib/auth'
 import { hashPassword, verifyPassword } from '@/lib/auth/password'
 import { validatePassword } from '@/lib/auth/validation'
+import { passwordChangeRateLimiter } from '@/lib/utils/rate-limit'
 
 export interface ChangePasswordResult {
   success: boolean
@@ -35,6 +36,18 @@ export async function changePassword(
     const user = await getCurrentUser()
     if (!user) {
       return { success: false, errors: { form: 'Not authenticated' } }
+    }
+
+    // Check rate limit to prevent brute force attacks
+    if (!passwordChangeRateLimiter.checkLimit(user.id)) {
+      const resetTime = passwordChangeRateLimiter.getTimeUntilReset(user.id)
+      const minutes = Math.ceil(resetTime / 60000)
+      return {
+        success: false,
+        errors: {
+          form: `Too many password change attempts. Please try again in ${minutes} minute${minutes !== 1 ? 's' : ''}.`,
+        },
+      }
     }
 
     // Validate inputs
@@ -69,13 +82,15 @@ export async function changePassword(
       select: { password: true },
     })
 
-    if (!dbUser) {
+    if (!dbUser || !dbUser.password) {
       return { success: false, errors: { form: 'User not found' } }
     }
 
     // Verify current password
     const isCurrentPasswordValid = await verifyPassword(currentPassword, dbUser.password)
     if (!isCurrentPasswordValid) {
+      // Record failed attempt to prevent brute force attacks
+      passwordChangeRateLimiter.recordAttempt(user.id)
       return {
         success: false,
         errors: { currentPassword: 'Current password is incorrect' },
