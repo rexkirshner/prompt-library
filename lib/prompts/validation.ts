@@ -5,6 +5,8 @@
  * Provides type-safe validation with clear error messages.
  */
 
+import { isValidUrl } from '@/lib/utils/url'
+
 export interface PromptSubmissionData {
   title: string
   promptText: string
@@ -49,25 +51,6 @@ const AUTHOR_NAME_MAX_LENGTH = 100
 const MIN_TAGS = 1
 const MAX_TAGS = 5
 const TAG_MAX_LENGTH = 50
-
-/**
- * Allowed URL schemes for author URLs
- * Only http and https are safe for external links
- */
-const ALLOWED_URL_SCHEMES = ['http:', 'https:']
-
-/**
- * Validate URL format and scheme
- * Only allows http: and https: protocols to prevent XSS via javascript: URLs
- */
-export function isValidUrl(url: string): boolean {
-  try {
-    const parsed = new URL(url)
-    return ALLOWED_URL_SCHEMES.includes(parsed.protocol)
-  } catch {
-    return false
-  }
-}
 
 /**
  * Generate URL-safe slug from title

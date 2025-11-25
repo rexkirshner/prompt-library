@@ -11,6 +11,7 @@ import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/db/client'
 import { getAdminUser } from '@/lib/auth/admin'
 import { generateSlug } from '@/lib/prompts/validation'
+import { isValidUrl } from '@/lib/utils/url'
 
 export interface EditPromptResult {
   success: boolean
@@ -208,14 +209,5 @@ export async function updatePrompt(
     redirect('/admin/queue')
   } else {
     redirect(`/prompts/${newSlug}`)
-  }
-}
-
-function isValidUrl(url: string): boolean {
-  try {
-    new URL(url)
-    return true
-  } catch {
-    return false
   }
 }
