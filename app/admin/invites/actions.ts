@@ -17,7 +17,48 @@ export interface CreateInviteActionResult {
 }
 
 /**
- * Create a new invite code (admin only)
+ * Create a new invite code for user registration (admin only)
+ *
+ * Generates a unique invite code and URL that can be shared with new users
+ * to register for the application. Only administrators can create invite codes.
+ * The invite code is one-time use and expires after being redeemed.
+ *
+ * @returns Result object with invite URL and code, or error message
+ *
+ * @security
+ * - Requires admin authentication (checked via getAdminUser)
+ * - Validates NEXTAUTH_URL is configured to prevent broken invite links
+ * - Returns descriptive error if admin check fails or URL misconfigured
+ *
+ * @example
+ * ```typescript
+ * // In an admin dashboard component (server action)
+ * const result = await createInviteAction()
+ *
+ * if (result.success) {
+ *   console.log('Invite URL:', result.inviteUrl)
+ *   console.log('Invite Code:', result.inviteCode)
+ *   // Example: https://app.example.com/auth/signup?invite=abc123def456
+ * } else {
+ *   console.error('Error:', result.error)
+ *   // Example errors:
+ *   // - "Unauthorized: Admin access required"
+ *   // - "Server configuration error: Base URL not configured"
+ *   // - "Failed to create invite code"
+ * }
+ * ```
+ *
+ * @example
+ * ```typescript
+ * // Copy invite URL to clipboard
+ * async function handleGenerateInvite() {
+ *   const result = await createInviteAction()
+ *   if (result.success && result.inviteUrl) {
+ *     await navigator.clipboard.writeText(result.inviteUrl)
+ *     showSuccessMessage('Invite link copied!')
+ *   }
+ * }
+ * ```
  */
 export async function createInviteAction(): Promise<CreateInviteActionResult> {
   try {

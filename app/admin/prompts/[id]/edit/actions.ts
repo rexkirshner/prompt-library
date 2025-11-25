@@ -45,6 +45,41 @@ export interface EditPromptData {
 
 /**
  * Generate unique slug for prompt, excluding a specific prompt ID
+ *
+ * Creates a URL-safe slug from the prompt title and ensures uniqueness
+ * by checking for collisions in the database. When editing an existing
+ * prompt, excludes that prompt's ID from collision detection to allow
+ * keeping the same slug when the title hasn't changed significantly.
+ *
+ * Uses incremental suffixes (-1, -2, -3...) for the first 50 attempts,
+ * then switches to random suffixes for better collision resistance.
+ *
+ * @param title - The prompt title to convert into a slug
+ * @param excludeId - The prompt ID to exclude from collision detection (allows editing)
+ * @returns A unique slug that's safe to use for this prompt
+ * @throws Error if unable to generate unique slug after 100 attempts
+ *
+ * @example
+ * ```typescript
+ * // Creating slug for new prompt title during edit
+ * const slug = await generateUniqueSlug(
+ *   'How to Write Better Prompts',
+ *   'existing-prompt-id-123'
+ * )
+ * // Returns: 'how-to-write-better-prompts'
+ * // Or if collision: 'how-to-write-better-prompts-1'
+ * ```
+ *
+ * @example
+ * ```typescript
+ * // Editing prompt with same title keeps existing slug
+ * const existingPrompt = await getPrompt('id-123')
+ * const newSlug = await generateUniqueSlug(
+ *   existingPrompt.title, // Same title
+ *   'id-123'
+ * )
+ * // Returns existing slug since no collision (same prompt ID)
+ * ```
  */
 async function generateUniqueSlug(title: string, excludeId: string): Promise<string> {
   const MAX_SLUG_ATTEMPTS = 100
@@ -78,7 +113,73 @@ async function generateUniqueSlug(title: string, excludeId: string): Promise<str
 }
 
 /**
- * Update an existing prompt
+ * Update an existing prompt with validation and tag management (admin only)
+ *
+ * Updates all fields of an existing prompt including title, content, category,
+ * tags, and author information. Handles slug regeneration when title changes,
+ * manages tag associations, and uses database transactions for consistency.
+ *
+ * After successful update, revalidates relevant pages and redirects based on
+ * prompt status (pending prompts go to queue, approved go to prompt page).
+ *
+ * @param data - Complete prompt data including all fields to update
+ * @returns Result object indicating success/failure with validation errors
+ *
+ * @security
+ * - Requires admin authentication
+ * - Validates all input fields (length, format, required fields)
+ * - Uses transactions to ensure data consistency
+ * - Sanitizes URLs to prevent XSS attacks
+ *
+ * @validation
+ * - Title: 10-100 characters
+ * - Prompt text: 150-5000 characters
+ * - Category: Required
+ * - Tags: 1-5 tags required
+ * - Author name: Required, max 100 characters
+ * - Author URL: Must be valid URL if provided
+ *
+ * @sideEffects
+ * - Updates prompt in database
+ * - Creates/updates tag records
+ * - Revalidates cached pages
+ * - Redirects to appropriate page (throws redirect)
+ *
+ * @example
+ * ```typescript
+ * // Update prompt from admin edit form
+ * const result = await updatePrompt({
+ *   id: 'prompt-123',
+ *   slug: 'current-slug',
+ *   status: 'APPROVED',
+ *   title: 'Updated Title for Better Prompts',
+ *   promptText: 'Act as a helpful assistant and...',
+ *   category: 'Writing',
+ *   description: 'Helps with writing tasks',
+ *   exampleOutput: 'Here is an example...',
+ *   authorName: 'John Doe',
+ *   authorUrl: 'https://johndoe.com',
+ *   tags: ['writing', 'assistant', 'productivity']
+ * })
+ *
+ * // Success: Redirects to /prompts/updated-title-for-better-prompts
+ * // Or if pending: Redirects to /admin/queue
+ * ```
+ *
+ * @example
+ * ```typescript
+ * // Handle validation errors
+ * const result = await updatePrompt({
+ *   id: 'prompt-123',
+ *   title: 'Short', // Too short!
+ *   // ... other fields
+ * })
+ *
+ * if (!result.success) {
+ *   console.log(result.errors?.title)
+ *   // "Title must be between 10 and 100 characters"
+ * }
+ * ```
  */
 export async function updatePrompt(
   data: EditPromptData,

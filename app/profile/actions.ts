@@ -25,7 +25,49 @@ export interface ChangePasswordResult {
 }
 
 /**
- * Change user password
+ * Change user password with validation and rate limiting
+ *
+ * Securely updates the authenticated user's password with comprehensive
+ * validation, rate limiting, and audit logging. Enforces password policy
+ * and prevents reuse of current password.
+ *
+ * @param currentPassword - The user's current password for verification
+ * @param newPassword - The new password to set (must meet password policy)
+ * @param confirmPassword - Confirmation of new password (must match newPassword)
+ * @returns Result object indicating success/failure with error details
+ *
+ * @security
+ * - Rate limited to 5 attempts per hour per user to prevent brute force
+ * - Uses bcrypt for password hashing and comparison
+ * - Validates current password before allowing change
+ * - Prevents reusing current password as new password
+ * - Logs successful password changes to audit trail
+ *
+ * @example
+ * ```typescript
+ * // In a server action or API route
+ * const result = await changePassword(
+ *   'currentPass123',
+ *   'NewSecurePass456!',
+ *   'NewSecurePass456!'
+ * )
+ *
+ * if (result.success) {
+ *   console.log(result.message) // "Password changed successfully"
+ * } else {
+ *   console.error(result.errors) // { newPassword: "Password too weak" }
+ * }
+ * ```
+ *
+ * @example
+ * ```typescript
+ * // Handling rate limiting
+ * const result = await changePassword('old', 'new', 'new')
+ * if (result.errors?.form?.includes('Too many')) {
+ *   // User has exceeded rate limit
+ *   showRateLimitMessage(result.errors.form)
+ * }
+ * ```
  */
 export async function changePassword(
   currentPassword: string,
