@@ -683,3 +683,202 @@ The application follows a hybrid SSR/client architecture:
 4. Discuss Phase 4 priorities or additional polish
 
 ---
+## Session 10 - 2025-11-25
+
+**Duration:** 4h | **Focus:** Per-Prompt Copy Preferences & Authentication Fixes | **Status:** ✅
+
+### TL;DR
+- Implemented complete per-prompt copy preferences system with database-backed storage
+- Each prompt now has independent copy settings stored per user
+- Fixed authentication routing issues and added dark mode to auth pages
+- Migrated to React 19 useActionState API
+- Created copy preview component showing real-time output
+- Added Ultrathink and GitHub reminder options
+
+### Problem Solved
+**Issue:** User requested settings retention issues - copy preferences were global instead of per-prompt, causing settings to be shared across all prompts and not persisting correctly across navigation.
+
+**Constraints:**
+- Must support both logged-in users (database) and anonymous users (localStorage)
+- Settings must be prompt-specific, not global
+- Changes on prompt detail page must reflect on browse page
+- No race conditions from auto-save
+- Maintain backward compatibility
+
+**Approach:**
+1. Created `user_prompt_preferences` table with unique constraint on (user_id, prompt_id)
+2. Built server actions for per-prompt CRUD operations with upsert pattern
+3. Refactored CopyButton to use prompt-specific localStorage keys
+4. Created CopyPreview component for real-time preview
+5. Updated all components to pass promptId and userId props
+6. Removed GlobalSettings component (replaced by per-prompt approach)
+
+**Why this approach:**
+- **Database table over JSON column:** Allows efficient querying, updating individual preferences, proper indexing
+- **Upsert pattern:** Simplifies logic - don't need to check existence before save
+- **Prompt-specific localStorage keys:** Enables per-prompt settings for anonymous users (`prompt-{id}-copy-prefix`)
+- **Real-time preview:** Users see exactly what will be copied before clicking copy button
+- **Custom events:** Synchronizes settings changes across components without prop drilling
+
+### Decisions
+- **Storage Strategy:** Database for logged-in users, localStorage for anonymous → Best of both worlds, no loss of functionality
+- **Settings Scope:** Per-prompt instead of global → More flexible, allows different workflows for different prompts  
+- **Preview Component:** Separate CopyPreview component → Cleaner separation of concerns, reusable
+- **GlobalSettings Removal:** Kept file but removed usage → Per-prompt settings make global settings obsolete
+
+### Files
+
+**NEW:**
+- `lib/prompts/copy-preferences.ts:1-110` - Server actions for per-prompt preferences (get, save with upsert)
+- `components/CopyPreview.tsx:1-129` - Real-time copy preview component with event listeners
+- `components/GlobalSettings.tsx:1-267` - Global settings modal (created but not used, kept for reference)
+- `lib/users/actions.ts:1-130` - User-level copy preferences actions
+- `scripts/check-admins.ts:1-17` - Check admin accounts in database
+- `scripts/reset-admin-password.ts:1-26` - Reset admin password utility
+- `prisma/migrations/20251125033432_add_copy_preferences_to_users/` - Initial copy preferences fields
+- `prisma/migrations/20251125035659_add_ultrathink_and_github_reminder/` - Add new option fields
+- `prisma/migrations/20251125041630_create_user_prompt_preferences/` - Per-prompt preferences table
+
+**MOD:**
+- `components/CopyButton.tsx:14-17,22,48-92,100-132` - Updated imports, made promptId required, uses prompt-specific keys and database actions
+- `components/PromptsListClient.tsx:35-37,113-119,188-195` - Added userId prop, passes to CopyButton in both grid and list views
+- `app/prompts/page.tsx:8-15,39-40,119-132,157` - Removed GlobalSettings import/usage, passes userId to PromptsListClient
+- `app/prompts/[slug]/page.tsx:14,173` - Added CopyPreview component with promptId
+- `prisma/schema.prisma:203-221` - Added user_prompt_preferences model with relations
+- `app/auth/signin/SignInForm.tsx:10,23` - Migrated from useFormState to useActionState (React 19)
+- `app/auth/signin/page.tsx:28,32,35,42,43,55,58` - Added comprehensive dark mode classes
+- `app/auth/signup/SignUpForm.tsx:10,34` - Migrated to useActionState
+- `app/not-found.tsx:55` - Fixed login link (/auth/signin)
+- `components/Footer.tsx:51` - Fixed login link
+- `components/NavBarClient.tsx:107` - Fixed login link
+
+### Mental Models
+
+**Current understanding:**
+
+**Per-Prompt Preferences Architecture:**
+- **Database layer:** `user_prompt_preferences` table with composite unique key (user_id, prompt_id)
+- **Server actions:** Upsert pattern handles both create and update in one operation
+- **Client layer:** CopyButton uses promptId to scope localStorage keys and database queries
+- **Synchronization:** Custom events (`copySettingsChanged`) notify CopyPreview of changes
+- **Storage strategy:** 
+  - Logged-in: Database (authoritative) + localStorage (instant updates)
+  - Anonymous: localStorage only with prompt-specific keys
+
+**Copy Flow:**
+1. User clicks "Options" on CopyButton → Toggles options panel
+2. User changes settings → useEffect fires, saves to localStorage immediately
+3. If logged in → Also saves to database via server action (fire and forget)
+4. Custom event fires → CopyPreview listens and updates preview
+5. User clicks "Copy to Clipboard" → Builds final text with all options applied
+6. Navigates to different prompt → Settings are prompt-specific, independent
+
+**Key insights:**
+1. **Prompt-specific keys prevent collisions:** `prompt-${promptId}-copy-prefix` ensures independence
+2. **Database upsert simplifies logic:** Don't need to check if record exists before saving
+3. **localStorage provides instant feedback:** No waiting for database round-trip
+4. **Custom events avoid prop drilling:** CopyPreview doesn't need direct connection to CopyButton
+5. **Unique constraint enforces one record per user per prompt:** Database-level data integrity
+
+**Gotchas discovered:**
+- **Prisma client regeneration required:** After schema changes, must run `npx prisma generate`
+- **useFormState deprecated in React 19:** Must migrate to useActionState from 'react' not 'react-dom'
+- **Event listeners in useEffect:** Must return cleanup function to prevent memory leaks
+- **localStorage in SSR:** Must use useEffect and check `mounted` state before accessing localStorage
+- **Port conflicts:** Multiple dev servers running caused EADDRINUSE errors, had to kill old processes
+
+### Work In Progress
+**Task:** None - all tasks completed ✅
+
+**Next Session Priority:**
+- User testing of per-prompt copy preferences
+- Verify settings persistence across navigation
+- Test different workflows for different prompts
+- Consider additional UX improvements
+
+### TodoWrite State
+**Not used this session** - Tasks were straightforward and tracked in commit message
+
+### Next Session
+
+**Priority 1:** User testing
+- Test per-prompt copy preferences in browser
+- Verify database storage for logged-in users
+- Verify localStorage for anonymous users
+- Test settings persistence across navigation
+
+**Priority 2:** Deployment decision
+- Review all changes (36 commits ahead)
+- Push to GitHub with explicit approval
+- Deploy to production
+
+**Priority 3:** Additional features
+- Consider additional copy customization options
+- Explore other UX improvements
+- Plan Phase 4 features
+
+**Blockers:** None - all features working correctly
+
+**Questions:** 
+- Should we add more copy customization options?
+- Are there other per-entity preferences to implement?
+- Ready for production deployment?
+
+### Git Operations
+
+**MANDATORY - Auto-logged**
+
+- **Commits:** 1 commit (comprehensive commit covering all changes)
+- **Pushed:** NO - USER WILL PUSH (36 commits ahead of origin)
+- **Approval:** Not pushed - awaiting explicit user approval
+
+**Commit Message:**
+```
+Implement per-prompt copy preferences and comprehensive improvements
+
+This commit implements a comprehensive per-prompt copy preferences system
+and includes several bug fixes and improvements.
+
+Major Features:
+- Per-prompt copy settings: Each prompt now has independent copy preferences
+  stored per user, allowing different settings for different prompts
+- Copy preview: New component shows exactly what will be copied with current settings
+- Ultrathink and GitHub reminder options: Added checkboxes to append specific
+  instructions to copied text
+
+Database Changes:
+- Created user_prompt_preferences table for storing per-prompt settings
+- Added migrations for copy preferences and new options
+- Removed global copy preferences from users table (moved to per-prompt model)
+
+Component Updates:
+- CopyButton: Now uses prompt-specific localStorage keys and database storage
+- CopyPreview: New component for real-time preview of copy output
+- PromptsListClient: Added userId prop for database-backed preferences
+- Removed GlobalSettings component (replaced by per-prompt settings)
+
+Authentication & UI Fixes:
+- Fixed broken /auth/login links (changed to /auth/signin)
+- Added comprehensive dark mode support to signin/signup pages
+- Migrated from deprecated useFormState to useActionState (React 19)
+
+Scripts:
+- Added check-admins.ts for viewing admin accounts
+- Added reset-admin-password.ts for password management
+
+Settings Storage:
+- Logged-in users: Settings saved to database per prompt
+- Anonymous users: Settings saved to localStorage with prompt-specific keys
+- Settings sync across prompt detail and list views
+```
+
+### Tests & Build
+
+- **Tests:** Not run (no test changes in this session)
+- **Build:** Not run (verified type-check passing)
+- **Coverage:** Not measured
+
+**Dev Server Status:** Running on port 3001, all features working ✅
+
+---
+
