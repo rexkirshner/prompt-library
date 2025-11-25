@@ -7,7 +7,8 @@
 
 'use client'
 
-import { useActionState, useFormStatus } from 'react'
+import { useActionState } from 'react'
+import { useFormStatus } from 'react-dom'
 import { handleSignIn, type SignInResult } from './actions'
 
 /**

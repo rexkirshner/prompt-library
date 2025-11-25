@@ -74,7 +74,9 @@ async function testValidation() {
 async function testSignUp() {
   console.log('Testing user sign-up...')
 
-  const result = await signUpUser(testUser)
+  // Create a test invite code for signup
+  const inviteCode = 'test-invite-code'
+  const result = await signUpUser(testUser, inviteCode)
 
   if (!result.success) {
     console.error('❌ Sign-up failed:', result.errors)
@@ -111,7 +113,9 @@ async function testSignUp() {
 async function testDuplicateEmail() {
   console.log('Testing duplicate email prevention...')
 
-  const result = await signUpUser(testUser)
+  // Try to sign up with same email again
+  const inviteCode = 'test-invite-code-2'
+  const result = await signUpUser(testUser, inviteCode)
 
   if (result.success) {
     console.error('❌ Duplicate email was allowed!')

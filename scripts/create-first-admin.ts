@@ -25,7 +25,7 @@ import { randomUUID } from "crypto";
 interface PromptAnswer {
   email: string;
   password: string;
-  name: string;
+  name?: string;
 }
 
 /**
