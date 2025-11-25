@@ -98,9 +98,9 @@ export function validateExportData(data: unknown): ValidationResult {
   } catch (error) {
     if (error instanceof z.ZodError) {
       // Extract detailed error messages from Zod
-      const errors = error.errors.map((err) => {
-        const path = err.path.join('.')
-        return `${path}: ${err.message}`
+      const errors = error.issues.map((issue) => {
+        const path = issue.path.join('.')
+        return path ? `${path}: ${issue.message}` : issue.message
       })
 
       return {
@@ -145,9 +145,9 @@ export function validatePromptData(data: unknown): ValidationResult {
     }
   } catch (error) {
     if (error instanceof z.ZodError) {
-      const errors = error.errors.map((err) => {
-        const path = err.path.join('.')
-        return `${path}: ${err.message}`
+      const errors = error.issues.map((issue) => {
+        const path = issue.path.join('.')
+        return path ? `${path}: ${issue.message}` : issue.message
       })
 
       return {
