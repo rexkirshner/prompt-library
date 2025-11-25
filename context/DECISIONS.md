@@ -344,6 +344,141 @@ Use simple boolean `is_admin` field instead of role-based permission system.
 
 ---
 
+## D004 - Invite-Only Registration over Public Signup
+
+**Date:** 2025-01-24
+**Status:** Accepted
+**Session:** 9
+
+### Context
+
+Need to control community growth and maintain quality. Options:
+1. Open public registration (anyone can sign up)
+2. Invite-only system (existing members invite new users)
+3. Manual approval (admin reviews each signup)
+
+Project is small-scale (<1K users) with quality curation as core value. Want to prevent spam while enabling organic community growth.
+
+### Decision
+
+Implement invite-only registration system where admins generate one-time invite links. No public signup allowed.
+
+### Rationale
+
+**Key factors:**
+
+- Quality over quantity - small, curated community
+- Admin-controlled growth prevents spam
+- One-time invite links prevent sharing/abuse
+- Simple to implement and maintain
+- Aligns with manual moderation philosophy
+
+### Implementation Details
+
+**Database Schema:**
+
+```prisma
+model invite_codes {
+  id           String    @id @default(uuid())
+  code         String    @unique @default(uuid())
+  created_by   String    // Admin who created invite
+  created_at   DateTime  @default(now())
+  used_by      String?   @unique
+  used_at      DateTime?
+}
+```
+
+**User Tracking:**
+
+- `users.invited_by` field links to inviter
+- Enables invite chain tracking for moderation
+- Cascade delete invites when admin deleted
+
+**Invite Generation:**
+
+- Only admins can generate invites
+- No limits (admins are trusted)
+- One-time use only (marked used on signup)
+- UUID codes (unguessable)
+
+**Bootstrap:**
+
+- CLI script creates first admin account
+- Bypasses invite requirement for initial setup
+- `scripts/create-first-admin.ts`
+
+### Alternatives Considered
+
+1. **Public Registration**
+   - Pros: Easy for users, no friction, fast growth
+   - Cons: Spam risk, quality dilution, moderation burden
+   - Why not: Contradicts quality-first philosophy
+
+2. **Manual Approval**
+   - Pros: Maximum control, no invite tracking needed
+   - Cons: Slow, admin burden, poor UX (waiting for approval)
+   - Why not: Creates bottleneck, discourages signups
+
+3. **Multi-Use Invites**
+   - Pros: Fewer links to manage, easier sharing
+   - Cons: Abuse risk (link shared publicly), harder to track
+   - Why not: One-time use prevents abuse, tracking is valuable
+
+4. **All Users Can Invite**
+   - Pros: Organic growth, community-driven
+   - Cons: Potential abuse, quality control harder
+   - Why not: Admin-only keeps control tight for small community
+
+### Tradeoffs Accepted
+
+- ✅ Quality control, spam prevention, controlled growth, simple implementation
+- ❌ Slower growth, admin dependency for invites, extra step for new users
+
+### Consequences
+
+**Positive:**
+
+- Spam-free community
+- Known invite chains (moderation tool)
+- Quality-focused growth
+- Simple invite flow (just a URL)
+
+**Negative:**
+
+- Admins must actively generate invites
+- Can't grow without admin involvement
+- Friction for potential users (need invite link)
+- Bootstrap process requires CLI access
+
+### When to Reconsider
+
+**Triggers:**
+
+- Community wants faster growth (100+ signups/month)
+- Admin invite generation becomes bottleneck
+- Need for non-admin members to invite friends
+- Spam/quality issues prove manageable with public signup
+
+**Migration path if needed:**
+
+1. Add `users.can_invite` boolean field
+2. Allow non-admin trusted users to generate invites
+3. Add invite quotas if needed (e.g., 5 invites per user)
+4. Or: Remove invite requirement entirely, add email verification
+
+### Related
+
+- See: D002 (Email/Password Authentication)
+- See: D003 (Boolean Admin Flag)
+- Implementation: `prisma/schema.prisma` (invite_codes model)
+- Implementation: `scripts/create-first-admin.ts` (bootstrap)
+- Implementation: `app/admin/invites/` (invite generation UI)
+- Implementation: `app/auth/signup/` (invite validation)
+
+**For AI agents:** Invite codes use UUID for `code` field (unguessable). The `id` and `code` are separate - `id` is primary key, `code` is the shareable token. Signup URL format: `/auth/signup?invite=<code>`. Bootstrap script should use same password hashing as regular signup (`lib/auth/password.ts`).
+
+---
+
 ## Active Decisions
 
 | ID   | Title                              | Date       | Status      |
@@ -351,6 +486,7 @@ Use simple boolean `is_admin` field instead of role-based permission system.
 | D001 | PostgreSQL over MongoDB            | 2025-01-15 | ✅ Accepted |
 | D002 | Email/Password Auth over Google    | 2025-11-23 | ✅ Accepted |
 | D003 | Boolean Admin Flag over Roles      | 2025-11-24 | ✅ Accepted |
+| D004 | Invite-Only Registration           | 2025-01-24 | ✅ Accepted |
 
 ---
 
