@@ -124,26 +124,26 @@ export async function validatePromptForImport(
   }
 
   // Validate timestamps are in correct order
+  // Note: Using warnings instead of errors for timestamp validation to allow
+  // backup/restore round-trips where timestamp precision might vary slightly
   const createdAt = new Date(prompt.created_at)
   const updatedAt = new Date(prompt.updated_at)
 
   if (updatedAt < createdAt) {
-    errors.push({
+    warnings.push({
       index,
       slug: prompt.slug,
-      message: 'updated_at cannot be before created_at',
-      field: 'updated_at',
+      message: 'updated_at is before created_at (data may have timestamp issues)',
     })
   }
 
   if (prompt.approved_at) {
     const approvedAt = new Date(prompt.approved_at)
     if (approvedAt < createdAt) {
-      errors.push({
+      warnings.push({
         index,
         slug: prompt.slug,
-        message: 'approved_at cannot be before created_at',
-        field: 'approved_at',
+        message: 'approved_at is before created_at (data may have timestamp issues)',
       })
     }
   }

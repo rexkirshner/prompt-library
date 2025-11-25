@@ -169,20 +169,7 @@ export class JSONImporter implements IImporter {
       exportData.prompts
     )
 
-    // If validate only, return early
-    if (validateOnly || dryRun) {
-      return {
-        success: validationErrors.length === 0,
-        total,
-        imported: 0,
-        skipped: 0,
-        failed: validationErrors.length,
-        errors: validationErrors,
-        warnings,
-      }
-    }
-
-    // Step 3: Process each prompt for import
+    // Step 3: Check for duplicates (needed for accurate preview in validate mode)
     const importErrors: ImportError[] = []
     const duplicateIndices = new Set<number>()
 
