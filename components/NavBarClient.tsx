@@ -7,9 +7,10 @@ import { ThemeToggle } from './ThemeToggle'
 
 interface NavBarClientProps {
   isLoggedIn: boolean
+  isAdmin: boolean
 }
 
-export function NavBarClient({ isLoggedIn }: NavBarClientProps) {
+export function NavBarClient({ isLoggedIn, isAdmin }: NavBarClientProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
@@ -94,6 +95,15 @@ export function NavBarClient({ isLoggedIn }: NavBarClientProps) {
                   >
                     Submit a Prompt
                   </Link>
+                  {isAdmin && (
+                    <Link
+                      href="/admin"
+                      className="block px-4 py-2 text-sm text-blue-700 dark:text-blue-400 font-semibold hover:bg-gray-100 dark:hover:bg-gray-700"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Admin Panel
+                    </Link>
+                  )}
                   <div className="border-t border-gray-200 dark:border-gray-700"></div>
                   {isLoggedIn ? (
                     <button
