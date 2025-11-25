@@ -81,11 +81,10 @@ export async function POST(request: NextRequest) {
       data: {
         id: crypto.randomUUID(),
         email: email.toLowerCase(),
-        password_hash: hashedPassword,
+        password: hashedPassword,
         name,
-        role: 'ADMIN',
+        is_admin: true,
         created_at: new Date(),
-        updated_at: new Date(),
       },
     })
 
@@ -97,7 +96,7 @@ export async function POST(request: NextRequest) {
           id: user.id,
           email: user.email,
           name: user.name,
-          role: user.role,
+          is_admin: user.is_admin,
         },
       },
       { status: 201 }
