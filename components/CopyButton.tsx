@@ -8,7 +8,7 @@
 
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { incrementCopyCount } from '@/lib/prompts/actions'
 
 interface CopyButtonProps {
@@ -28,6 +28,49 @@ export function CopyButton({
   const [addSuffix, setAddSuffix] = useState(false)
   const [prefix, setPrefix] = useState('')
   const [suffix, setSuffix] = useState('')
+  const [mounted, setMounted] = useState(false)
+
+  // Load saved preferences from localStorage on mount
+  useEffect(() => {
+    setMounted(true)
+    const savedPrefix = localStorage.getItem('prompt-copy-prefix')
+    const savedSuffix = localStorage.getItem('prompt-copy-suffix')
+    const savedAddPrefix = localStorage.getItem('prompt-copy-add-prefix') === 'true'
+    const savedAddSuffix = localStorage.getItem('prompt-copy-add-suffix') === 'true'
+
+    if (savedPrefix !== null) setPrefix(savedPrefix)
+    if (savedSuffix !== null) setSuffix(savedSuffix)
+    setAddPrefix(savedAddPrefix)
+    setAddSuffix(savedAddSuffix)
+  }, [])
+
+  // Save prefix to localStorage when it changes
+  useEffect(() => {
+    if (mounted) {
+      localStorage.setItem('prompt-copy-prefix', prefix)
+    }
+  }, [prefix, mounted])
+
+  // Save suffix to localStorage when it changes
+  useEffect(() => {
+    if (mounted) {
+      localStorage.setItem('prompt-copy-suffix', suffix)
+    }
+  }, [suffix, mounted])
+
+  // Save addPrefix setting to localStorage when it changes
+  useEffect(() => {
+    if (mounted) {
+      localStorage.setItem('prompt-copy-add-prefix', String(addPrefix))
+    }
+  }, [addPrefix, mounted])
+
+  // Save addSuffix setting to localStorage when it changes
+  useEffect(() => {
+    if (mounted) {
+      localStorage.setItem('prompt-copy-add-suffix', String(addSuffix))
+    }
+  }, [addSuffix, mounted])
 
   const handleCopy = async () => {
     try {
