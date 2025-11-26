@@ -1,0 +1,113 @@
+{
+  "version": "2.0",
+  "exported_at": "2025-11-26T16:45:00.000Z",
+  "total_count": 3,
+  "prompts": [
+    {
+      "title": "Professional Tone Wrapper",
+      "slug": "professional-tone-wrapper",
+      "prompt_text": "Please rewrite the following text in a professional, formal tone suitable for business communication. Maintain the core message while enhancing clarity and professionalism.",
+      "description": "A reusable component that transforms any text into a professional tone",
+      "example_output": null,
+      "category": "writing",
+      "tags": ["professional", "tone", "business", "component"],
+      "author_name": "Test Author",
+      "author_url": "https://example.com",
+      "status": "APPROVED",
+      "featured": false,
+      "created_at": "2025-11-26T16:00:00.000Z",
+      "updated_at": "2025-11-26T16:00:00.000Z",
+      "approved_at": "2025-11-26T16:00:00.000Z",
+      "submitted_by": "test@example.com",
+      "approved_by": "admin@example.com",
+      "is_compound": false,
+      "max_depth": null
+    },
+    {
+      "title": "Email Response Generator",
+      "slug": "email-response-generator",
+      "prompt_text": null,
+      "description": "Generates professional email responses by combining context analysis with professional tone",
+      "example_output": "Dear [Recipient],\n\nThank you for your email regarding [topic]. I appreciate you bringing this to my attention.\n\n[Professional response]\n\nPlease let me know if you need any further clarification.\n\nBest regards,\n[Your name]",
+      "category": "writing",
+      "tags": ["email", "professional", "compound", "business-communication"],
+      "author_name": "Test Author",
+      "author_url": "https://example.com",
+      "status": "APPROVED",
+      "featured": true,
+      "created_at": "2025-11-26T16:10:00.000Z",
+      "updated_at": "2025-11-26T16:10:00.000Z",
+      "approved_at": "2025-11-26T16:10:00.000Z",
+      "submitted_by": "test@example.com",
+      "approved_by": "admin@example.com",
+      "is_compound": true,
+      "max_depth": 1,
+      "components": [
+        {
+          "position": 0,
+          "component_prompt_slug": null,
+          "custom_text_before": "First, analyze this email and identify the key points that need to be addressed:",
+          "custom_text_after": null
+        },
+        {
+          "position": 1,
+          "component_prompt_slug": null,
+          "custom_text_before": "Now, draft a response that addresses each point.",
+          "custom_text_after": null
+        },
+        {
+          "position": 2,
+          "component_prompt_slug": "professional-tone-wrapper",
+          "custom_text_before": null,
+          "custom_text_after": null
+        },
+        {
+          "position": 3,
+          "component_prompt_slug": null,
+          "custom_text_before": "Finally, format this as a complete email with appropriate greeting and closing.",
+          "custom_text_after": null
+        }
+      ]
+    },
+    {
+      "title": "Report Summary with Professional Polish",
+      "slug": "report-summary-professional",
+      "prompt_text": null,
+      "description": "Creates executive summaries from reports with professional formatting",
+      "example_output": "Executive Summary\n\nKey Findings:\n- [Finding 1]\n- [Finding 2]\n- [Finding 3]\n\nRecommendations:\n- [Recommendation 1]\n- [Recommendation 2]",
+      "category": "writing",
+      "tags": ["reports", "summaries", "professional", "compound", "business"],
+      "author_name": "Test Author",
+      "author_url": "https://example.com",
+      "status": "APPROVED",
+      "featured": true,
+      "created_at": "2025-11-26T16:15:00.000Z",
+      "updated_at": "2025-11-26T16:15:00.000Z",
+      "approved_at": "2025-11-26T16:15:00.000Z",
+      "submitted_by": "test@example.com",
+      "approved_by": "admin@example.com",
+      "is_compound": true,
+      "max_depth": 1,
+      "components": [
+        {
+          "position": 0,
+          "component_prompt_slug": null,
+          "custom_text_before": "Extract the key findings and main conclusions from this report:\n\n",
+          "custom_text_after": "\n\nFormat these as bullet points."
+        },
+        {
+          "position": 1,
+          "component_prompt_slug": null,
+          "custom_text_before": "Based on the findings above, create 3-5 actionable recommendations.",
+          "custom_text_after": null
+        },
+        {
+          "position": 2,
+          "component_prompt_slug": "professional-tone-wrapper",
+          "custom_text_before": "Combine the findings and recommendations into an executive summary:\n\n",
+          "custom_text_after": null
+        }
+      ]
+    }
+  ]
+}

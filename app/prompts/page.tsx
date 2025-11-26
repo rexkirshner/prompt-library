@@ -13,6 +13,7 @@ import { buildSearchWhere, parseTagFilter } from '@/lib/prompts/search'
 import { PromptFilters } from '@/components/PromptFilters'
 import { Pagination } from '@/components/Pagination'
 import { PromptsListClient } from '@/components/PromptsListClient'
+import { SortDropdown } from '@/components/SortDropdown'
 
 export const metadata: Metadata = {
   title: 'Browse Prompts - AI Prompts Library',
@@ -28,6 +29,7 @@ interface PromptsPageProps {
     category?: string
     tags?: string
     page?: string
+    sort?: string
   }>
 }
 
@@ -49,6 +51,9 @@ export default async function PromptsPage({ searchParams }: PromptsPageProps) {
   // Parse page number
   const currentPage = Math.max(1, parseInt(params.page || '1', 10))
 
+  // Parse sort parameter
+  const sortBy = params.sort || 'newest'
+
   // Build where clause
   const where = buildSearchWhere(filters)
 
@@ -58,6 +63,19 @@ export default async function PromptsPage({ searchParams }: PromptsPageProps) {
   // Calculate pagination
   const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE)
   const skip = (currentPage - 1) * ITEMS_PER_PAGE
+
+  // Map sort parameter to orderBy clause
+  const orderBy = (() => {
+    switch (sortBy) {
+      case 'alphabetical':
+        return { title: 'asc' as const }
+      case 'popular':
+        return { copy_count: 'desc' as const }
+      case 'newest':
+      default:
+        return { created_at: 'desc' as const }
+    }
+  })()
 
   // Fetch filtered prompts with pagination
   const prompts = await prisma.prompts.findMany({
@@ -69,9 +87,7 @@ export default async function PromptsPage({ searchParams }: PromptsPageProps) {
         },
       },
     },
-    orderBy: {
-      created_at: 'desc',
-    },
+    orderBy,
     skip,
     take: ITEMS_PER_PAGE,
   })
@@ -117,12 +133,15 @@ export default async function PromptsPage({ searchParams }: PromptsPageProps) {
 
       {/* Stats bar */}
       <div className="mb-8 flex items-center justify-between border-b border-gray-200 dark:border-gray-700 pb-4">
-        <p className="text-sm text-gray-600 dark:text-gray-400">
-          {prompts.length} {prompts.length === 1 ? 'prompt' : 'prompts'}{' '}
-          {filters.query || filters.category || filters.tags.length > 0
-            ? 'found'
-            : 'available'}
-        </p>
+        <div className="flex items-center gap-6">
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            {prompts.length} {prompts.length === 1 ? 'prompt' : 'prompts'}{' '}
+            {filters.query || filters.category || filters.tags.length > 0
+              ? 'found'
+              : 'available'}
+          </p>
+          <SortDropdown />
+        </div>
         <Link
           href="/submit"
           className="rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-500 dark:bg-blue-500 dark:hover:bg-blue-400"
