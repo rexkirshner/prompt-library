@@ -9,6 +9,8 @@ import Link from 'next/link'
 import { requireAdmin } from '@/lib/auth/admin'
 import { prisma } from '@/lib/db/client'
 import { ModerationActions } from './ModerationActions'
+import { resolvePrompt } from '@/lib/compound-prompts/resolution'
+import type { CompoundPromptWithComponents } from '@/lib/compound-prompts/types'
 
 export const metadata: Metadata = {
   title: 'Moderation Queue - Admin',
@@ -16,6 +18,45 @@ export const metadata: Metadata = {
 
 // Force dynamic rendering - page requires authentication and database access
 export const dynamic = 'force-dynamic'
+
+/**
+ * Helper to fetch prompt with components for resolution
+ */
+async function getPromptWithComponents(
+  id: string
+): Promise<CompoundPromptWithComponents | null> {
+  const prompt = await prisma.prompts.findUnique({
+    where: { id },
+    include: {
+      compound_components: {
+        include: {
+          component_prompt: true,
+        },
+        orderBy: { position: 'asc' },
+      },
+    },
+  })
+
+  if (!prompt) return null
+
+  return {
+    id: prompt.id,
+    prompt_text: prompt.prompt_text,
+    is_compound: prompt.is_compound,
+    max_depth: prompt.max_depth,
+    compound_components: prompt.compound_components.map((comp) => ({
+      ...comp,
+      component_prompt: comp.component_prompt
+        ? {
+            id: comp.component_prompt.id,
+            prompt_text: comp.component_prompt.prompt_text,
+            is_compound: comp.component_prompt.is_compound,
+            max_depth: comp.component_prompt.max_depth,
+          }
+        : null,
+    })),
+  }
+}
 
 export default async function AdminQueuePage() {
   await requireAdmin()
@@ -32,11 +73,41 @@ export default async function AdminQueuePage() {
           tags: true,
         },
       },
+      compound_components: {
+        include: {
+          component_prompt: {
+            select: {
+              id: true,
+              title: true,
+              is_compound: true,
+            },
+          },
+        },
+        orderBy: { position: 'asc' },
+      },
     },
     orderBy: {
       created_at: 'asc', // Oldest first (FIFO)
     },
   })
+
+  // Resolve compound prompts
+  const promptsWithText = await Promise.all(
+    pendingPrompts.map(async (prompt) => {
+      let displayText: string
+      if (prompt.is_compound) {
+        try {
+          displayText = await resolvePrompt(prompt.id, getPromptWithComponents)
+        } catch (error) {
+          console.error('Failed to resolve compound prompt:', error)
+          displayText = '[Error: Could not resolve compound prompt]'
+        }
+      } else {
+        displayText = prompt.prompt_text || ''
+      }
+      return { ...prompt, displayText }
+    })
+  )
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-12">
@@ -45,7 +116,7 @@ export default async function AdminQueuePage() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-100">Moderation Queue</h1>
           <p className="mt-2 text-gray-600 dark:text-gray-400">
-            {pendingPrompts.length} {pendingPrompts.length === 1 ? 'prompt' : 'prompts'}{' '}
+            {promptsWithText.length} {promptsWithText.length === 1 ? 'prompt' : 'prompts'}{' '}
             awaiting review
           </p>
         </div>
@@ -58,7 +129,7 @@ export default async function AdminQueuePage() {
       </div>
 
       {/* Queue list */}
-      {pendingPrompts.length === 0 ? (
+      {promptsWithText.length === 0 ? (
         <div className="rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-700 p-12 text-center">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Queue is empty</h3>
           <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
@@ -67,7 +138,7 @@ export default async function AdminQueuePage() {
         </div>
       ) : (
         <div className="space-y-6">
-          {pendingPrompts.map((prompt) => (
+          {promptsWithText.map((prompt) => (
             <div
               key={prompt.id}
               className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 shadow-sm"
@@ -82,6 +153,11 @@ export default async function AdminQueuePage() {
                     <span className="inline-block rounded-md bg-gray-100 dark:bg-gray-700 px-2 py-1 text-xs font-medium text-gray-700 dark:text-gray-300">
                       {prompt.category}
                     </span>
+                    {prompt.is_compound && (
+                      <span className="inline-block rounded-md bg-blue-100 dark:bg-blue-900/30 px-2 py-1 text-xs font-medium text-blue-800 dark:text-blue-300">
+                        COMPOUND
+                      </span>
+                    )}
                   </div>
                   <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">{prompt.title}</h2>
                   <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
@@ -100,12 +176,46 @@ export default async function AdminQueuePage() {
 
               {/* Prompt text preview */}
               <div className="mb-4">
-                <h3 className="mb-2 text-sm font-semibold text-gray-900 dark:text-gray-100">Prompt Text:</h3>
+                <h3 className="mb-2 text-sm font-semibold text-gray-900 dark:text-gray-100">
+                  {prompt.is_compound ? 'Resolved Prompt Text:' : 'Prompt Text:'}
+                </h3>
                 <div className="rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 p-4">
                   <pre className="line-clamp-6 whitespace-pre-wrap font-mono text-sm text-gray-900 dark:text-gray-100">
-                    {prompt.prompt_text}
+                    {prompt.displayText}
                   </pre>
                 </div>
+                {prompt.is_compound && prompt.compound_components.length > 0 && (
+                  <div className="mt-2">
+                    <details className="group">
+                      <summary className="cursor-pointer text-xs text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100">
+                        View component structure ({prompt.compound_components.length} components)
+                      </summary>
+                      <div className="mt-2 space-y-2 rounded-lg border border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-900">
+                        {prompt.compound_components.map((comp, index) => (
+                          <div key={comp.id} className="text-xs">
+                            <span className="font-medium text-gray-700 dark:text-gray-300">
+                              {index + 1}.
+                            </span>{' '}
+                            {comp.component_prompt ? (
+                              <span className="text-gray-900 dark:text-gray-100">
+                                {comp.component_prompt.title}
+                                {comp.component_prompt.is_compound && (
+                                  <span className="ml-1 text-xs text-blue-600 dark:text-blue-400">
+                                    (compound)
+                                  </span>
+                                )}
+                              </span>
+                            ) : (
+                              <span className="italic text-gray-500 dark:text-gray-500">
+                                Custom text only
+                              </span>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </details>
+                  </div>
+                )}
               </div>
 
               {/* Example output */}
@@ -141,7 +251,11 @@ export default async function AdminQueuePage() {
               <div className="space-y-3">
                 {/* Edit button */}
                 <Link
-                  href={`/admin/prompts/${prompt.id}/edit`}
+                  href={
+                    prompt.is_compound
+                      ? `/admin/prompts/compound/${prompt.id}/edit`
+                      : `/admin/prompts/${prompt.id}/edit`
+                  }
                   className="inline-flex items-center gap-2 rounded-md border border-gray-300 dark:border-gray-600 px-4 py-2 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
                 >
                   <svg
