@@ -479,13 +479,13 @@ All new exports will include compound prompt data automatically.
 5. ✅ Update test fixtures - All test prompts now include compound fields
 6. ✅ Manual verification - Exported real data, verified format
 
-### Phase 2: Import (IN PROGRESS)
-7. ⏳ Update import validation (schema + business logic)
-8. ⏳ Implement two-pass import algorithm
-9. ⏳ Add component creation logic
-10. ⏳ Add depth recalculation
-11. ⏳ Update tests
-12. ⏳ Test round-trip export/import
+### Phase 2: Import (COMPLETED ✅)
+7. ✅ Update import validation (schema + business logic) - Added CompoundComponentSchema, refinement rules in json-validator.ts
+8. ✅ Implement two-pass import algorithm - Two-pass executeImport in import-service.ts with slug-to-ID map
+9. ✅ Add component creation logic - createCompoundComponents method resolves slugs and creates relationships
+10. ✅ Add depth recalculation - Uses calculateMaxDepth after component creation
+11. ✅ Update tests - All test fixtures updated, 9/9 import tests passing, 11 validation tests added
+12. ✅ Test round-trip export/import - Round-trip test passing with tag collision fix
 
 ## Files to Modify
 
