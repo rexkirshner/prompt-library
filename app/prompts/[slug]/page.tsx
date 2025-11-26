@@ -283,25 +283,39 @@ export default async function PromptPage({ params }: PromptPageProps) {
               <summary className="cursor-pointer text-sm text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100">
                 View component structure ({prompt.compound_components.length} components)
               </summary>
-              <div className="mt-3 space-y-2 rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
+              <div className="mt-3 space-y-3 rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
                 {prompt.compound_components.map((comp, index) => (
-                  <div key={comp.id} className="text-sm">
-                    <span className="font-medium text-gray-700 dark:text-gray-300">
-                      {index + 1}.
-                    </span>{' '}
-                    {comp.component_prompt ? (
-                      <span className="text-gray-900 dark:text-gray-100">
-                        {comp.component_prompt.title}
-                        {comp.component_prompt.is_compound && (
-                          <span className="ml-2 text-xs text-blue-600 dark:text-blue-400">
-                            (compound)
-                          </span>
-                        )}
-                      </span>
-                    ) : (
-                      <span className="italic text-gray-500 dark:text-gray-500">
-                        Custom text
-                      </span>
+                  <div key={comp.id} className="space-y-1 text-sm">
+                    <div>
+                      <span className="font-medium text-gray-700 dark:text-gray-300">
+                        {index + 1}.
+                      </span>{' '}
+                      {comp.component_prompt ? (
+                        <span className="text-gray-900 dark:text-gray-100">
+                          {comp.component_prompt.title}
+                          {comp.component_prompt.is_compound && (
+                            <span className="ml-2 text-xs text-blue-600 dark:text-blue-400">
+                              (compound)
+                            </span>
+                          )}
+                        </span>
+                      ) : (
+                        <span className="italic text-gray-500 dark:text-gray-500">
+                          Custom text only
+                        </span>
+                      )}
+                    </div>
+                    {comp.custom_text_before && (
+                      <div className="ml-4 text-xs text-gray-600 dark:text-gray-400">
+                        <span className="font-medium">Before: </span>
+                        <span className="italic">&quot;{comp.custom_text_before}&quot;</span>
+                      </div>
+                    )}
+                    {comp.custom_text_after && (
+                      <div className="ml-4 text-xs text-gray-600 dark:text-gray-400">
+                        <span className="font-medium">After: </span>
+                        <span className="italic">&quot;{comp.custom_text_after}&quot;</span>
+                      </div>
                     )}
                   </div>
                 ))}
