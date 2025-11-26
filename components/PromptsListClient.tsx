@@ -283,7 +283,7 @@ export function PromptsListClient({ prompts, userId }: PromptsListClientProps) {
               <div className="flex items-center justify-between gap-2">
                 <div onClick={(e) => e.stopPropagation()}>
                   <CopyButton
-                    text={prompt.prompt_text}
+                    text={prompt.prompt_text || ''}
                     label="Copy"
                     promptId={prompt.id}
                     userId={userId}
