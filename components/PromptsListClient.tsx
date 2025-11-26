@@ -236,7 +236,7 @@ export function PromptsListClient({ prompts, userId }: PromptsListClientProps) {
               <div className="ml-4 flex flex-shrink-0 items-center gap-2">
                 <div onClick={(e) => e.stopPropagation()}>
                   <CopyButton
-                    text={prompt.prompt_text}
+                    text={prompt.prompt_text || ''}
                     label="Copy"
                     promptId={prompt.id}
                     userId={userId}
