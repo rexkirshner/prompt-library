@@ -149,7 +149,7 @@ export async function validatePromptForImport(
   }
 
   // Warn about very long content
-  if (prompt.prompt_text.length > 50000) {
+  if (prompt.prompt_text && prompt.prompt_text.length > 50000) {
     warnings.push({
       index,
       slug: prompt.slug,
