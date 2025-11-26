@@ -280,7 +280,7 @@ export function SubmitCompoundPromptForm({
 
         <CompoundPromptBuilder
           availablePrompts={availablePrompts}
-          components={components}
+          initialComponents={components}
           onComponentsChange={setComponents}
         />
 

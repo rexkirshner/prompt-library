@@ -454,9 +454,9 @@ export class ImportService {
 
       return {
         id: prompt.id,
-        slug: prompt.slug,
         is_compound: prompt.is_compound,
         max_depth: prompt.max_depth,
+        prompt_text: prompt.prompt_text,
         compound_components: prompt.compound_components.map((comp: any) => ({
           id: comp.id,
           compound_prompt_id: comp.compound_prompt_id,
