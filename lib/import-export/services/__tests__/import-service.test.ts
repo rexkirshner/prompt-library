@@ -587,8 +587,9 @@ describe('ImportService', () => {
       const createdAt = new Date(now.getTime() - 10000) // 10 seconds ago
       const approvedAt = new Date(now.getTime() - 5000) // 5 seconds ago
 
+      const timestamp = Date.now()
       const tag1 = await prisma.tags.create({
-        data: { id: crypto.randomUUID(), name: 'Round Trip Tag', slug: 'round-trip-tag-' + Date.now() },
+        data: { id: crypto.randomUUID(), name: 'Round Trip Tag ' + timestamp, slug: 'round-trip-tag-' + timestamp },
       })
       createdTagIds.push(tag1.id)
 
