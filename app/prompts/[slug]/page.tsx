@@ -252,6 +252,8 @@ export default async function PromptPage({ params }: PromptPageProps) {
           )}
           <span>•</span>
           <span>{prompt.view_count} views</span>
+          <span>•</span>
+          <span>{prompt.copy_count} copied</span>
         </div>
       </div>
 
