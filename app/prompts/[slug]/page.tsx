@@ -13,6 +13,8 @@ import { auth } from '@/lib/auth'
 import { getCurrentUser } from '@/lib/auth'
 import { CopyButton } from '@/components/CopyButton'
 import { CopyPreview } from '@/components/CopyPreview'
+import { resolvePrompt } from '@/lib/compound-prompts/resolution'
+import type { CompoundPromptWithComponents } from '@/lib/compound-prompts/types'
 
 interface PromptPageProps {
   params: Promise<{
@@ -22,6 +24,45 @@ interface PromptPageProps {
 
 // Force dynamic rendering - page requires database access
 export const dynamic = 'force-dynamic'
+
+/**
+ * Helper to fetch prompt with components for resolution
+ */
+async function getPromptWithComponents(
+  id: string
+): Promise<CompoundPromptWithComponents | null> {
+  const prompt = await prisma.prompts.findUnique({
+    where: { id },
+    include: {
+      compound_components: {
+        include: {
+          component_prompt: true,
+        },
+        orderBy: { position: 'asc' },
+      },
+    },
+  })
+
+  if (!prompt) return null
+
+  return {
+    id: prompt.id,
+    prompt_text: prompt.prompt_text,
+    is_compound: prompt.is_compound,
+    max_depth: prompt.max_depth,
+    compound_components: prompt.compound_components.map((comp) => ({
+      ...comp,
+      component_prompt: comp.component_prompt
+        ? {
+            id: comp.component_prompt.id,
+            prompt_text: comp.component_prompt.prompt_text,
+            is_compound: comp.component_prompt.is_compound,
+            max_depth: comp.component_prompt.max_depth,
+          }
+        : null,
+    })),
+  }
+}
 
 /**
  * Generate metadata for SEO
@@ -47,17 +88,31 @@ export async function generateMetadata({
     }
   }
 
-  const description = prompt.description || prompt.prompt_text.substring(0, 160)
+  // For compound prompts, resolve to get text for description
+  let descriptionText = prompt.description
+  if (!descriptionText) {
+    if (prompt.is_compound) {
+      try {
+        const resolvedText = await resolvePrompt(prompt.id, getPromptWithComponents)
+        descriptionText = resolvedText.substring(0, 160)
+      } catch {
+        descriptionText = 'Compound prompt'
+      }
+    } else {
+      descriptionText = prompt.prompt_text?.substring(0, 160) || ''
+    }
+  }
+
   const tags = prompt.prompt_tags.map((pt) => pt.tags.name)
 
   return {
     title: prompt.title,
-    description,
+    description: descriptionText,
     keywords: ['AI prompt', prompt.category, ...tags],
     authors: [{ name: prompt.author_name }],
     openGraph: {
       title: prompt.title,
-      description,
+      description: descriptionText,
       type: 'article',
       publishedTime: prompt.created_at.toISOString(),
       modifiedTime: prompt.updated_at.toISOString(),
@@ -67,7 +122,7 @@ export async function generateMetadata({
     twitter: {
       card: 'summary_large_image',
       title: prompt.title,
-      description,
+      description: descriptionText,
     },
   }
 }
@@ -80,7 +135,7 @@ export default async function PromptPage({ params }: PromptPageProps) {
   const currentUser = await getCurrentUser()
   const isAdmin = currentUser?.isAdmin === true
 
-  // Fetch prompt with tags
+  // Fetch prompt with tags and components
   const prompt = await prisma.prompts.findUnique({
     where: { slug },
     include: {
@@ -88,6 +143,18 @@ export default async function PromptPage({ params }: PromptPageProps) {
         include: {
           tags: true,
         },
+      },
+      compound_components: {
+        include: {
+          component_prompt: {
+            select: {
+              id: true,
+              title: true,
+              is_compound: true,
+            },
+          },
+        },
+        orderBy: { position: 'asc' },
       },
     },
   })
@@ -105,6 +172,17 @@ export default async function PromptPage({ params }: PromptPageProps) {
     })
     .catch((err) => console.error('Failed to increment view count:', err))
 
+  // For compound prompts, resolve the text
+  let displayText = prompt.prompt_text
+  if (prompt.is_compound) {
+    try {
+      displayText = await resolvePrompt(prompt.id, getPromptWithComponents)
+    } catch (error) {
+      console.error('Failed to resolve compound prompt:', error)
+      displayText = '[Error: Could not resolve compound prompt]'
+    }
+  }
+
   return (
     <div className="mx-auto max-w-4xl px-4 py-12">
       {/* Back link and admin controls */}
@@ -117,7 +195,11 @@ export default async function PromptPage({ params }: PromptPageProps) {
         </Link>
         {isAdmin && (
           <Link
-            href={`/admin/prompts/${prompt.id}/edit`}
+            href={
+              prompt.is_compound
+                ? `/admin/prompts/compound/${prompt.id}/edit`
+                : `/admin/prompts/${prompt.id}/edit`
+            }
             className="inline-flex items-center gap-2 rounded-md bg-blue-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-blue-500"
           >
             <svg
@@ -181,22 +263,56 @@ export default async function PromptPage({ params }: PromptPageProps) {
       {/* Prompt text */}
       <div className="mb-8">
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Prompt</h2>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+            {prompt.is_compound ? 'Resolved Prompt' : 'Prompt'}
+          </h2>
           <CopyButton
-            text={prompt.prompt_text}
+            text={displayText}
             promptId={prompt.id}
             userId={session?.user?.id}
           />
         </div>
         <div className="rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-4">
           <pre className="whitespace-pre-wrap font-mono text-sm text-gray-900 dark:text-gray-100">
-            {prompt.prompt_text}
+            {displayText}
           </pre>
         </div>
+        {prompt.is_compound && prompt.compound_components.length > 0 && (
+          <div className="mt-4">
+            <details className="group">
+              <summary className="cursor-pointer text-sm text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100">
+                View component structure ({prompt.compound_components.length} components)
+              </summary>
+              <div className="mt-3 space-y-2 rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
+                {prompt.compound_components.map((comp, index) => (
+                  <div key={comp.id} className="text-sm">
+                    <span className="font-medium text-gray-700 dark:text-gray-300">
+                      {index + 1}.
+                    </span>{' '}
+                    {comp.component_prompt ? (
+                      <span className="text-gray-900 dark:text-gray-100">
+                        {comp.component_prompt.title}
+                        {comp.component_prompt.is_compound && (
+                          <span className="ml-2 text-xs text-blue-600 dark:text-blue-400">
+                            (compound)
+                          </span>
+                        )}
+                      </span>
+                    ) : (
+                      <span className="italic text-gray-500 dark:text-gray-500">
+                        Custom text
+                      </span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </details>
+          </div>
+        )}
       </div>
 
       {/* Copy Preview */}
-      <CopyPreview text={prompt.prompt_text} promptId={prompt.id} userId={session?.user?.id} />
+      <CopyPreview text={displayText} promptId={prompt.id} userId={session?.user?.id} />
 
       {/* Tags */}
       {prompt.prompt_tags.length > 0 && (
