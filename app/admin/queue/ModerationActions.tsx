@@ -36,15 +36,10 @@ export function ModerationActions({ promptId, onComplete }: ModerationActionsPro
   }
 
   const handleReject = async () => {
-    if (!rejectionReason.trim()) {
-      setError('Please provide a rejection reason')
-      return
-    }
-
     setLoading(true)
     setError(null)
 
-    const result = await rejectPrompt(promptId, rejectionReason)
+    const result = await rejectPrompt(promptId, rejectionReason.trim() || undefined)
 
     if (result.success) {
       setShowRejectForm(false)
@@ -84,25 +79,25 @@ export function ModerationActions({ promptId, onComplete }: ModerationActionsPro
         <div className="space-y-3">
           <div>
             <label htmlFor="rejection-reason" className="mb-1 block text-sm font-medium">
-              Rejection Reason
+              Rejection Reason <span className="text-gray-500 dark:text-gray-400">(optional)</span>
             </label>
             <textarea
               id="rejection-reason"
               value={rejectionReason}
               onChange={(e) => setRejectionReason(e.target.value)}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+              className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 px-3 py-2 text-sm"
               rows={3}
-              placeholder="Explain why this prompt is being rejected..."
+              placeholder="Optionally explain why this prompt is being rejected..."
               disabled={loading}
             />
           </div>
           <div className="flex gap-2">
             <button
               onClick={handleReject}
-              disabled={loading || !rejectionReason.trim()}
+              disabled={loading}
               className="rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-500 disabled:opacity-50"
             >
-              {loading ? 'Rejecting...' : 'Confirm Rejection'}
+              {loading ? 'Rejecting...' : 'Reject'}
             </button>
             <button
               onClick={() => {
@@ -111,7 +106,7 @@ export function ModerationActions({ promptId, onComplete }: ModerationActionsPro
                 setError(null)
               }}
               disabled={loading}
-              className="rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold hover:bg-gray-50 disabled:opacity-50"
+              className="rounded-md border border-gray-300 dark:border-gray-600 px-4 py-2 text-sm font-semibold text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50"
             >
               Cancel
             </button>

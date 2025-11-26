@@ -47,11 +47,11 @@ export async function approvePrompt(promptId: string): Promise<ModerationResult>
 }
 
 /**
- * Reject a pending prompt with reason
+ * Reject a pending prompt with optional reason
  */
 export async function rejectPrompt(
   promptId: string,
-  rejectionReason: string,
+  rejectionReason?: string,
 ): Promise<ModerationResult> {
   try {
     const admin = await getAdminUser()
@@ -59,16 +59,12 @@ export async function rejectPrompt(
       return { success: false, error: 'Unauthorized: Admin access required' }
     }
 
-    if (!rejectionReason.trim()) {
-      return { success: false, error: 'Rejection reason is required' }
-    }
-
     // Update prompt status
     await prisma.prompts.update({
       where: { id: promptId },
       data: {
         status: 'REJECTED',
-        rejection_reason: rejectionReason,
+        rejection_reason: rejectionReason?.trim() || null,
       },
     })
 
