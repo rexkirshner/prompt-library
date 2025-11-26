@@ -56,7 +56,7 @@ export class ExportService {
    */
   async exportAll(): Promise<ExportResult> {
     try {
-      // Fetch all prompts with their tags from database
+      // Fetch all prompts with their tags and compound components from database
       const prompts = await prisma.prompts.findMany({
         include: {
           prompt_tags: {
@@ -76,6 +76,19 @@ export class ExportService {
               name: true,
             },
           },
+          // NEW: Include compound components for compound prompts
+          compound_components: {
+            include: {
+              component_prompt: {
+                select: {
+                  slug: true, // Get slug for portable reference
+                },
+              },
+            },
+            orderBy: {
+              position: 'asc', // Maintain component order
+            },
+          },
         },
         where: {
           deleted_at: null, // Exclude soft-deleted prompts
@@ -86,41 +99,60 @@ export class ExportService {
       })
 
       // Transform to portable format
-      const promptData: PromptData[] = prompts.map((prompt) => ({
-        // Core content
-        title: prompt.title,
-        slug: prompt.slug,
-        prompt_text: prompt.prompt_text,
-        description: prompt.description,
-        example_output: prompt.example_output,
+      const promptData: PromptData[] = prompts.map((prompt) => {
+        // Base prompt data
+        const base: PromptData = {
+          // Core content
+          title: prompt.title,
+          slug: prompt.slug,
+          prompt_text: prompt.prompt_text,
+          description: prompt.description,
+          example_output: prompt.example_output,
 
-        // Classification
-        category: prompt.category,
-        tags: prompt.prompt_tags.map((pt) => pt.tags.name),
+          // Classification
+          category: prompt.category,
+          tags: prompt.prompt_tags.map((pt) => pt.tags.name),
 
-        // Attribution
-        author_name: prompt.author_name,
-        author_url: prompt.author_url,
+          // Attribution
+          author_name: prompt.author_name,
+          author_url: prompt.author_url,
 
-        // Status
-        status: prompt.status,
-        featured: prompt.featured,
+          // Status
+          status: prompt.status,
+          featured: prompt.featured,
 
-        // Metadata (convert dates to ISO 8601 strings)
-        created_at: prompt.created_at.toISOString(),
-        updated_at: prompt.updated_at.toISOString(),
-        approved_at: prompt.approved_at?.toISOString() || null,
+          // Metadata (convert dates to ISO 8601 strings)
+          created_at: prompt.created_at.toISOString(),
+          updated_at: prompt.updated_at.toISOString(),
+          approved_at: prompt.approved_at?.toISOString() || null,
 
-        // Audit trail (optional)
-        submitted_by:
-          prompt.users_prompts_submitted_by_user_idTousers?.email ||
-          prompt.users_prompts_submitted_by_user_idTousers?.name ||
-          undefined,
-        approved_by:
-          prompt.users_prompts_approved_by_user_idTousers?.email ||
-          prompt.users_prompts_approved_by_user_idTousers?.name ||
-          undefined,
-      }))
+          // Audit trail (optional)
+          submitted_by:
+            prompt.users_prompts_submitted_by_user_idTousers?.email ||
+            prompt.users_prompts_submitted_by_user_idTousers?.name ||
+            undefined,
+          approved_by:
+            prompt.users_prompts_approved_by_user_idTousers?.email ||
+            prompt.users_prompts_approved_by_user_idTousers?.name ||
+            undefined,
+
+          // Compound prompt fields (v2.0+)
+          is_compound: prompt.is_compound,
+          max_depth: prompt.max_depth,
+        }
+
+        // Include components only if compound prompt
+        if (prompt.is_compound && prompt.compound_components.length > 0) {
+          base.components = prompt.compound_components.map((comp) => ({
+            position: comp.position,
+            component_prompt_slug: comp.component_prompt?.slug || null,
+            custom_text_before: comp.custom_text_before,
+            custom_text_after: comp.custom_text_after,
+          }))
+        }
+
+        return base
+      })
 
       // Use JSON exporter to create export data
       return await this.jsonExporter.export(promptData)

@@ -13,7 +13,7 @@ import type {
   ExportData,
 } from '../types'
 
-export const EXPORT_VERSION = '1.0'
+export const EXPORT_VERSION = '2.0'
 
 /**
  * JSON format exporter

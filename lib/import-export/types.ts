@@ -14,11 +14,33 @@ export type ExportFormat = 'json'
 export type ImportFormat = 'json'
 
 /**
+ * Component of a compound prompt
+ *
+ * References other prompts by slug (not ID) for portability across databases.
+ * Components can include custom text before and after the referenced prompt.
+ */
+export interface CompoundComponent {
+  /** Position in the component sequence (0-indexed) */
+  position: number
+
+  /** Slug of the component prompt (null for custom text only) */
+  component_prompt_slug: string | null
+
+  /** Custom text to insert before the component prompt */
+  custom_text_before: string | null
+
+  /** Custom text to insert after the component prompt */
+  custom_text_after: string | null
+}
+
+/**
  * Prompt data structure for export/import
  *
  * This is a simplified, portable representation of a prompt
  * that can be serialized to various formats. It excludes
  * database-specific fields like IDs and transient data.
+ *
+ * Version 2.0+: Added compound prompt support
  */
 export interface PromptData {
   // Core content
@@ -48,6 +70,16 @@ export interface PromptData {
   // Audit trail (optional)
   submitted_by?: string
   approved_by?: string
+
+  // Compound prompt fields (v2.0+)
+  /** Whether this is a compound prompt composed of other prompts */
+  is_compound: boolean
+
+  /** Maximum nesting depth (null for regular prompts) */
+  max_depth: number | null
+
+  /** Component structure (only present if is_compound=true) */
+  components?: CompoundComponent[]
 }
 
 /**
