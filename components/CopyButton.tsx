@@ -9,7 +9,7 @@
 
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { incrementCopyCount } from '@/lib/prompts/actions'
 import {
   getPromptCopyPreferences,
@@ -38,6 +38,23 @@ export function CopyButton({
   const [useUltrathink, setUseUltrathink] = useState(false)
   const [githubReminder, setGithubReminder] = useState(false)
   const [mounted, setMounted] = useState(false)
+  const optionsRef = useRef<HTMLDivElement>(null)
+
+  // Close options when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (optionsRef.current && !optionsRef.current.contains(event.target as Node)) {
+        setShowOptions(false)
+      }
+    }
+
+    if (showOptions) {
+      document.addEventListener('mousedown', handleClickOutside)
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside)
+      }
+    }
+  }, [showOptions])
 
   // Load saved preferences on mount
   // For logged-in users: fetch from database
@@ -166,7 +183,7 @@ export function CopyButton({
   }
 
   return (
-    <div className="space-y-3">
+    <div className="relative" ref={optionsRef}>
       {/* Copy button and options toggle */}
       <div className="flex items-center gap-2">
         <button
@@ -187,7 +204,7 @@ export function CopyButton({
 
       {/* Prefix/Suffix options */}
       {showOptions && (
-        <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-4 space-y-3">
+        <div className="absolute top-full left-0 mt-2 w-80 max-w-[calc(100vw-2rem)] rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-4 space-y-3 shadow-lg z-50">
           {/* Prefix option */}
           <div className="space-y-2">
             <label className="flex items-center gap-2">

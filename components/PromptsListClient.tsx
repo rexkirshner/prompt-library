@@ -216,6 +216,100 @@ export function PromptsListClient({ prompts, userId }: PromptsListClientProps) {
           ))}
         </div>
       )}
+
+      {/* Mini List View */}
+      {viewMode === 'mini' && (
+        <div className="space-y-2">
+          {prompts.map((prompt) => (
+            <div
+              key={prompt.id}
+              className="group flex items-center justify-between rounded-lg border border-gray-200 bg-white px-4 py-3 transition-shadow hover:shadow-md dark:border-gray-700 dark:bg-gray-800"
+            >
+              {/* Title (clickable link) */}
+              <Link href={`/prompts/${prompt.slug}`} className="flex-1 truncate">
+                <h3 className="font-medium text-gray-900 group-hover:text-blue-600 dark:text-gray-100 dark:group-hover:text-blue-400">
+                  {prompt.title}
+                </h3>
+              </Link>
+
+              {/* Action buttons */}
+              <div className="ml-4 flex flex-shrink-0 items-center gap-2">
+                <div onClick={(e) => e.stopPropagation()}>
+                  <CopyButton
+                    text={prompt.prompt_text}
+                    label="Copy"
+                    promptId={prompt.id}
+                    userId={userId}
+                  />
+                </div>
+                <Link href={`/prompts/${prompt.slug}`}>
+                  <svg
+                    className="h-5 w-5 text-gray-400 transition-colors group-hover:text-blue-600 dark:text-gray-500 dark:group-hover:text-blue-400"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth="1.5"
+                    stroke="currentColor"
+                    aria-hidden="true"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M8.25 4.5l7.5 7.5-7.5 7.5"
+                    />
+                  </svg>
+                </Link>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Compact Grid View */}
+      {viewMode === 'compact' && (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {prompts.map((prompt) => (
+            <div
+              key={prompt.id}
+              className="group relative flex flex-col rounded-lg border border-gray-200 bg-white p-4 transition-shadow hover:shadow-md dark:border-gray-700 dark:bg-gray-800"
+            >
+              {/* Title (clickable link) */}
+              <Link href={`/prompts/${prompt.slug}`} className="mb-3 flex-1">
+                <h3 className="line-clamp-2 font-medium text-gray-900 group-hover:text-blue-600 dark:text-gray-100 dark:group-hover:text-blue-400">
+                  {prompt.title}
+                </h3>
+              </Link>
+
+              {/* Action buttons */}
+              <div className="flex items-center justify-between gap-2">
+                <div onClick={(e) => e.stopPropagation()}>
+                  <CopyButton
+                    text={prompt.prompt_text}
+                    label="Copy"
+                    promptId={prompt.id}
+                    userId={userId}
+                  />
+                </div>
+                <Link href={`/prompts/${prompt.slug}`}>
+                  <svg
+                    className="h-5 w-5 text-gray-400 transition-colors group-hover:text-blue-600 dark:text-gray-500 dark:group-hover:text-blue-400"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth="1.5"
+                    stroke="currentColor"
+                    aria-hidden="true"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M8.25 4.5l7.5 7.5-7.5 7.5"
+                    />
+                  </svg>
+                </Link>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </>
   )
 }

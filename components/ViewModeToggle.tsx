@@ -9,7 +9,7 @@
 
 import { useState, useEffect } from 'react'
 
-export type ViewMode = 'grid' | 'list'
+export type ViewMode = 'grid' | 'list' | 'mini' | 'compact'
 
 interface ViewModeToggleProps {
   defaultMode?: ViewMode
@@ -25,7 +25,7 @@ export function ViewModeToggle({
   // Load preference from localStorage on mount
   useEffect(() => {
     const saved = localStorage.getItem('prompts-view-mode') as ViewMode | null
-    if (saved && (saved === 'grid' || saved === 'list')) {
+    if (saved && (saved === 'grid' || saved === 'list' || saved === 'mini' || saved === 'compact')) {
       setViewMode(saved)
       onViewModeChange(saved)
     }
@@ -50,6 +50,34 @@ export function ViewModeToggle({
         }`}
         aria-label="Grid view"
         aria-pressed={viewMode === 'grid'}
+      >
+        <svg
+          className="h-5 w-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth="1.5"
+          stroke="currentColor"
+          aria-hidden="true"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M5.25 7.5A2.25 2.25 0 017.5 5.25h9a2.25 2.25 0 012.25 2.25v9a2.25 2.25 0 01-2.25 2.25h-9a2.25 2.25 0 01-2.25-2.25v-9z"
+          />
+        </svg>
+      </button>
+
+      {/* Compact Grid View Button */}
+      <button
+        type="button"
+        onClick={() => handleToggle('compact')}
+        className={`rounded px-3 py-1.5 text-sm font-medium transition-colors ${
+          viewMode === 'compact'
+            ? 'bg-gray-900 text-white dark:bg-gray-700'
+            : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'
+        }`}
+        aria-label="Compact grid view"
+        aria-pressed={viewMode === 'compact'}
       >
         <svg
           className="h-5 w-5"
@@ -91,6 +119,34 @@ export function ViewModeToggle({
             strokeLinecap="round"
             strokeLinejoin="round"
             d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 010 3.75H5.625a1.875 1.875 0 010-3.75z"
+          />
+        </svg>
+      </button>
+
+      {/* Mini List View Button */}
+      <button
+        type="button"
+        onClick={() => handleToggle('mini')}
+        className={`rounded px-3 py-1.5 text-sm font-medium transition-colors ${
+          viewMode === 'mini'
+            ? 'bg-gray-900 text-white dark:bg-gray-700'
+            : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'
+        }`}
+        aria-label="Mini list view"
+        aria-pressed={viewMode === 'mini'}
+      >
+        <svg
+          className="h-5 w-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth="1.5"
+          stroke="currentColor"
+          aria-hidden="true"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
           />
         </svg>
       </button>
