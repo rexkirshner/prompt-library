@@ -82,7 +82,7 @@ export default async function EditPromptPage({ params }: EditPromptPageProps) {
           title: prompt.title,
           slug: prompt.slug,
           status: prompt.status,
-          promptText: prompt.prompt_text,
+          promptText: prompt.prompt_text || '',
           category: prompt.category,
           description: prompt.description || '',
           exampleOutput: prompt.example_output || '',
