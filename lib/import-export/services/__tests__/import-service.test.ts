@@ -66,7 +66,7 @@ describe('ImportService', () => {
   describe('importAll()', () => {
     it('should import new prompts successfully', async () => {
       const exportData = {
-        version: '1.0',
+        version: '2.0',
         exported_at: new Date().toISOString(),
         total_count: 2,
         prompts: [
@@ -85,6 +85,8 @@ describe('ImportService', () => {
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
             approved_at: new Date().toISOString(),
+            is_compound: false,
+            max_depth: null,
           },
           {
             title: 'Import Test 2',
@@ -101,6 +103,8 @@ describe('ImportService', () => {
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
             approved_at: null,
+            is_compound: false,
+            max_depth: null,
           },
         ] as PromptData[],
       }
@@ -158,6 +162,8 @@ describe('ImportService', () => {
           category: 'Testing',
           author_name: 'Original Author',
           status: 'APPROVED',
+          is_compound: false,
+          max_depth: null,
           submitted_by_user_id: testUserId,
           updated_at: new Date(),
         },
@@ -166,7 +172,7 @@ describe('ImportService', () => {
 
       // Try to import with the same slug
       const exportData = {
-        version: '1.0',
+        version: '2.0',
         exported_at: new Date().toISOString(),
         total_count: 2,
         prompts: [
@@ -185,6 +191,8 @@ describe('ImportService', () => {
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
             approved_at: new Date().toISOString(),
+            is_compound: false,
+            max_depth: null,
           },
           {
             title: 'New Prompt',
@@ -201,6 +209,8 @@ describe('ImportService', () => {
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
             approved_at: new Date().toISOString(),
+            is_compound: false,
+            max_depth: null,
           },
         ] as PromptData[],
       }
@@ -251,6 +261,8 @@ describe('ImportService', () => {
           category: 'Old Category',
           author_name: 'Old Author',
           status: 'PENDING',
+          is_compound: false,
+          max_depth: null,
           submitted_by_user_id: testUserId,
           updated_at: new Date(),
         },
@@ -266,7 +278,7 @@ describe('ImportService', () => {
 
       // Import with update strategy
       const exportData = {
-        version: '1.0',
+        version: '2.0',
         exported_at: new Date().toISOString(),
         total_count: 1,
         prompts: [
@@ -285,6 +297,8 @@ describe('ImportService', () => {
             created_at: existing.created_at.toISOString(),
             updated_at: new Date().toISOString(),
             approved_at: new Date().toISOString(),
+            is_compound: false,
+            max_depth: null,
           },
         ] as PromptData[],
       }
@@ -336,6 +350,8 @@ describe('ImportService', () => {
           category: 'Test',
           author_name: 'Test',
           status: 'APPROVED',
+          is_compound: false,
+          max_depth: null,
           submitted_by_user_id: testUserId,
           updated_at: new Date(),
         },
@@ -343,7 +359,7 @@ describe('ImportService', () => {
       createdPromptIds.push(existing.id)
 
       const exportData = {
-        version: '1.0',
+        version: '2.0',
         exported_at: new Date().toISOString(),
         total_count: 1,
         prompts: [
@@ -362,6 +378,8 @@ describe('ImportService', () => {
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
             approved_at: new Date().toISOString(),
+            is_compound: false,
+            max_depth: null,
           },
         ] as PromptData[],
       }
@@ -382,7 +400,7 @@ describe('ImportService', () => {
       const uniqueTag2 = 'another-tag-' + Date.now()
 
       const exportData = {
-        version: '1.0',
+        version: '2.0',
         exported_at: new Date().toISOString(),
         total_count: 1,
         prompts: [
@@ -401,6 +419,8 @@ describe('ImportService', () => {
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
             approved_at: new Date().toISOString(),
+            is_compound: false,
+            max_depth: null,
           },
         ] as PromptData[],
       }
@@ -437,7 +457,7 @@ describe('ImportService', () => {
     it('should rollback transaction on error', async () => {
       // Create invalid data that will fail during import
       const exportData = {
-        version: '1.0',
+        version: '2.0',
         exported_at: new Date().toISOString(),
         total_count: 2,
         prompts: [
@@ -456,6 +476,8 @@ describe('ImportService', () => {
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
             approved_at: new Date().toISOString(),
+            is_compound: false,
+            max_depth: null,
           },
           {
             title: 'Invalid Prompt',
@@ -494,7 +516,7 @@ describe('ImportService', () => {
 
     it('should validate data before importing', async () => {
       const invalidData = {
-        version: '1.0',
+        version: '2.0',
         exported_at: new Date().toISOString(),
         total_count: 1,
         prompts: [
@@ -517,7 +539,7 @@ describe('ImportService', () => {
 
     it('should use validateOnly mode', async () => {
       const exportData = {
-        version: '1.0',
+        version: '2.0',
         exported_at: new Date().toISOString(),
         total_count: 1,
         prompts: [
@@ -536,6 +558,8 @@ describe('ImportService', () => {
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
             approved_at: new Date().toISOString(),
+            is_compound: false,
+            max_depth: null,
           },
         ] as PromptData[],
       }
@@ -579,6 +603,8 @@ describe('ImportService', () => {
           author_name: 'Test Author',
           status: 'APPROVED',
           featured: true,
+          is_compound: false,
+          max_depth: null,
           submitted_by_user_id: testUserId,
           approved_by_user_id: testUserId,
           created_at: createdAt,
@@ -597,7 +623,7 @@ describe('ImportService', () => {
 
       // Manually create export data with just this prompt
       const exportData = {
-        version: '1.0',
+        version: '2.0',
         exported_at: now.toISOString(),
         total_count: 1,
         prompts: [
@@ -616,6 +642,8 @@ describe('ImportService', () => {
             created_at: createdAt.toISOString(),
             updated_at: now.toISOString(),
             approved_at: approvedAt.toISOString(),
+            is_compound: false,
+            max_depth: null,
           },
         ],
       }
