@@ -22,7 +22,7 @@ interface Prompt {
   id: string
   slug: string
   title: string
-  prompt_text: string
+  prompt_text: string | null
   description: string | null
   category: string
   author_name: string
@@ -112,7 +112,7 @@ export function PromptsListClient({ prompts, userId }: PromptsListClientProps) {
               {/* Copy Button */}
               <div onClick={(e) => e.stopPropagation()}>
                 <CopyButton
-                  text={prompt.prompt_text}
+                  text={prompt.prompt_text || ''}
                   label="Copy Prompt"
                   promptId={prompt.id}
                   userId={userId}
@@ -188,7 +188,7 @@ export function PromptsListClient({ prompts, userId }: PromptsListClientProps) {
                 <div className="flex flex-shrink-0 items-center gap-3">
                   <div onClick={(e) => e.stopPropagation()}>
                     <CopyButton
-                      text={prompt.prompt_text}
+                      text={prompt.prompt_text || ''}
                       label="Copy"
                       promptId={prompt.id}
                       userId={userId}
