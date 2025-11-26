@@ -7,7 +7,8 @@
 
 import { Metadata } from 'next'
 import { getCurrentUser } from '@/lib/auth'
-import { SubmitPromptForm } from './SubmitPromptForm'
+import { prisma } from '@/lib/db/client'
+import { SubmitPromptFormWrapper } from './SubmitPromptFormWrapper'
 
 export const metadata: Metadata = {
   title: 'Submit a Prompt - AI Prompts Library',
@@ -19,6 +20,23 @@ export const dynamic = 'force-dynamic'
 
 export default async function SubmitPage() {
   const user = await getCurrentUser()
+
+  // Fetch approved prompts for compound prompt creation
+  const availablePrompts = await prisma.prompts.findMany({
+    where: {
+      status: 'APPROVED',
+      deleted_at: null,
+    },
+    select: {
+      id: true,
+      slug: true,
+      title: true,
+      description: true,
+      category: true,
+      is_compound: true,
+    },
+    orderBy: [{ category: 'asc' }, { title: 'asc' }],
+  })
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-12">
@@ -53,8 +71,11 @@ export default async function SubmitPage() {
         </p>
       </div>
 
-      {/* Submission form */}
-      <SubmitPromptForm defaultAuthorName={user?.name || ''} />
+      {/* Submission form wrapper with type selector */}
+      <SubmitPromptFormWrapper
+        defaultAuthorName={user?.name || ''}
+        availablePrompts={availablePrompts}
+      />
     </div>
   )
 }
