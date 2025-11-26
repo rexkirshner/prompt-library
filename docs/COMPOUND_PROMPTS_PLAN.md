@@ -1432,10 +1432,10 @@ const COMPONENTS_PER_PAGE = 20
 
 ### Phase 2: Admin UI (Week 2) 🚧 IN PROGRESS
 - [x] Server actions (create, update, preview)
-- [ ] Base prompt selector modal
-- [ ] Compound prompt builder component
-- [ ] Create compound prompt page
-- [ ] Edit compound prompt page
+- [x] Base prompt selector modal
+- [x] Compound prompt builder component
+- [x] Create compound prompt page
+- [x] Edit compound prompt page
 - [ ] Admin list view (show compound badge)
 
 **Deliverable:** Admins can create/edit compound prompts
@@ -1444,7 +1444,13 @@ const COMPONENTS_PER_PAGE = 20
 - Created `app/admin/prompts/compound/actions.ts` with full CRUD operations
 - Validation integrates with lib/compound-prompts
 - Transaction-based for data consistency
-- Committed in: 7bc6561
+- Committed in: 7bc6561, f0597cc
+- Created `components/compound-prompts/BasePromptSelector.tsx` - Modal for selecting base prompts
+- Created `components/compound-prompts/CompoundPromptBuilder.tsx` - Drag-and-drop component builder
+- Created `/admin/prompts/compound/create` - Create page with form
+- Created `/admin/prompts/compound/[id]/edit` - Edit page with form
+- HTML5 drag-and-drop for reordering components
+- Committed in: 9bd5d91, 1ccb9e4, e4b09c3, 5b55bee
 
 ### Phase 3: Public Display (Week 3)
 - [ ] Compound prompt detail page (component view)
