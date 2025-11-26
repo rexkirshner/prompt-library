@@ -27,6 +27,7 @@ export interface CompoundPromptResult {
     description?: string
     category?: string
     components?: string
+    authorName?: string
     form?: string
   }
   message?: string
