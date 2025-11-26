@@ -272,13 +272,6 @@ export function CompoundPromptBuilder({
               {/* Component content */}
               {component.type === 'base_prompt' ? (
                 <div className="space-y-3">
-                  {/* Base prompt title (read-only) */}
-                  <div className="rounded-md bg-gray-50 p-3 dark:bg-gray-800">
-                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                      {component.promptTitle || component.component_prompt_id}
-                    </p>
-                  </div>
-
                   {/* Custom text before */}
                   <div>
                     <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -293,6 +286,13 @@ export function CompoundPromptBuilder({
                       rows={2}
                       className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:placeholder:text-gray-400"
                     />
+                  </div>
+
+                  {/* Base prompt title (read-only) */}
+                  <div className="rounded-md bg-gray-50 p-3 dark:bg-gray-800">
+                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                      {component.promptTitle || component.component_prompt_id}
+                    </p>
                   </div>
 
                   {/* Custom text after */}
