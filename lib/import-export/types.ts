@@ -24,7 +24,7 @@ export interface PromptData {
   // Core content
   title: string
   slug: string
-  prompt_text: string
+  prompt_text: string | null
   description: string | null
   example_output: string | null
 
