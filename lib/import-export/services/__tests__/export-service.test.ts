@@ -45,6 +45,7 @@ describe('ExportService', () => {
     // Create test prompt (approved)
     const prompt = await prisma.prompts.create({
       data: {
+        id: randomUUID(),
         title: 'Export Test Prompt',
         slug: 'export-test-prompt-' + Date.now(),
         prompt_text: 'This is a test prompt for export',
@@ -55,9 +56,13 @@ describe('ExportService', () => {
         author_url: 'https://example.com',
         status: 'APPROVED',
         featured: true,
+        is_compound: false,
+        max_depth: null,
         submitted_by_user_id: testUserId,
         approved_by_user_id: testUserId,
         approved_at: new Date(),
+        created_at: new Date(),
+        updated_at: new Date(),
       },
     })
     testPromptId = prompt.id
@@ -73,13 +78,21 @@ describe('ExportService', () => {
     // Create soft-deleted prompt (should not be exported)
     const deletedPrompt = await prisma.prompts.create({
       data: {
+        id: randomUUID(),
         title: 'Deleted Prompt',
         slug: 'deleted-prompt-' + Date.now(),
         prompt_text: 'This should not be exported',
+        description: null,
+        example_output: null,
         category: 'writing',
         author_name: 'Test Author',
+        author_url: null,
         status: 'APPROVED',
         featured: false,
+        is_compound: false,
+        max_depth: null,
+        created_at: new Date(),
+        updated_at: new Date(),
         deleted_at: new Date(), // Soft deleted
       },
     })

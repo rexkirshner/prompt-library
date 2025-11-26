@@ -30,10 +30,12 @@ describe('JSON Schema Validator', () => {
     approved_at: '2024-01-01T00:00:00Z',
     submitted_by: 'user@example.com',
     approved_by: 'admin@example.com',
+    is_compound: false,
+    max_depth: null,
   }
 
   const validExportData: ExportData = {
-    version: '1.0',
+    version: '2.0',
     exported_at: '2024-01-01T00:00:00Z',
     total_count: 1,
     prompts: [validPrompt],
@@ -267,7 +269,7 @@ describe('JSON Schema Validator', () => {
       const result = parseAndValidateJSON(json)
 
       expect(result.data).toBeDefined()
-      expect(result.data?.version).toBe('1.0')
+      expect(result.data?.version).toBe('2.0')
       expect(result.data?.prompts.length).toBe(1)
     })
   })
