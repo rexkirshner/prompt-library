@@ -233,6 +233,157 @@ describe('JSON Schema Validator', () => {
     })
   })
 
+  describe('validatePromptData - Compound Prompts', () => {
+    const validCompoundPrompt: PromptData = {
+      title: 'Test Compound Prompt',
+      slug: 'test-compound-prompt',
+      prompt_text: null, // Compound prompts have null text
+      description: 'Test compound description',
+      example_output: 'Test compound output',
+      category: 'writing',
+      tags: ['compound', 'test'],
+      author_name: 'Test Author',
+      author_url: 'https://example.com',
+      status: 'APPROVED',
+      featured: false,
+      created_at: '2024-01-01T00:00:00Z',
+      updated_at: '2024-01-01T00:00:00Z',
+      approved_at: '2024-01-01T00:00:00Z',
+      is_compound: true,
+      max_depth: 2,
+      components: [
+        {
+          position: 0,
+          component_prompt_slug: 'component-1',
+          custom_text_before: null,
+          custom_text_after: null,
+        },
+        {
+          position: 1,
+          component_prompt_slug: null,
+          custom_text_before: 'Custom text',
+          custom_text_after: null,
+        },
+      ],
+    }
+
+    it('accepts valid compound prompt', () => {
+      const result = validatePromptData(validCompoundPrompt)
+
+      expect(result.valid).toBe(true)
+      expect(result.errors).toEqual([])
+    })
+
+    it('rejects compound prompt without components', () => {
+      const prompt = { ...validCompoundPrompt, components: [] }
+      const result = validatePromptData(prompt)
+
+      expect(result.valid).toBe(false)
+      expect(
+        result.errors.some((e) => e.includes('Compound prompts must have at least one component'))
+      ).toBe(true)
+    })
+
+    it('rejects compound prompt with missing components field', () => {
+      const { components, ...prompt } = validCompoundPrompt
+      const result = validatePromptData(prompt)
+
+      expect(result.valid).toBe(false)
+      expect(
+        result.errors.some((e) => e.includes('Compound prompts must have at least one component'))
+      ).toBe(true)
+    })
+
+    it('rejects compound prompt with non-null prompt_text', () => {
+      const prompt = { ...validCompoundPrompt, prompt_text: 'Should be null' }
+      const result = validatePromptData(prompt)
+
+      expect(result.valid).toBe(false)
+      expect(
+        result.errors.some((e) => e.includes('Compound prompts must have null prompt_text'))
+      ).toBe(true)
+    })
+
+    it('rejects regular prompt with null prompt_text', () => {
+      const prompt = { ...validPrompt, prompt_text: null }
+      const result = validatePromptData(prompt)
+
+      expect(result.valid).toBe(false)
+      expect(
+        result.errors.some((e) => e.includes('Regular prompts must have non-null prompt_text'))
+      ).toBe(true)
+    })
+
+    it('rejects regular prompt with empty prompt_text', () => {
+      const prompt = { ...validPrompt, prompt_text: '' }
+      const result = validatePromptData(prompt)
+
+      expect(result.valid).toBe(false)
+      expect(
+        result.errors.some((e) => e.includes('Regular prompts must have non-null prompt_text'))
+      ).toBe(true)
+    })
+
+    it('accepts compound prompt with null max_depth', () => {
+      const prompt = { ...validCompoundPrompt, max_depth: null }
+      const result = validatePromptData(prompt)
+
+      expect(result.valid).toBe(true)
+    })
+
+    it('rejects component with negative position', () => {
+      const prompt = {
+        ...validCompoundPrompt,
+        components: [
+          {
+            position: -1,
+            component_prompt_slug: 'test',
+            custom_text_before: null,
+            custom_text_after: null,
+          },
+        ],
+      }
+      const result = validatePromptData(prompt)
+
+      expect(result.valid).toBe(false)
+      expect(result.errors.some((e) => e.includes('Position must be non-negative'))).toBe(true)
+    })
+
+    it('accepts component with only custom text (null slug)', () => {
+      const prompt = {
+        ...validCompoundPrompt,
+        components: [
+          {
+            position: 0,
+            component_prompt_slug: null,
+            custom_text_before: 'Before text',
+            custom_text_after: 'After text',
+          },
+        ],
+      }
+      const result = validatePromptData(prompt)
+
+      expect(result.valid).toBe(true)
+    })
+
+    it('accepts component with all null custom text', () => {
+      const prompt = {
+        ...validCompoundPrompt,
+        components: [
+          {
+            position: 0,
+            component_prompt_slug: 'test-slug',
+            custom_text_before: null,
+            custom_text_after: null,
+          },
+        ],
+      }
+      const result = validatePromptData(prompt)
+
+      expect(result.valid).toBe(true)
+    })
+  })
+
   describe('parseAndValidateJSON', () => {
     it('parses and validates valid JSON', () => {
       const json = JSON.stringify(validExportData)

@@ -14,44 +14,104 @@ import type { ValidationResult } from '../types'
 const PromptStatusSchema = z.enum(['PENDING', 'APPROVED', 'REJECTED'])
 
 /**
- * Zod schema for PromptData
+ * Zod schema for CompoundComponent
+ *
+ * Validates component structure within compound prompts.
+ * Components reference other prompts by slug (not ID) for portability.
+ */
+const CompoundComponentSchema = z.object({
+  position: z.number().int().nonnegative('Position must be non-negative'),
+  component_prompt_slug: z.string().nullable(),
+  custom_text_before: z.string().nullable(),
+  custom_text_after: z.string().nullable(),
+})
+
+/**
+ * Zod schema for PromptData (v2.0+)
  *
  * Validates individual prompt data structure with all required fields,
  * optional fields, and data type constraints.
+ *
+ * Version 2.0 adds support for compound prompts with components.
  */
-export const PromptDataSchema = z.object({
-  // Core content - all required except description and example_output
-  title: z.string().min(1, 'Title is required').max(500, 'Title too long'),
-  slug: z
-    .string()
-    .min(1, 'Slug is required')
-    .max(200, 'Slug too long')
-    .regex(/^[a-z0-9-]+$/, 'Slug must be lowercase alphanumeric with hyphens'),
-  prompt_text: z.string().min(1, 'Prompt text is required'),
-  description: z.string().nullable(),
-  example_output: z.string().nullable(),
+export const PromptDataSchema = z
+  .object({
+    // Core content - all required except description and example_output
+    title: z.string().min(1, 'Title is required').max(500, 'Title too long'),
+    slug: z
+      .string()
+      .min(1, 'Slug is required')
+      .max(200, 'Slug too long')
+      .regex(/^[a-z0-9-]+$/, 'Slug must be lowercase alphanumeric with hyphens'),
+    prompt_text: z.string().nullable(), // Nullable for compound prompts
+    description: z.string().nullable(),
+    example_output: z.string().nullable(),
 
-  // Classification
-  category: z.string().min(1, 'Category is required'),
-  tags: z.array(z.string()).default([]),
+    // Classification
+    category: z.string().min(1, 'Category is required'),
+    tags: z.array(z.string()).default([]),
 
-  // Attribution
-  author_name: z.string().min(1, 'Author name is required'),
-  author_url: z.string().url('Invalid author URL').nullable().or(z.literal(null)),
+    // Attribution
+    author_name: z.string().min(1, 'Author name is required'),
+    author_url: z.string().url('Invalid author URL').nullable().or(z.literal(null)),
 
-  // Status
-  status: PromptStatusSchema,
-  featured: z.boolean(),
+    // Status
+    status: PromptStatusSchema,
+    featured: z.boolean(),
 
-  // Metadata (ISO 8601 strings)
-  created_at: z.string().datetime('Invalid created_at timestamp'),
-  updated_at: z.string().datetime('Invalid updated_at timestamp'),
-  approved_at: z.string().datetime('Invalid approved_at timestamp').nullable(),
+    // Metadata (ISO 8601 strings)
+    created_at: z.string().datetime('Invalid created_at timestamp'),
+    updated_at: z.string().datetime('Invalid updated_at timestamp'),
+    approved_at: z.string().datetime('Invalid approved_at timestamp').nullable(),
 
-  // Audit trail (optional)
-  submitted_by: z.string().optional(),
-  approved_by: z.string().optional(),
-})
+    // Audit trail (optional)
+    submitted_by: z.string().optional(),
+    approved_by: z.string().optional(),
+
+    // Compound prompt fields (v2.0+)
+    is_compound: z.boolean(),
+    max_depth: z.number().int().nullable(),
+    components: z.array(CompoundComponentSchema).optional(),
+  })
+  .refine(
+    (data) => {
+      // Regular prompts must have prompt_text
+      if (!data.is_compound) {
+        return data.prompt_text !== null && data.prompt_text.length > 0
+      }
+      return true
+    },
+    {
+      message: 'Regular prompts must have non-null prompt_text',
+      path: ['prompt_text'],
+    }
+  )
+  .refine(
+    (data) => {
+      // Compound prompts must have null prompt_text
+      if (data.is_compound) {
+        return data.prompt_text === null
+      }
+      return true
+    },
+    {
+      message: 'Compound prompts must have null prompt_text',
+      path: ['prompt_text'],
+    }
+  )
+  .refine(
+    (data) => {
+      // Compound prompts must have at least one component
+      if (data.is_compound) {
+        return data.components && data.components.length > 0
+      }
+      return true
+    },
+    {
+      message: 'Compound prompts must have at least one component',
+      path: ['components'],
+    }
+  )
 
 /**
  * Zod schema for ExportData
