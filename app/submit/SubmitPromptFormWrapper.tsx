@@ -28,27 +28,27 @@ export function SubmitPromptFormWrapper({
     <div className="space-y-6">
       {/* Prompt Type Selector */}
       <div>
-        <label className="block text-sm font-medium leading-6 text-gray-900 mb-3">
+        <label className="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-100 mb-3">
           Prompt Type
         </label>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <button
             type="button"
             onClick={() => setPromptType('regular')}
-            className={`relative flex cursor-pointer rounded-lg border bg-white p-4 shadow-sm focus:outline-none ${
+            className={`relative flex cursor-pointer rounded-lg border bg-white dark:bg-gray-800 p-4 shadow-sm focus:outline-none ${
               promptType === 'regular'
                 ? 'border-blue-600 ring-2 ring-blue-600'
-                : 'border-gray-300'
+                : 'border-gray-300 dark:border-gray-700'
             }`}
           >
             <div className="flex flex-1 flex-col">
               <div className="flex items-center justify-between">
-                <span className="block text-sm font-medium text-gray-900">
+                <span className="block text-sm font-medium text-gray-900 dark:text-gray-100">
                   Regular Prompt
                 </span>
                 {promptType === 'regular' && (
                   <svg
-                    className="h-5 w-5 text-blue-600"
+                    className="h-5 w-5 text-blue-600 dark:text-blue-400"
                     viewBox="0 0 20 20"
                     fill="currentColor"
                   >
@@ -60,7 +60,7 @@ export function SubmitPromptFormWrapper({
                   </svg>
                 )}
               </div>
-              <span className="mt-1 flex items-center text-sm text-gray-500">
+              <span className="mt-1 flex items-center text-sm text-gray-500 dark:text-gray-400">
                 Submit a single, standalone prompt with your own text
               </span>
             </div>
@@ -69,20 +69,20 @@ export function SubmitPromptFormWrapper({
           <button
             type="button"
             onClick={() => setPromptType('compound')}
-            className={`relative flex cursor-pointer rounded-lg border bg-white p-4 shadow-sm focus:outline-none ${
+            className={`relative flex cursor-pointer rounded-lg border bg-white dark:bg-gray-800 p-4 shadow-sm focus:outline-none ${
               promptType === 'compound'
                 ? 'border-blue-600 ring-2 ring-blue-600'
-                : 'border-gray-300'
+                : 'border-gray-300 dark:border-gray-700'
             }`}
           >
             <div className="flex flex-1 flex-col">
               <div className="flex items-center justify-between">
-                <span className="block text-sm font-medium text-gray-900">
+                <span className="block text-sm font-medium text-gray-900 dark:text-gray-100">
                   Compound Prompt
                 </span>
                 {promptType === 'compound' && (
                   <svg
-                    className="h-5 w-5 text-blue-600"
+                    className="h-5 w-5 text-blue-600 dark:text-blue-400"
                     viewBox="0 0 20 20"
                     fill="currentColor"
                   >
@@ -94,7 +94,7 @@ export function SubmitPromptFormWrapper({
                   </svg>
                 )}
               </div>
-              <span className="mt-1 flex items-center text-sm text-gray-500">
+              <span className="mt-1 flex items-center text-sm text-gray-500 dark:text-gray-400">
                 Combine multiple existing prompts with custom text
               </span>
             </div>

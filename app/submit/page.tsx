@@ -42,27 +42,27 @@ export default async function SubmitPage() {
     <div className="mx-auto max-w-4xl px-4 py-12">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">
+        <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-100">
           Submit a Prompt
         </h1>
-        <p className="mt-2 text-gray-600">
+        <p className="mt-2 text-gray-600 dark:text-gray-400">
           Share your AI prompt with the community. All submissions are reviewed
           before publication.
         </p>
       </div>
 
       {/* License notice */}
-      <div className="mb-8 rounded-md bg-blue-50 p-4">
-        <h2 className="text-sm font-semibold text-blue-900">
+      <div className="mb-8 rounded-md bg-blue-50 dark:bg-blue-900/20 p-4">
+        <h2 className="text-sm font-semibold text-blue-900 dark:text-blue-100">
           📝 Content License
         </h2>
-        <p className="mt-1 text-sm text-blue-800">
+        <p className="mt-1 text-sm text-blue-800 dark:text-blue-200">
           All submissions are released under{' '}
           <a
             href="https://creativecommons.org/publicdomain/zero/1.0/"
             target="_blank"
             rel="noopener noreferrer"
-            className="underline hover:text-blue-900"
+            className="underline hover:text-blue-900 dark:hover:text-blue-100"
           >
             CC0 (Public Domain)
           </a>

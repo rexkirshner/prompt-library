@@ -76,21 +76,21 @@ export function SubmitCompoundPromptForm({
     <form action={formAction} className="space-y-8">
       {/* Form-level error */}
       {state?.errors?.form && (
-        <div className="rounded-md bg-red-50 p-4">
-          <p className="text-sm text-red-800">{state.errors.form}</p>
+        <div className="rounded-md bg-red-50 dark:bg-red-900/20 p-4">
+          <p className="text-sm text-red-800 dark:text-red-200">{state.errors.form}</p>
         </div>
       )}
 
       {/* Success message */}
       {state?.success && state.message && (
-        <div className="rounded-md bg-green-50 p-4">
-          <p className="text-sm text-green-800">{state.message}</p>
+        <div className="rounded-md bg-green-50 dark:bg-green-900/20 p-4">
+          <p className="text-sm text-green-800 dark:text-green-200">{state.message}</p>
         </div>
       )}
 
       {/* Basic Information Section */}
       <div className="space-y-6">
-        <h2 className="text-xl font-semibold text-gray-900">
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
           Basic Information
         </h2>
 
@@ -98,9 +98,9 @@ export function SubmitCompoundPromptForm({
         <div>
           <label
             htmlFor="title"
-            className="block text-sm font-medium leading-6 text-gray-900"
+            className="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-100"
           >
-            Title <span className="text-red-600">*</span>
+            Title <span className="text-red-600 dark:text-red-400">*</span>
           </label>
           <div className="mt-2">
             <input
@@ -110,19 +110,19 @@ export function SubmitCompoundPromptForm({
               required
               maxLength={100}
               placeholder="e.g., Complete Code Review Workflow"
-              className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
+              className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 dark:text-gray-100 dark:bg-gray-800 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
               aria-invalid={state?.errors?.title ? 'true' : 'false'}
               aria-describedby={state?.errors?.title ? 'title-error' : 'title-help'}
             />
           </div>
           <p
             id="title-help"
-            className="mt-2 text-sm text-gray-500"
+            className="mt-2 text-sm text-gray-500 dark:text-gray-400"
           >
             10-100 characters. Be concise and descriptive.
           </p>
           {state?.errors?.title && (
-            <p id="title-error" className="mt-2 text-sm text-red-600">
+            <p id="title-error" className="mt-2 text-sm text-red-600 dark:text-red-400">
               {state.errors.title}
             </p>
           )}
@@ -132,16 +132,16 @@ export function SubmitCompoundPromptForm({
         <div>
           <label
             htmlFor="category"
-            className="block text-sm font-medium leading-6 text-gray-900"
+            className="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-100"
           >
-            Category <span className="text-red-600">*</span>
+            Category <span className="text-red-600 dark:text-red-400">*</span>
           </label>
           <div className="mt-2">
             <select
               id="category"
               name="category"
               required
-              className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
+              className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 dark:text-gray-100 dark:bg-gray-800 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
               aria-invalid={state?.errors?.category ? 'true' : 'false'}
               aria-describedby={
                 state?.errors?.category ? 'category-error' : undefined
@@ -156,7 +156,7 @@ export function SubmitCompoundPromptForm({
             </select>
           </div>
           {state?.errors?.category && (
-            <p id="category-error" className="mt-2 text-sm text-red-600">
+            <p id="category-error" className="mt-2 text-sm text-red-600 dark:text-red-400">
               {state.errors.category}
             </p>
           )}
@@ -166,9 +166,9 @@ export function SubmitCompoundPromptForm({
         <div>
           <label
             htmlFor="description"
-            className="block text-sm font-medium leading-6 text-gray-900"
+            className="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-100"
           >
-            Description <span className="text-gray-500">(optional)</span>
+            Description <span className="text-gray-500 dark:text-gray-400">(optional)</span>
           </label>
           <div className="mt-2">
             <textarea
@@ -177,7 +177,7 @@ export function SubmitCompoundPromptForm({
               rows={3}
               maxLength={500}
               placeholder="Brief overview of what this compound prompt does..."
-              className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
+              className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 dark:text-gray-100 dark:bg-gray-800 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
               aria-invalid={state?.errors?.description ? 'true' : 'false'}
               aria-describedby={
                 state?.errors?.description
@@ -186,11 +186,11 @@ export function SubmitCompoundPromptForm({
               }
             />
           </div>
-          <p id="description-help" className="mt-2 text-sm text-gray-500">
+          <p id="description-help" className="mt-2 text-sm text-gray-500 dark:text-gray-400">
             Up to 500 characters. Optional but recommended.
           </p>
           {state?.errors?.description && (
-            <p id="description-error" className="mt-2 text-sm text-red-600">
+            <p id="description-error" className="mt-2 text-sm text-red-600 dark:text-red-400">
               {state.errors.description}
             </p>
           )}
@@ -198,13 +198,13 @@ export function SubmitCompoundPromptForm({
 
         {/* Tags field */}
         <div>
-          <label className="block text-sm font-medium leading-6 text-gray-900">
-            Tags <span className="text-red-600">*</span>
+          <label className="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-100">
+            Tags <span className="text-red-600 dark:text-red-400">*</span>
           </label>
           <div className="mt-2">
             <TagInput tags={tags} onTagsChange={setTags} />
           </div>
-          <p className="mt-2 text-sm text-gray-500">
+          <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
             1-5 tags to help categorize your prompt.
           </p>
         </div>
@@ -212,7 +212,7 @@ export function SubmitCompoundPromptForm({
 
       {/* Author Information Section */}
       <div className="space-y-6">
-        <h2 className="text-xl font-semibold text-gray-900">
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
           Author Information
         </h2>
 
@@ -220,9 +220,9 @@ export function SubmitCompoundPromptForm({
         <div>
           <label
             htmlFor="authorName"
-            className="block text-sm font-medium leading-6 text-gray-900"
+            className="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-100"
           >
-            Your Name <span className="text-red-600">*</span>
+            Your Name <span className="text-red-600 dark:text-red-400">*</span>
           </label>
           <div className="mt-2">
             <input
@@ -232,7 +232,7 @@ export function SubmitCompoundPromptForm({
               required
               defaultValue={defaultAuthorName}
               placeholder="John Doe"
-              className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
+              className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 dark:text-gray-100 dark:bg-gray-800 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
               aria-invalid={state?.errors?.authorName ? 'true' : 'false'}
               aria-describedby={
                 state?.errors?.authorName ? 'authorName-error' : undefined
@@ -240,7 +240,7 @@ export function SubmitCompoundPromptForm({
             />
           </div>
           {state?.errors?.authorName && (
-            <p id="authorName-error" className="mt-2 text-sm text-red-600">
+            <p id="authorName-error" className="mt-2 text-sm text-red-600 dark:text-red-400">
               {state.errors.authorName}
             </p>
           )}
@@ -250,9 +250,9 @@ export function SubmitCompoundPromptForm({
         <div>
           <label
             htmlFor="authorUrl"
-            className="block text-sm font-medium leading-6 text-gray-900"
+            className="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-100"
           >
-            Website/URL <span className="text-gray-500">(optional)</span>
+            Website/URL <span className="text-gray-500 dark:text-gray-400">(optional)</span>
           </label>
           <div className="mt-2">
             <input
@@ -260,10 +260,10 @@ export function SubmitCompoundPromptForm({
               name="authorUrl"
               type="url"
               placeholder="https://yourwebsite.com"
-              className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
+              className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 dark:text-gray-100 dark:bg-gray-800 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
             />
           </div>
-          <p className="mt-2 text-sm text-gray-500">
+          <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
             Link to your website, GitHub, or social profile.
           </p>
         </div>
@@ -271,10 +271,10 @@ export function SubmitCompoundPromptForm({
 
       {/* Component Builder Section */}
       <div className="space-y-6">
-        <h2 className="text-xl font-semibold text-gray-900">
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
           Build Your Compound Prompt
         </h2>
-        <p className="text-sm text-gray-600">
+        <p className="text-sm text-gray-600 dark:text-gray-400">
           Select existing prompts and add custom text to create a compound prompt.
         </p>
 
@@ -285,7 +285,7 @@ export function SubmitCompoundPromptForm({
         />
 
         {state?.errors?.components && (
-          <p className="mt-2 text-sm text-red-600">{state.errors.components}</p>
+          <p className="mt-2 text-sm text-red-600 dark:text-red-400">{state.errors.components}</p>
         )}
       </div>
 
