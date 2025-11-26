@@ -93,7 +93,7 @@ export default async function AdminDashboardPage() {
       {/* Quick Actions */}
       <div className="mb-8">
         <h2 className="mb-4 text-xl font-semibold text-gray-900 dark:text-gray-100">Quick Actions</h2>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <Link
             href="/admin/queue"
             className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 shadow-sm hover:shadow-md"
@@ -101,6 +101,16 @@ export default async function AdminDashboardPage() {
             <h3 className="font-semibold text-gray-900 dark:text-gray-100">Moderation Queue</h3>
             <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
               Review pending submissions ({pendingCount})
+            </p>
+          </Link>
+
+          <Link
+            href="/admin/prompts/compound/create"
+            className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 shadow-sm hover:shadow-md"
+          >
+            <h3 className="font-semibold text-gray-900 dark:text-gray-100">Create Compound Prompt</h3>
+            <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+              Build prompts from components
             </p>
           </Link>
 
