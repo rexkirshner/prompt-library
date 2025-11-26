@@ -173,7 +173,7 @@ export default async function PromptPage({ params }: PromptPageProps) {
     .catch((err) => console.error('Failed to increment view count:', err))
 
   // For compound prompts, resolve the text
-  let displayText = prompt.prompt_text
+  let displayText: string
   if (prompt.is_compound) {
     try {
       displayText = await resolvePrompt(prompt.id, getPromptWithComponents)
@@ -181,6 +181,8 @@ export default async function PromptPage({ params }: PromptPageProps) {
       console.error('Failed to resolve compound prompt:', error)
       displayText = '[Error: Could not resolve compound prompt]'
     }
+  } else {
+    displayText = prompt.prompt_text || ''
   }
 
   return (
