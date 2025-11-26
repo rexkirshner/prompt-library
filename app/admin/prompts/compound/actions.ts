@@ -249,9 +249,11 @@ export async function createCompoundPrompt(
           author_name: data.authorName,
           author_url: null,
           prompt_text: null,
+          example_output: null,
           is_compound: true,
           status: 'PENDING',
           submitted_by_user_id: admin.id,
+          created_at: new Date(),
           updated_at: new Date(),
         },
       })
