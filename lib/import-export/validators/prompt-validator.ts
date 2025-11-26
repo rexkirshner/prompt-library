@@ -188,7 +188,7 @@ export function sanitizePromptData(prompt: PromptData): PromptData {
   return {
     ...prompt,
     title: sanitizeText(prompt.title),
-    prompt_text: sanitizeText(prompt.prompt_text),
+    prompt_text: prompt.prompt_text ? sanitizeText(prompt.prompt_text) : null,
     description: prompt.description ? sanitizeText(prompt.description) : null,
     example_output: prompt.example_output ? sanitizeText(prompt.example_output) : null,
     author_name: sanitizeText(prompt.author_name),
