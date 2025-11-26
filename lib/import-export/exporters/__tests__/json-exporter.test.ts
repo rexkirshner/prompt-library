@@ -43,6 +43,8 @@ describe('JSONExporter', () => {
           created_at: '2024-01-01T00:00:00Z',
           updated_at: '2024-01-01T00:00:00Z',
           approved_at: '2024-01-01T00:00:00Z',
+          is_compound: false,
+          max_depth: null,
         },
       ]
 
@@ -72,6 +74,8 @@ describe('JSONExporter', () => {
           created_at: '2024-01-01T00:00:00Z',
           updated_at: '2024-01-01T00:00:00Z',
           approved_at: null,
+          is_compound: false,
+          max_depth: null,
         },
         {
           title: 'Second Prompt',
@@ -90,6 +94,8 @@ describe('JSONExporter', () => {
           approved_at: '2024-01-03T00:00:00Z',
           submitted_by: 'user@example.com',
           approved_by: 'admin@example.com',
+          is_compound: false,
+          max_depth: null,
         },
       ]
 
@@ -144,7 +150,7 @@ describe('JSONExporter', () => {
   describe('serialize', () => {
     it('serializes export data to formatted JSON string', () => {
       const exportData = {
-        version: '1.0',
+        version: '2.0',
         exported_at: '2024-01-01T00:00:00Z',
         total_count: 1,
         prompts: [
@@ -163,6 +169,8 @@ describe('JSONExporter', () => {
             created_at: '2024-01-01T00:00:00Z',
             updated_at: '2024-01-01T00:00:00Z',
             approved_at: null,
+            is_compound: false,
+            max_depth: null,
           },
         ],
       }
@@ -175,7 +183,7 @@ describe('JSONExporter', () => {
 
     it('formats JSON with indentation', () => {
       const exportData = {
-        version: '1.0',
+        version: '2.0',
         exported_at: '2024-01-01T00:00:00Z',
         total_count: 0,
         prompts: [],
