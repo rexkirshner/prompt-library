@@ -15,7 +15,7 @@ import {
   updateCompoundPrompt,
   type ComponentData,
   type CompoundPromptResult,
-} from '../../../actions'
+} from '../../actions'
 import type { BasePromptOption } from '@/components/compound-prompts/BasePromptSelector'
 
 /**
