@@ -1414,14 +1414,21 @@ const COMPONENTS_PER_PAGE = 20
 
 ## Rollout Plan
 
-### Phase 1: Foundation (Week 1)
-- [ ] Database migration (add tables/columns)
-- [ ] Core resolution function
-- [ ] Circular reference detection
-- [ ] Depth calculation
-- [ ] Unit tests
+### Phase 1: Foundation (Week 1) ✅ COMPLETED
+- [x] Database migration (add tables/columns)
+- [x] Core resolution function
+- [x] Circular reference detection
+- [x] Depth calculation
+- [x] Unit tests (55 tests, all passing)
 
-**Deliverable:** Backend logic works, tested via scripts
+**Deliverable:** Backend logic works, tested via scripts ✅
+
+**Implementation Details:**
+- Created `lib/compound-prompts/` module with types, validation, and resolution
+- Database schema with proper constraints and indexes
+- 32 validation tests covering circular references, depth calculation, and edge cases
+- 23 resolution tests covering simple/nested compounds, custom text, and error handling
+- Committed in: 6e32ce4
 
 ### Phase 2: Admin UI (Week 2)
 - [ ] Compound prompt builder component
