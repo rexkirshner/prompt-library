@@ -471,16 +471,21 @@ All new exports will include compound prompt data automatically.
 
 ## Implementation Order
 
-1. ✅ Update types (PromptData interface)
-2. ✅ Update export service to fetch components
-3. ✅ Update export service to include compound fields
-4. ✅ Update version to 2.0
-5. ✅ Update import validation (schema + business logic)
-6. ✅ Implement two-pass import algorithm
-7. ✅ Add component creation logic
-8. ✅ Add depth recalculation
-9. ✅ Update tests
-10. ✅ Test round-trip export/import
+### Phase 1: Export (COMPLETED ✅)
+1. ✅ Update types (PromptData interface) - Added CompoundComponent interface, is_compound, max_depth, components fields
+2. ✅ Update export service to fetch components - Added compound_components include with slug selection
+3. ✅ Update export service to include compound fields - Map components with slug references
+4. ✅ Update version to 2.0 - Bumped EXPORT_VERSION constant
+5. ✅ Update test fixtures - All test prompts now include compound fields
+6. ✅ Manual verification - Exported real data, verified format
+
+### Phase 2: Import (IN PROGRESS)
+7. ⏳ Update import validation (schema + business logic)
+8. ⏳ Implement two-pass import algorithm
+9. ⏳ Add component creation logic
+10. ⏳ Add depth recalculation
+11. ⏳ Update tests
+12. ⏳ Test round-trip export/import
 
 ## Files to Modify
 
