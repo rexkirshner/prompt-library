@@ -67,31 +67,35 @@ model prompt_tags {
 }
 
 model prompts {
-  id                                        String         @id
-  slug                                      String         @unique
+  id                                        String                       @id
+  slug                                      String                       @unique
   title                                     String
-  prompt_text                               String
+  prompt_text                               String?
   description                               String?
   example_output                            String?
   category                                  String
   author_name                               String
   author_url                                String?
   submitted_by_user_id                      String?
-  status                                    PromptStatus   @default(PENDING)
+  status                                    PromptStatus                 @default(PENDING)
   rejection_reason                          String?
-  featured                                  Boolean        @default(false)
-  view_count                                Int            @default(0)
-  copy_count                                Int            @default(0)
-  created_at                                DateTime       @default(now())
+  featured                                  Boolean                      @default(false)
+  view_count                                Int                          @default(0)
+  copy_count                                Int                          @default(0)
+  is_compound                               Boolean                      @default(false)
+  max_depth                                 Int?
+  created_at                                DateTime                     @default(now())
   updated_at                                DateTime
   approved_at                               DateTime?
   approved_by_user_id                       String?
   deleted_at                                DateTime?
   prompt_edits                              prompt_edits[]
   prompt_tags                               prompt_tags[]
-  users_prompts_approved_by_user_idTousers  users?                      @relation("prompts_approved_by_user_idTousers", fields: [approved_by_user_id], references: [id])
-  users_prompts_submitted_by_user_idTousers users?                      @relation("prompts_submitted_by_user_idTousers", fields: [submitted_by_user_id], references: [id])
+  users_prompts_approved_by_user_idTousers  users?                       @relation("prompts_approved_by_user_idTousers", fields: [approved_by_user_id], references: [id])
+  users_prompts_submitted_by_user_idTousers users?                       @relation("prompts_submitted_by_user_idTousers", fields: [submitted_by_user_id], references: [id])
   user_preferences                          user_prompt_preferences[]
+  compound_components                       compound_prompt_components[] @relation("CompoundPrompt")
+  used_in_compounds                         compound_prompt_components[] @relation("ComponentPrompt")
 
   @@index([slug])
   @@index([status, created_at])
@@ -99,6 +103,23 @@ model prompts {
   @@index([category])
   @@index([deleted_at])
   @@index([status, deleted_at])
+  @@index([is_compound])
+}
+
+model compound_prompt_components {
+  id                  String   @id @default(cuid())
+  compound_prompt_id  String
+  component_prompt_id String?
+  position            Int
+  custom_text_before  String?
+  custom_text_after   String?
+  created_at          DateTime @default(now())
+  compound_prompt     prompts  @relation("CompoundPrompt", fields: [compound_prompt_id], references: [id], onDelete: Cascade)
+  component_prompt    prompts? @relation("ComponentPrompt", fields: [component_prompt_id], references: [id], onDelete: Restrict)
+
+  @@unique([compound_prompt_id, position])
+  @@index([component_prompt_id])
+  @@index([compound_prompt_id, position])
 }
 
 model tags {
