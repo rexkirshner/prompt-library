@@ -1,6 +1,6 @@
 # Database Schema
 
-This directory contains the Prisma schema and migrations for the AI Prompts Library.
+This directory contains the Prisma schema and migrations for the AI Prompt Library.
 
 ## Schema Overview
 

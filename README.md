@@ -1,4 +1,4 @@
-# AI Prompts Library
+# AI Prompt Library
 
 A lightweight, public-facing web application for saving, sharing, and discovering AI prompts. Built for a small community with emphasis on quality curation through manual moderation.
 

@@ -58,7 +58,7 @@ export default async function Home() {
       <div className="border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
         <div className="mx-auto max-w-7xl px-4 py-16 text-center">
           <h1 className="mb-4 text-5xl font-bold tracking-tight text-gray-900 dark:text-gray-100">
-            AI Prompts Library
+            AI Prompt Library
           </h1>
           <p className="mb-8 text-xl text-gray-600 dark:text-gray-400">
             A curated collection of high-quality AI prompts for the community

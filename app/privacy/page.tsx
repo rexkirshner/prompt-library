@@ -9,7 +9,7 @@ import { Metadata } from 'next'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy - AI Prompts Library',
+  title: 'Privacy Policy - AI Prompt Library',
   description: 'How we collect, use, and protect your data',
 }
 
@@ -26,7 +26,7 @@ export default function PrivacyPage() {
         <section className="mt-8">
           <h2 className="text-2xl font-semibold text-gray-900">Introduction</h2>
           <p className="mt-4 text-gray-700">
-            AI Prompts Library ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, and safeguard your information when you use our service.
+            AI Prompt Library ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, and safeguard your information when you use our service.
           </p>
         </section>
 

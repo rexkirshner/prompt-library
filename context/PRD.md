@@ -1,4 +1,4 @@
-# Product Requirements Document: AI Prompts Library v2
+# Product Requirements Document: AI Prompt Library v2
 
 **Last Updated:** 2025-11-24
 **Current Phase:** Phase 3 - Polish & Launch (Ready to Start)

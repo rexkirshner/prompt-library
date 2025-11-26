@@ -1,7 +1,7 @@
 # AI Context System - Feedback Log
 
 **Version**: 3.4.0
-**Project**: AI Prompts Library
+**Project**: AI Prompt Library
 
 ---
 

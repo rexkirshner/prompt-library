@@ -9,7 +9,7 @@
 
 ## What Is This Project?
 
-**AI Prompts Library** - A lightweight, public-facing web application for saving, sharing, and discovering AI prompts. Built for a small community (<1K users) with emphasis on quality curation through manual moderation. All content is contributed under CC0 (Public Domain) license for maximum reusability.
+**AI Prompt Library** - A lightweight, public-facing web application for saving, sharing, and discovering AI prompts. Built for a small community (<1K users) with emphasis on quality curation through manual moderation. All content is contributed under CC0 (Public Domain) license for maximum reusability.
 
 **Goals:**
 

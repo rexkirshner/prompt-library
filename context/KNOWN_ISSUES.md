@@ -1,6 +1,6 @@
 # KNOWN_ISSUES.md
 
-**Tracked limitations and issues** in the AI Prompts Library.
+**Tracked limitations and issues** in the AI Prompt Library.
 
 **For current status:** See `STATUS.md`
 **For architecture:** See `ARCHITECTURE.md`

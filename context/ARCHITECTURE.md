@@ -1,6 +1,6 @@
 # ARCHITECTURE.md
 
-**System architecture and design patterns** for the AI Prompts Library.
+**System architecture and design patterns** for the AI Prompt Library.
 
 **For coding standards:** See `CODE_STYLE.md`
 **For current status:** See `STATUS.md`
@@ -23,7 +23,7 @@
 
 ## System Overview
 
-The AI Prompts Library is a community-driven platform for discovering and sharing AI prompts. Built with Next.js 14+ App Router, it provides a modern, type-safe, server-first architecture.
+The AI Prompt Library is a community-driven platform for discovering and sharing AI prompts. Built with Next.js 14+ App Router, it provides a modern, type-safe, server-first architecture.
 
 ### Core Features
 

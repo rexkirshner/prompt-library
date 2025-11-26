@@ -9,8 +9,8 @@ import { Metadata } from 'next'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: 'Terms of Service - AI Prompts Library',
-  description: 'Terms and conditions for using AI Prompts Library',
+  title: 'Terms of Service - AI Prompt Library',
+  description: 'Terms and conditions for using AI Prompt Library',
 }
 
 export default function TermsPage() {
@@ -26,7 +26,7 @@ export default function TermsPage() {
         <section className="mt-8">
           <h2 className="text-2xl font-semibold text-gray-900">Agreement to Terms</h2>
           <p className="mt-4 text-gray-700">
-            By accessing or using AI Prompts Library ("Service"), you agree to be bound by these Terms of Service ("Terms"). If you disagree with any part of these terms, you may not access the Service.
+            By accessing or using AI Prompt Library ("Service"), you agree to be bound by these Terms of Service ("Terms"). If you disagree with any part of these terms, you may not access the Service.
           </p>
         </section>
 
@@ -169,7 +169,7 @@ export default function TermsPage() {
         <section className="mt-8">
           <h2 className="text-2xl font-semibold text-gray-900">Indemnification</h2>
           <p className="mt-4 text-gray-700">
-            You agree to indemnify and hold harmless AI Prompts Library and its operators from any claims, damages, or expenses arising from:
+            You agree to indemnify and hold harmless AI Prompt Library and its operators from any claims, damages, or expenses arising from:
           </p>
           <ul className="mt-2 list-disc space-y-1 pl-6 text-gray-700">
             <li>Your use of the Service</li>

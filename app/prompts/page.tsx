@@ -16,7 +16,7 @@ import { PromptsListClient } from '@/components/PromptsListClient'
 import { SortDropdown } from '@/components/SortDropdown'
 
 export const metadata: Metadata = {
-  title: 'Browse Prompts - AI Prompts Library',
+  title: 'Browse Prompts - AI Prompt Library',
   description: 'Discover and explore AI prompts shared by the community',
 }
 

@@ -16,7 +16,7 @@ export function Footer() {
           {/* About */}
           <div>
             <h3 className="mb-4 text-sm font-semibold text-gray-900 dark:text-gray-100">
-              AI Prompts Library
+              AI Prompt Library
             </h3>
             <p className="text-sm text-gray-600 dark:text-gray-400">
               A curated collection of high-quality AI prompts for the community.
@@ -123,7 +123,7 @@ export function Footer() {
         {/* Copyright */}
         <div className="mt-8 border-t border-gray-200 dark:border-gray-700 pt-8 text-center text-sm text-gray-500 dark:text-gray-400">
           <p>
-            © {currentYear} AI Prompts Library. All prompts are public domain under CC0.
+            © {currentYear} AI Prompt Library. All prompts are public domain under CC0.
           </p>
         </div>
       </div>
