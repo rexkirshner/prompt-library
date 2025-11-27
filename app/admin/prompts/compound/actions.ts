@@ -274,17 +274,6 @@ export async function createCompoundPrompt(
         })),
       })
 
-      // Calculate and set max_depth
-      try {
-        const depth = await calculateMaxDepth(prompt.id, getPromptWithComponents)
-        await tx.prompts.update({
-          where: { id: prompt.id },
-          data: { max_depth: depth },
-        })
-      } catch {
-        // If calculation fails, leave max_depth as null
-      }
-
       // Create tag associations
       await tx.prompt_tags.createMany({
         data: tagRecords.map((tag) => ({
@@ -295,6 +284,19 @@ export async function createCompoundPrompt(
 
       return prompt
     })
+
+    // Calculate and set max_depth AFTER transaction commits
+    // This ensures the components are visible to getPromptWithComponents
+    try {
+      const depth = await calculateMaxDepth(compoundPrompt.id, getPromptWithComponents)
+      await prisma.prompts.update({
+        where: { id: compoundPrompt.id },
+        data: { max_depth: depth },
+      })
+    } catch {
+      // If calculation fails, leave max_depth as null
+      // This is non-critical, so we don't fail the entire submission
+    }
 
     // Revalidate paths
     revalidatePath('/admin')

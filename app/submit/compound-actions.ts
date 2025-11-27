@@ -228,7 +228,7 @@ export async function submitCompoundPrompt(
     )
 
     // Create compound prompt in transaction
-    await prisma.$transaction(async (tx) => {
+    const prompt = await prisma.$transaction(async (tx) => {
       // Create the prompt with PENDING status
       const prompt = await tx.prompts.create({
         data: {
@@ -260,17 +260,6 @@ export async function submitCompoundPrompt(
         })),
       })
 
-      // Calculate and set max_depth
-      try {
-        const depth = await calculateMaxDepth(prompt.id, getPromptWithComponents)
-        await tx.prompts.update({
-          where: { id: prompt.id },
-          data: { max_depth: depth },
-        })
-      } catch {
-        // If calculation fails, leave max_depth as null
-      }
-
       // Create tag associations
       await tx.prompt_tags.createMany({
         data: tagRecords.map((tag) => ({
@@ -281,6 +270,19 @@ export async function submitCompoundPrompt(
 
       return prompt
     })
+
+    // Calculate and set max_depth AFTER transaction commits
+    // This ensures the components are visible to getPromptWithComponents
+    try {
+      const depth = await calculateMaxDepth(prompt.id, getPromptWithComponents)
+      await prisma.prompts.update({
+        where: { id: prompt.id },
+        data: { max_depth: depth },
+      })
+    } catch {
+      // If calculation fails, leave max_depth as null
+      // This is non-critical, so we don't fail the entire submission
+    }
 
     // Revalidate paths
     revalidatePath('/submit')
