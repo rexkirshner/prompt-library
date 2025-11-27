@@ -8,6 +8,9 @@
 
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/db/client'
+import { logger as baseLogger } from '@/lib/logging'
+
+const logger = baseLogger.child({ module: 'users/actions' })
 
 export interface CopyPreferences {
   copyPrefix: string
@@ -54,7 +57,11 @@ export async function getCopyPreferences(): Promise<CopyPreferences | null> {
       copyGithubReminder: user.copy_github_reminder,
     }
   } catch (error) {
-    console.error('Failed to get copy preferences:', error)
+    logger.error(
+      'Failed to get copy preferences',
+      error as Error,
+      { userId: session.user.id }
+    )
     return null
   }
 }
@@ -86,7 +93,11 @@ export async function saveCopyPreferences(
 
     return true
   } catch (error) {
-    console.error('Failed to save copy preferences:', error)
+    logger.error(
+      'Failed to save copy preferences',
+      error as Error,
+      { userId: session.user.id }
+    )
     return false
   }
 }
