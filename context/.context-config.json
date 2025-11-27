@@ -1,5 +1,5 @@
 {
-  "version": "3.0.0",
+  "version": "3.4.0",
   "owner": "Rex Kirshner",
   "project": {
     "name": "AI Prompts Library",
@@ -220,8 +220,8 @@
   },
   "metadata": {
     "createdAt": "2025-11-23",
-    "lastUpdated": "2025-11-23",
-    "configVersion": "3.0.0",
+    "lastUpdated": "2025-11-27",
+    "configVersion": "3.4.0",
     "notes": "Configuration for AI Context System"
   },
   "metrics": {

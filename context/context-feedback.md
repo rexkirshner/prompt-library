@@ -880,6 +880,76 @@ Document if: This is something future developers will wonder about
 
 ---
 
+## 2025-11-27 - /review-context Version Check - Bug 🐛
+
+**What happened**: `/review-context` Step 1.5 version check reported system update available (v3.0.0 → v3.4.0) even though system was already on v3.4.0
+
+**Expected behavior**: Version check should correctly detect current system version from config file and not report false update availability
+
+**Actual behavior**:
+- System was already on v3.4.0 (confirmed by git commit "Install AI Context System v3.4.0")
+- `context/.context-config.json` showed `"version": "3.0.0"` (incorrect)
+- Version check compared incorrect config version vs GitHub version
+- Incorrectly reported "UPDATE_AVAILABLE|3.0.0|3.4.0"
+
+**Root cause**: During v3.4.0 installation, the `.context-config.json` file was not updated to reflect the new version. The file retained the old v3.0.0 value in both:
+- Line 2: `"version": "3.0.0"`
+- Line 224: `"configVersion": "3.0.0"`
+
+**Steps to reproduce**:
+1. Install AI Context System v3.4.0
+2. Check if `.context-config.json` version fields were updated
+3. Run `/review-context`
+4. Observe false positive update notification
+
+**Impact**:
+- Confusing UX - users think they need to update when already current
+- Wastes time investigating version discrepancy
+- Erodes trust in version checking mechanism
+
+**Suggestion**:
+
+**Option 1: Fix installation process** - Ensure `/init-context` or `/update-context-system` updates all version fields in `.context-config.json`:
+```bash
+# Update both version fields during installation
+sed -i '' 's/"version": "[^"]*"/"version": "3.4.0"/' context/.context-config.json
+sed -i '' 's/"configVersion": "[^"]*"/"configVersion": "3.4.0"/' context/.context-config.json
+```
+
+**Option 2: Add version verification step** - After installation, verify config version matches:
+```bash
+# In /init-context or /update-context-system
+INSTALLED_VERSION="3.4.0"
+CONFIG_VERSION=$(grep -m 1 '"version":' context/.context-config.json | sed 's/.*"version": "\([^"]*\)".*/\1/')
+
+if [ "$CONFIG_VERSION" != "$INSTALLED_VERSION" ]; then
+  echo "⚠️  Warning: Config version mismatch detected, updating..."
+  # Fix the version
+fi
+```
+
+**Option 3: Use authoritative VERSION file** - Don't rely on config file for version:
+```bash
+# Create context/VERSION file during installation
+echo "3.4.0" > context/VERSION
+
+# Version check reads from VERSION file (single source of truth)
+CURRENT_VERSION=$(cat context/VERSION 2>/dev/null || echo "unknown")
+```
+
+**Resolution**: Manually updated `.context-config.json` to v3.4.0 and added `lastUpdated: 2025-11-27`
+
+**Severity**: 🟡 Moderate (confusing UX, easy manual fix, but should be prevented)
+
+**Environment**:
+- OS: macOS Darwin 24.6.0
+- Claude Code: Claude Sonnet 4.5
+- CCS: 3.4.0 (actual) / 3.0.0 (config before fix)
+
+**Follow-up action needed**: Check `/init-context` and `/update-context-system` commands to ensure they update version fields in `.context-config.json`
+
+---
+
 ## Examples (Delete after reading)
 
 ### Example 1: Bug Report
