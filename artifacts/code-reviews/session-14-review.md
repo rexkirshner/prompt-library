@@ -17,7 +17,7 @@ The codebase continues to maintain solid engineering standards with TypeScript s
 
 **Critical Issues:** 0
 **High Priority:** 0 (H1 COMPLETE ✅)
-**Medium Priority:** 2 (1 RESOLVED)
+**Medium Priority:** 1 (M2, M3 RESOLVED ✅)
 **Low Priority:** 2
 
 **Top 3 Recommendations:**
@@ -222,6 +222,7 @@ The codebase continues to maintain solid engineering standards with TypeScript s
 
 #### M2: Type Hierarchy Inconsistency
 - **Severity:** Medium (Code Quality)
+- **Status:** ✅ **RESOLVED** (Session 16)
 - **Location:** `lib/compound-prompts/types.ts`, `lib/import-export/services/import-service.ts`
 - **Issue:** CompoundPromptWithComponents type definition may not include all commonly needed fields:
   - Component resolution logic needs `slug` field
@@ -230,14 +231,16 @@ The codebase continues to maintain solid engineering standards with TypeScript s
   - Workaround: using Map<slug, id> for resolution
 - **Impact:** Type definition doesn't fully match usage patterns, potential confusion
 - **Root Cause:** Type designed for specific use case, doesn't cover all scenarios
-- **Suggestion:**
-  1. Review CompoundPromptWithComponents type definition
-  2. Consider adding `slug` field if commonly needed
-  3. Or create separate type for component resolution scenarios
-  4. Document type usage patterns in code comments
-  5. Add type utility functions for common transformations
-- **Effort:** 2-3 hours
-- **Priority:** Improves type safety and developer experience
+
+**Session 16 Resolution:**
+- ✅ **BasePrompt type enhanced** - Added optional `title` and `slug` fields
+- ✅ **Comprehensive documentation** - JSDoc explains core vs optional fields
+- ✅ **Import service updated** - Now includes title and slug for better traceability
+- ✅ **All tests updated** - Fixed 17 test fixtures to include required fields
+- ✅ **Type safety maintained** - Optional fields ensure backward compatibility
+- ✅ **Build verified** - TypeScript compilation and all tests pass
+
+**Outcome:** Type system now supports both minimal resolution use cases and richer debugging scenarios without type proliferation. YAGNI principle maintained while improving developer experience.
 
 #### M3: Missing Documentation for Recent Decisions
 - **Severity:** Medium (Documentation)
