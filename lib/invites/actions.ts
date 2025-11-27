@@ -6,6 +6,9 @@
 
 import { prisma } from "../db/client";
 import { CreateInviteResult, RedeemInviteResult } from "./types";
+import { logger as baseLogger } from '@/lib/logging'
+
+const logger = baseLogger.child({ module: 'invites/actions' })
 
 /**
  * Create a new invite code
@@ -49,7 +52,11 @@ export async function createInviteCode(
       inviteUrl,
     };
   } catch (error) {
-    console.error("Error creating invite code:", error);
+    logger.error(
+      'Failed to create invite code',
+      error as Error,
+      { createdBy, baseUrl }
+    )
     return {
       success: false,
       error: "Failed to create invite code",
@@ -97,7 +104,11 @@ export async function redeemInviteCode(
       inviteId: invite.id,
     };
   } catch (error) {
-    console.error("Error redeeming invite code:", error);
+    logger.error(
+      'Failed to redeem invite code',
+      error as Error,
+      { code, redeemedBy }
+    )
     return {
       success: false,
       error: "Failed to redeem invite code",
