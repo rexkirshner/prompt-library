@@ -16,6 +16,9 @@
 import { randomUUID } from 'crypto'
 import { prisma } from '@/lib/db/client'
 import { Prisma } from '@prisma/client'
+import { logger as baseLogger } from '@/lib/logging'
+
+const logger = baseLogger.child({ module: 'audit' })
 
 /**
  * Standard action types for user activities
@@ -131,7 +134,11 @@ export async function logUserAction(
 
     return { success: true, actionId }
   } catch (error) {
-    console.error('Failed to log user action:', error)
+    logger.error(
+      'Failed to log user action',
+      error as Error,
+      { userId, action }
+    )
     return { success: false, error: 'Failed to create audit log entry' }
   }
 }
