@@ -7,7 +7,7 @@
 
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { BasePromptSelector, type BasePromptOption } from './BasePromptSelector'
 import type { ComponentData } from '@/app/admin/prompts/compound/actions'
 
@@ -49,10 +49,11 @@ export function CompoundPromptBuilder({
   const [isSelectorOpen, setIsSelectorOpen] = useState(false)
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null)
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null)
+  const hasInitialized = useRef(false)
 
-  // Initialize components from props
+  // Initialize components from props (only once)
   useEffect(() => {
-    if (initialComponents.length > 0) {
+    if (!hasInitialized.current && initialComponents.length > 0) {
       const displayComponents = initialComponents.map((comp, idx) => {
         const prompt = availablePrompts.find((p) => p.id === comp.component_prompt_id)
         return {
@@ -63,6 +64,7 @@ export function CompoundPromptBuilder({
         }
       })
       setComponents(displayComponents)
+      hasInitialized.current = true
     }
   }, [initialComponents, availablePrompts])
 

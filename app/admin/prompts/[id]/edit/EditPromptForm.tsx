@@ -52,6 +52,8 @@ export function EditPromptForm({ prompt }: EditPromptFormProps) {
   const [tags, setTags] = useState<string[]>(prompt.tags)
   const [promptText, setPromptText] = useState(prompt.promptText)
   const [showPreview, setShowPreview] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
 
   const handleSubmit = async (
     prevState: EditPromptResult | null,
@@ -348,6 +350,72 @@ export function EditPromptForm({ prompt }: EditPromptFormProps) {
 
       {/* Submit button */}
       <SubmitButton />
+
+      {/* Danger Zone - Delete */}
+      <div className="mt-8 border-t border-gray-200 dark:border-gray-700 pt-8">
+        <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
+          Danger Zone
+        </h3>
+        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+          Deleting this prompt will hide it from public view. You can restore it later from the admin dashboard.
+        </p>
+
+        {!showDeleteConfirm ? (
+          <button
+            type="button"
+            onClick={() => setShowDeleteConfirm(true)}
+            className="rounded-md border border-red-300 dark:border-red-700 bg-white dark:bg-gray-800 px-4 py-2 text-sm font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
+          >
+            Delete Prompt
+          </button>
+        ) : (
+          <div className="rounded-lg border border-red-300 dark:border-red-700 bg-red-50 dark:bg-red-900/20 p-4">
+            <p className="text-sm font-medium text-red-800 dark:text-red-200 mb-3">
+              Are you sure you want to delete this prompt?
+            </p>
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={async () => {
+                  setIsDeleting(true)
+                  try {
+                    const response = await fetch(`/api/admin/prompts/${prompt.id}/delete`, {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ action: 'delete' }),
+                    })
+
+                    if (response.ok) {
+                      window.location.href = '/admin'
+                    } else {
+                      const data = await response.json()
+                      alert(`Error: ${data.error || 'Failed to delete prompt'}`)
+                      setIsDeleting(false)
+                      setShowDeleteConfirm(false)
+                    }
+                  } catch (error) {
+                    alert('Failed to delete prompt')
+                    setIsDeleting(false)
+                    setShowDeleteConfirm(false)
+                  }
+                }}
+                disabled={isDeleting}
+                className="rounded-md bg-red-600 dark:bg-red-700 px-4 py-2 text-sm font-semibold text-white hover:bg-red-500 dark:hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isDeleting ? 'Deleting...' : 'Yes, Delete'}
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowDeleteConfirm(false)}
+                disabled={isDeleting}
+                className="rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-4 py-2 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
     </form>
   )
 }

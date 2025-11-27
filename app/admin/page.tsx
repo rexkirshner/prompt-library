@@ -20,7 +20,7 @@ export default async function AdminDashboardPage() {
   await requireAdmin()
 
   // Fetch stats
-  const [pendingCount, approvedCount, rejectedCount, totalTags, recentSubmissions] =
+  const [pendingCount, approvedCount, rejectedCount, totalTags, recentSubmissions, deletedPrompts] =
     await Promise.all([
       prisma.prompts.count({
         where: { status: 'PENDING', deleted_at: null },
@@ -43,6 +43,18 @@ export default async function AdminDashboardPage() {
           status: true,
           created_at: true,
           author_name: true,
+        },
+      }),
+      prisma.prompts.findMany({
+        where: { deleted_at: { not: null } },
+        orderBy: { deleted_at: 'desc' },
+        take: 10,
+        select: {
+          id: true,
+          title: true,
+          slug: true,
+          status: true,
+          deleted_at: true,
         },
       }),
     ])
@@ -219,6 +231,95 @@ export default async function AdminDashboardPage() {
           </table>
         </div>
       </div>
+
+      {/* Deleted Prompts */}
+      {deletedPrompts.length > 0 && (
+        <div className="mt-8">
+          <h2 className="mb-4 text-xl font-semibold text-gray-900 dark:text-gray-100">Deleted Prompts</h2>
+          <div className="overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead className="bg-gray-50 dark:bg-gray-900">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                    Title
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                    Status
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                    Deleted
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-800">
+                {deletedPrompts.map((prompt) => (
+                  <tr key={prompt.id}>
+                    <td className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-gray-100">
+                      {prompt.title}
+                    </td>
+                    <td className="px-6 py-4">
+                      <span
+                        className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold leading-5 ${
+                          prompt.status === 'APPROVED'
+                            ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300'
+                            : prompt.status === 'PENDING'
+                              ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300'
+                              : 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300'
+                        }`}
+                      >
+                        {prompt.status}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
+                      {prompt.deleted_at
+                        ? new Date(prompt.deleted_at).toLocaleDateString()
+                        : 'N/A'}
+                    </td>
+                    <td className="px-6 py-4 text-sm">
+                      <form
+                        action={async () => {
+                          'use server'
+                          await requireAdmin()
+                          const { auth } = await import('@/lib/auth')
+                          const { logUserAction } = await import('@/lib/audit')
+
+                          const session = await auth()
+                          if (!session?.user) return
+
+                          await prisma.prompts.update({
+                            where: { id: prompt.id },
+                            data: { deleted_at: null },
+                          })
+
+                          // Log restoration
+                          await logUserAction(session.user.id, 'PROMPT_RESTORED', {
+                            details: {
+                              entityType: 'prompt',
+                              entityId: prompt.id,
+                              title: prompt.title,
+                              slug: prompt.slug,
+                            },
+                          })
+                        }}
+                      >
+                        <button
+                          type="submit"
+                          className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium"
+                        >
+                          Restore
+                        </button>
+                      </form>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

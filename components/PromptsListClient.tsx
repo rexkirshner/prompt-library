@@ -79,10 +79,10 @@ export function PromptsListClient({ prompts, userId }: PromptsListClientProps) {
                   {prompt.title}
                 </h2>
 
-                {/* Description */}
-                {prompt.description && (
+                {/* Description or resolved text preview */}
+                {(prompt.description || prompt.resolved_text) && (
                   <p className="mb-4 line-clamp-2 text-sm text-gray-600 dark:text-gray-400">
-                    {prompt.description}
+                    {prompt.description || prompt.resolved_text}
                   </p>
                 )}
 
@@ -167,10 +167,10 @@ export function PromptsListClient({ prompts, userId }: PromptsListClientProps) {
                     </h2>
                   </div>
 
-                  {/* Description */}
-                  {prompt.description && (
+                  {/* Description or resolved text preview */}
+                  {(prompt.description || prompt.resolved_text) && (
                     <p className="mb-3 text-sm text-gray-600 dark:text-gray-400">
-                      {prompt.description}
+                      {prompt.description || prompt.resolved_text}
                     </p>
                   )}
 
