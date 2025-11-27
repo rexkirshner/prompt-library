@@ -9,6 +9,9 @@
 import { revalidatePath } from 'next/cache'
 import { prisma } from '@/lib/db/client'
 import { getAdminUser } from '@/lib/auth/admin'
+import { logger as baseLogger } from '@/lib/logging'
+
+const logger = baseLogger.child({ module: 'admin/queue/actions' })
 
 export interface ModerationResult {
   success: boolean
@@ -41,7 +44,11 @@ export async function approvePrompt(promptId: string): Promise<ModerationResult>
 
     return { success: true }
   } catch (error) {
-    console.error('Failed to approve prompt:', error)
+    logger.error(
+      'Failed to approve prompt',
+      error as Error,
+      { promptId }
+    )
     return { success: false, error: 'Failed to approve prompt' }
   }
 }
@@ -73,7 +80,11 @@ export async function rejectPrompt(
 
     return { success: true }
   } catch (error) {
-    console.error('Failed to reject prompt:', error)
+    logger.error(
+      'Failed to reject prompt',
+      error as Error,
+      { promptId, rejectionReason }
+    )
     return { success: false, error: 'Failed to reject prompt' }
   }
 }
@@ -102,7 +113,11 @@ export async function deletePrompt(promptId: string): Promise<ModerationResult> 
 
     return { success: true }
   } catch (error) {
-    console.error('Failed to delete prompt:', error)
+    logger.error(
+      'Failed to delete prompt',
+      error as Error,
+      { promptId }
+    )
     return { success: false, error: 'Failed to delete prompt' }
   }
 }
