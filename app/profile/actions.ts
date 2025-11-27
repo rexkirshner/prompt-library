@@ -12,6 +12,9 @@ import { hashPassword, verifyPassword } from '@/lib/auth/password'
 import { validatePassword } from '@/lib/auth/validation'
 import { passwordChangeRateLimiter } from '@/lib/utils/rate-limit'
 import { logUserAction, USER_ACTIONS } from '@/lib/audit'
+import { logger as baseLogger } from '@/lib/logging'
+
+const logger = baseLogger.child({ module: 'profile/actions' })
 
 export interface ChangePasswordResult {
   success: boolean
@@ -168,7 +171,11 @@ export async function changePassword(
       },
     }).catch((error) => {
       // Log error but don't propagate to user
-      console.error('Failed to log password change audit:', error)
+      logger.error(
+        'Failed to log password change audit',
+        error as Error,
+        { userId: user.id }
+      )
     })
 
     return {
@@ -176,7 +183,10 @@ export async function changePassword(
       message: 'Password changed successfully',
     }
   } catch (error) {
-    console.error('Failed to change password:', error)
+    logger.error(
+      'Failed to change password',
+      error as Error
+    )
     return { success: false, errors: { form: 'Failed to change password' } }
   }
 }
