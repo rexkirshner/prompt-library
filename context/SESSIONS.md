@@ -1065,3 +1065,111 @@ Settings Storage:
 - Test coverage excellent (compound prompts, import/export)
 
 ---
+## Session 11 - 2025-01-27
+
+**Duration:** 2h | **Focus:** Bug fixes, soft delete, UI improvements | **Status:** ✅
+
+### TL;DR
+
+- Fixed compound prompts not showing previews on /prompts page
+- Fixed infinite loop error in CompoundPromptBuilder component
+- Implemented complete soft delete/archive functionality for prompts
+- Repositioned sort dropdown to align with view mode toggles
+
+### Problem Solved
+
+**Issue:** Three distinct issues needed resolution:
+1. Compound prompts showed no preview text on browse page
+2. Compound prompt edit page crashed with "Maximum update depth exceeded" error
+3. No way for admins to soft delete/archive prompts
+4. Sort dropdown positioned above the dividing line, separated from view controls
+
+**Constraints:**
+- Must maintain existing compound prompt resolution logic
+- Cannot break existing prompt display functionality
+- Need complete audit trail for deletion/restoration operations
+- UI changes must work across all viewport sizes
+
+**Approach:**
+1. For compound prompt previews: Added fallback pattern `description || resolved_text` in PromptsListClient
+2. For infinite loop: Added `useRef` initialization tracker to prevent re-initialization on every render
+3. For soft delete: Created full REST API endpoint with client/server delete+restore flows
+4. For UI: Moved sort dropdown from stats bar to client component alongside view toggles
+
+**Why this approach:**
+- Fallback pattern is React best practice for optional data display
+- `useRef` tracks component lifecycle without triggering re-renders
+- Soft delete preserves data while hiding from public view (better than hard delete)
+- Grouping all view controls (sort + view mode) below the line creates intuitive UI
+
+### Decisions
+
+No significant architectural decisions this session - primarily bug fixes and feature additions following established patterns.
+
+### Files
+
+**NEW:** `app/api/admin/prompts/[id]/delete/route.ts:1-141` - REST endpoint for soft delete/restore with audit logging and admin authentication
+
+**MOD:** `app/admin/page.tsx:203-321` - Added deleted prompts section showing 10 most recent with restore buttons (server action based)
+
+**MOD:** `app/admin/prompts/[id]/edit/EditPromptForm.tsx:354-418` - Added "Danger Zone" section with two-step delete confirmation, client-side fetch to API endpoint
+
+**MOD:** `components/PromptsListClient.tsx:83-86,171-174` - Added fallback to `resolved_text` when `description` is null/empty for both grid and list views
+
+**MOD:** `components/compound-prompts/CompoundPromptBuilder.tsx:10,52,55-68` - Fixed infinite loop by adding `useRef(false)` to track initialization state and prevent re-runs
+
+**MOD:** `app/prompts/page.tsx:13-16,203-217` - Removed SortDropdown from stats bar, simplified layout to just prompt count and submit button
+
+**MOD:** `components/PromptsListClient.tsx:10,14,49-58` - Added SortDropdown import and repositioned it alongside ViewModeToggle using `justify-between` flex layout
+
+### Mental Models
+
+**Current understanding:**
+- Compound Prompt System v2.0 resolution works recursively, building final text from components
+- Each prompt can have `description` (optional user-provided) or rely on `resolved_text` (computed)
+- React `useEffect` with array dependencies re-runs when reference changes (not deep equality)
+- `useRef` provides persistent state across renders without triggering re-renders
+- Soft delete pattern uses `deleted_at` timestamp for filtering queries
+
+**Key insights:**
+- The `availablePrompts` array was being recreated on every render (new reference), causing infinite `useEffect` loop
+- PromptsListClient needs to handle both base prompts (with prompt_text) and compound prompts (with resolved_text)
+- Soft delete is superior to hard delete: preserves data, maintains referential integrity, enables undo
+- UI controls should be grouped by function, not by implementation layer
+
+**Gotchas discovered:**
+- Must check `hasInitialized.current` BEFORE accessing `initialComponents.length` to avoid evaluating empty state
+- Deleted prompts still exist in database, just have `deleted_at IS NOT NULL` - must filter all queries
+- Server actions in admin dashboard work well for simple restore operations (progressive enhancement)
+- Sort dropdown needs to be in client component to work with view mode state
+
+### Work In Progress
+
+**Task:** None - all work completed and committed
+
+**Completed in this session:**
+- All compound prompt bugs resolved
+- Soft delete feature fully implemented with UI
+- Sort dropdown repositioned and tested
+
+### TodoWrite State
+
+**Completed:**
+- ✅ Fixed compound prompts not showing previews
+- ✅ Fixed infinite loop in CompoundPromptBuilder
+- ✅ Implemented soft delete API endpoint
+- ✅ Added delete button to edit form
+- ✅ Added deleted prompts section to admin dashboard
+- ✅ Repositioned sort dropdown with view toggles
+
+**In Progress:**
+- None
+
+### Next Session
+
+**Priority:** Address any issues discovered in production, or move to next feature request
+
+**Blockers:** None - all requested features implemented and working
+
+---
+
