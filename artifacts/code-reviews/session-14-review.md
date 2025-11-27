@@ -13,10 +13,10 @@
 **Overall Assessment:**
 The codebase continues to maintain solid engineering standards with TypeScript strict mode enabled and comprehensive test coverage. Recent changes demonstrate good attention to detail in fixing build errors and improving user experience. The project is production-ready and successfully deployed. This review focuses on recent changes and identifies opportunities for continued improvement.
 
-**Session 15 Update (Continued):** Major progress on structured logging migration. Custom logger implemented and 8 production files migrated (lib and app directories). Migration approximately 40% complete with all core lib modules done.
+**Session 15 Update (Continued):** Major progress on structured logging migration. Custom logger implemented and 14 production files migrated (lib and app directories). Migration approximately 55% complete with all core lib modules and critical app server actions done.
 
 **Critical Issues:** 0
-**High Priority:** 1 (IN PROGRESS - 40% complete)
+**High Priority:** 1 (IN PROGRESS - 55% complete)
 **Medium Priority:** 2 (1 RESOLVED)
 **Low Priority:** 2
 
@@ -160,10 +160,16 @@ The codebase continues to maintain solid engineering standards with TypeScript s
 - ✅ **lib/import-export/services/export-service.ts** - Export operation failures
 - ✅ **lib/import-export/services/import-service.ts** - Import transaction failures with context
 
-**Phase 3: App Directory (Started - 1/19 files)**
+**Phase 3: App Directory (In Progress - 7/19 files)**
 - ✅ **app/profile/actions.ts** - Password change error logging (2 statements)
-- ⏳ **Remaining app files (18):**
-  - Server actions: backup, invites, queue, prompts (edit/compound), auth, submit
+- ✅ **app/admin/backup/actions.ts** - Export/import error logging (3 statements)
+- ✅ **app/admin/invites/actions.ts** - Invite creation errors (2 statements)
+- ✅ **app/admin/queue/actions.ts** - Moderation actions (approve/reject/delete, 3 statements)
+- ✅ **app/admin/prompts/[id]/edit/actions.ts** - Prompt update errors (1 statement)
+- ✅ **app/admin/prompts/compound/actions.ts** - Compound prompt errors (3 statements)
+- ✅ **app/auth/signup/actions.ts** - User registration errors (1 statement)
+- ⏳ **Remaining app files (12):**
+  - Server actions: submit/actions.ts, submit/compound-actions.ts
   - Error boundaries: error.tsx, global-error.tsx
   - Client components: InviteGenerator, ExportButton, ImportButton
   - Pages with .catch() handlers: prompts/[slug], prompts/page, admin/queue
@@ -178,15 +184,15 @@ The codebase continues to maintain solid engineering standards with TypeScript s
   1. ✅ ~~Add structured logging library~~ - Custom logger implemented (Session 15)
   2. ✅ ~~Include contextual information~~ - Child loggers with module context (Session 15)
   3. ✅ ~~Migrate core lib modules~~ - All lib modules complete (6 files, Session 15)
-  4. 🔄 **Complete migration of app directory** - 1/19 files done, ~18 remaining
+  4. 🔄 **Complete migration of app directory** - 7/19 files done, ~12 remaining
   5. ⏳ Add tests for logging functionality
   6. 🔜 Integrate error tracking service (Sentry) - Phase 2
   7. 🔜 Create alerting rules for critical errors - Phase 2
 
-- **Progress:** 40% complete (8 production files migrated, ~12 console statements replaced)
-- **Effort Remaining:** 3-5 hours for app directory migration, 1-2 hours for testing
+- **Progress:** ~55% complete (14 production files migrated, ~25 console statements replaced)
+- **Effort Remaining:** 2-3 hours for remaining app directory migration, 1-2 hours for testing
 - **Priority:** On track to complete before traffic increase
-- **Commits:** 6 structured logging commits made in Session 15
+- **Commits:** 13 structured logging commits made in Session 15
 
 ---
 
