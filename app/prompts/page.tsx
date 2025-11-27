@@ -14,6 +14,8 @@ import { PromptFilters } from '@/components/PromptFilters'
 import { Pagination } from '@/components/Pagination'
 import { PromptsListClient } from '@/components/PromptsListClient'
 import { SortDropdown } from '@/components/SortDropdown'
+import { resolvePrompt } from '@/lib/compound-prompts/resolution'
+import type { CompoundPromptWithComponents } from '@/lib/compound-prompts/types'
 
 export const metadata: Metadata = {
   title: 'Browse Prompts - AI Prompt Library',
@@ -34,6 +36,45 @@ interface PromptsPageProps {
 }
 
 const ITEMS_PER_PAGE = 20
+
+/**
+ * Helper to fetch prompt with components for resolution
+ */
+async function getPromptWithComponents(
+  id: string
+): Promise<CompoundPromptWithComponents | null> {
+  const prompt = await prisma.prompts.findUnique({
+    where: { id },
+    include: {
+      compound_components: {
+        include: {
+          component_prompt: true,
+        },
+        orderBy: { position: 'asc' },
+      },
+    },
+  })
+
+  if (!prompt) return null
+
+  return {
+    id: prompt.id,
+    prompt_text: prompt.prompt_text,
+    is_compound: prompt.is_compound,
+    max_depth: prompt.max_depth,
+    compound_components: prompt.compound_components.map((comp) => ({
+      ...comp,
+      component_prompt: comp.component_prompt
+        ? {
+            id: comp.component_prompt.id,
+            prompt_text: comp.component_prompt.prompt_text,
+            is_compound: comp.component_prompt.is_compound,
+            max_depth: comp.component_prompt.max_depth,
+          }
+        : null,
+    })),
+  }
+}
 
 export default async function PromptsPage({ searchParams }: PromptsPageProps) {
   const params = await searchParams
@@ -92,6 +133,28 @@ export default async function PromptsPage({ searchParams }: PromptsPageProps) {
     take: ITEMS_PER_PAGE,
   })
 
+  // Resolve compound prompts to get their text
+  const promptsWithResolvedText = await Promise.all(
+    prompts.map(async (prompt) => {
+      let resolvedText: string
+      if (prompt.is_compound) {
+        try {
+          resolvedText = await resolvePrompt(prompt.id, getPromptWithComponents)
+        } catch (error) {
+          console.error('Failed to resolve compound prompt:', error)
+          resolvedText = ''
+        }
+      } else {
+        resolvedText = prompt.prompt_text || ''
+      }
+
+      return {
+        ...prompt,
+        resolved_text: resolvedText,
+      }
+    })
+  )
+
   // Fetch all unique categories for filter dropdown
   const categories = await prisma.prompts.findMany({
     where: {
@@ -135,7 +198,7 @@ export default async function PromptsPage({ searchParams }: PromptsPageProps) {
       <div className="mb-8 flex items-center justify-between border-b border-gray-200 dark:border-gray-700 pb-4">
         <div className="flex items-center gap-6">
           <p className="text-sm text-gray-600 dark:text-gray-400">
-            {prompts.length} {prompts.length === 1 ? 'prompt' : 'prompts'}{' '}
+            {promptsWithResolvedText.length} {promptsWithResolvedText.length === 1 ? 'prompt' : 'prompts'}{' '}
             {filters.query || filters.category || filters.tags.length > 0
               ? 'found'
               : 'available'}
@@ -151,7 +214,7 @@ export default async function PromptsPage({ searchParams }: PromptsPageProps) {
       </div>
 
       {/* Prompts list with view toggle */}
-      {prompts.length === 0 ? (
+      {promptsWithResolvedText.length === 0 ? (
         <div className="rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-700 p-12 text-center">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
             {filters.query || filters.category || filters.tags.length > 0
@@ -173,11 +236,11 @@ export default async function PromptsPage({ searchParams }: PromptsPageProps) {
           )}
         </div>
       ) : (
-        <PromptsListClient prompts={prompts} userId={session?.user?.id} />
+        <PromptsListClient prompts={promptsWithResolvedText} userId={session?.user?.id} />
       )}
 
       {/* Pagination */}
-      {prompts.length > 0 && (
+      {promptsWithResolvedText.length > 0 && (
         <Pagination
           currentPage={currentPage}
           totalPages={totalPages}

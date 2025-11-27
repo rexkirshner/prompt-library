@@ -27,6 +27,7 @@ interface Prompt {
   category: string
   author_name: string
   copy_count: number
+  resolved_text: string // Resolved text for compound prompts
   prompt_tags: {
     tags: Tag
   }[]
@@ -129,7 +130,7 @@ export function PromptsListClient({ prompts, userId }: PromptsListClientProps) {
               {/* Copy Button */}
               <div onClick={(e) => e.stopPropagation()}>
                 <CopyButton
-                  text={prompt.prompt_text || ''}
+                  text={prompt.resolved_text}
                   label="Copy Prompt"
                   promptId={prompt.id}
                   userId={userId}
@@ -223,7 +224,7 @@ export function PromptsListClient({ prompts, userId }: PromptsListClientProps) {
                 <div className="flex flex-shrink-0 items-center gap-3">
                   <div onClick={(e) => e.stopPropagation()}>
                     <CopyButton
-                      text={prompt.prompt_text || ''}
+                      text={prompt.resolved_text}
                       label="Copy"
                       promptId={prompt.id}
                       userId={userId}
@@ -271,7 +272,7 @@ export function PromptsListClient({ prompts, userId }: PromptsListClientProps) {
               <div className="ml-4 flex flex-shrink-0 items-center gap-2">
                 <div onClick={(e) => e.stopPropagation()}>
                   <CopyButton
-                    text={prompt.prompt_text || ''}
+                    text={prompt.resolved_text}
                     label="Copy"
                     promptId={prompt.id}
                     userId={userId}
@@ -318,7 +319,7 @@ export function PromptsListClient({ prompts, userId }: PromptsListClientProps) {
               <div className="flex items-center justify-between gap-2">
                 <div onClick={(e) => e.stopPropagation()}>
                   <CopyButton
-                    text={prompt.prompt_text || ''}
+                    text={prompt.resolved_text}
                     label="Copy"
                     promptId={prompt.id}
                     userId={userId}
