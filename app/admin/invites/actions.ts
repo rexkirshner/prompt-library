@@ -8,6 +8,9 @@
 
 import { getAdminUser } from '@/lib/auth/admin'
 import { createInviteCode } from '@/lib/invites'
+import { logger as baseLogger } from '@/lib/logging'
+
+const logger = baseLogger.child({ module: 'admin/invites/actions' })
 
 export interface CreateInviteActionResult {
   success: boolean
@@ -72,7 +75,10 @@ export async function createInviteAction(): Promise<CreateInviteActionResult> {
     // Fail fast if NEXTAUTH_URL is not configured to prevent broken invite links
     const baseUrl = process.env.NEXTAUTH_URL
     if (!baseUrl) {
-      console.error('NEXTAUTH_URL environment variable is not set')
+      logger.error(
+        'NEXTAUTH_URL environment variable is not set',
+        new Error('Missing NEXTAUTH_URL configuration')
+      )
       return {
         success: false,
         error: 'Server configuration error: Base URL not configured',
@@ -92,7 +98,10 @@ export async function createInviteAction(): Promise<CreateInviteActionResult> {
       inviteCode: result.inviteCode,
     }
   } catch (error) {
-    console.error('Failed to create invite:', error)
+    logger.error(
+      'Failed to create invite',
+      error as Error
+    )
     return { success: false, error: 'Failed to create invite code' }
   }
 }
