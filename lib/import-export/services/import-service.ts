@@ -11,6 +11,9 @@ import type { PromptData, ImportResult, ImportOptions, ImportError, ImportWarnin
 import { JSONImporter } from '../importers/json-importer'
 import { calculateMaxDepth } from '@/lib/compound-prompts'
 import type { CompoundPromptWithComponents } from '@/lib/compound-prompts'
+import { logger as baseLogger } from '@/lib/logging'
+
+const logger = baseLogger.child({ module: 'import-service' })
 
 /**
  * Import service for prompts
@@ -122,7 +125,11 @@ export class ImportService {
       const result = await this.executeImport(sanitizedPrompts, onDuplicate, userId)
       return result
     } catch (error) {
-      console.error('Import transaction failed:', error)
+      logger.error(
+        'Import transaction failed',
+        error as Error,
+        { promptCount: prompts.length, onDuplicate, userId }
+      )
       return {
         success: false,
         total: prompts.length,

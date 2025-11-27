@@ -8,6 +8,9 @@
 import { prisma } from '@/lib/db/client'
 import type { PromptData, ExportResult } from '../types'
 import { JSONExporter } from '../exporters/json-exporter'
+import { logger as baseLogger } from '@/lib/logging'
+
+const logger = baseLogger.child({ module: 'export-service' })
 
 /**
  * Export service for prompts
@@ -157,7 +160,10 @@ export class ExportService {
       // Use JSON exporter to create export data
       return await this.jsonExporter.export(promptData)
     } catch (error) {
-      console.error('Failed to export prompts:', error)
+      logger.error(
+        'Failed to export prompts',
+        error as Error
+      )
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error during export',
