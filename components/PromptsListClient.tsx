@@ -11,6 +11,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { ViewMode, ViewModeToggle } from './ViewModeToggle'
 import { CopyButton } from './CopyButton'
+import { SortDropdown } from './SortDropdown'
 
 interface Tag {
   id: string
@@ -47,8 +48,9 @@ export function PromptsListClient({ prompts, userId }: PromptsListClientProps) {
 
   return (
     <>
-      {/* View Mode Toggle */}
-      <div className="mb-6 flex justify-end">
+      {/* Sort and View Mode Toggle */}
+      <div className="mb-6 flex items-center justify-between">
+        <SortDropdown />
         <ViewModeToggle
           defaultMode="grid"
           onViewModeChange={setViewMode}

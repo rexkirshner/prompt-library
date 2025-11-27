@@ -13,7 +13,6 @@ import { buildSearchWhere, parseTagFilter } from '@/lib/prompts/search'
 import { PromptFilters } from '@/components/PromptFilters'
 import { Pagination } from '@/components/Pagination'
 import { PromptsListClient } from '@/components/PromptsListClient'
-import { SortDropdown } from '@/components/SortDropdown'
 import { resolvePrompt } from '@/lib/compound-prompts/resolution'
 import type { CompoundPromptWithComponents } from '@/lib/compound-prompts/types'
 import { logger as baseLogger } from '@/lib/logging'
@@ -202,15 +201,12 @@ export default async function PromptsPage({ searchParams }: PromptsPageProps) {
 
       {/* Stats bar */}
       <div className="mb-8 flex items-center justify-between border-b border-gray-200 dark:border-gray-700 pb-4">
-        <div className="flex items-center gap-6">
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            {promptsWithResolvedText.length} {promptsWithResolvedText.length === 1 ? 'prompt' : 'prompts'}{' '}
-            {filters.query || filters.category || filters.tags.length > 0
-              ? 'found'
-              : 'available'}
-          </p>
-          <SortDropdown />
-        </div>
+        <p className="text-sm text-gray-600 dark:text-gray-400">
+          {promptsWithResolvedText.length} {promptsWithResolvedText.length === 1 ? 'prompt' : 'prompts'}{' '}
+          {filters.query || filters.category || filters.tags.length > 0
+            ? 'found'
+            : 'available'}
+        </p>
         <Link
           href="/submit"
           className="rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-500 dark:bg-blue-500 dark:hover:bg-blue-400"
