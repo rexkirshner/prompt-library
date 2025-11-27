@@ -15,6 +15,9 @@ import {
   type SignUpFormData,
 } from '@/lib/auth/validation'
 import { validateInviteCode, redeemInviteCode } from '@/lib/invites'
+import { logger as baseLogger } from '@/lib/logging'
+
+const logger = baseLogger.child({ module: 'auth/signup/actions' })
 
 export interface SignUpResult {
   success: boolean
@@ -120,7 +123,10 @@ export async function signUpUser(
       message: 'Account created successfully! Please sign in.',
     }
   } catch (error) {
-    console.error('Sign-up error:', error)
+    logger.error(
+      'Sign-up error',
+      error as Error
+    )
     return {
       success: false,
       errors: {
