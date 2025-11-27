@@ -7,6 +7,7 @@ import { ThemeProvider } from '@/components/ThemeProvider'
 import { Analytics } from '@vercel/analytics/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { GoogleAnalytics } from '@/components/GoogleAnalytics'
+import { getBaseUrl } from '@/lib/utils/url'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -18,8 +19,10 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 })
 
+const baseUrl = getBaseUrl()
+
 export const metadata: Metadata = {
-  metadataBase: new URL('https://prompt-library.vercel.app'),
+  metadataBase: new URL(baseUrl),
   title: {
     default: 'AI Prompt Library',
     template: '%s | AI Prompt Library',
@@ -32,7 +35,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://prompt-library.vercel.app',
+    url: baseUrl,
     siteName: 'AI Prompt Library',
     title: 'AI Prompt Library',
     description: 'A curated collection of high-quality AI prompts for the community',

@@ -452,6 +452,77 @@ This would:
 
 ---
 
+## 2025-11-26 - /code-review - Improvement 💡
+
+**What happened**: The `/code-review` command provides an excellent comprehensive analysis in chat but doesn't automatically create a detailed report document in `artifacts/code-reviews/`.
+
+**Expected behavior**: After completing a code review, the command should automatically:
+1. Generate a comprehensive markdown report in `artifacts/code-reviews/session-N-review.md`
+2. Include all findings with proper formatting and structure
+3. Notify user that report has been created
+4. Continue to show summary in chat for immediate visibility
+
+**Actual behavior**:
+- Command performs thorough analysis ✅
+- Provides detailed summary in chat ✅
+- Shows grade and recommendations ✅
+- BUT: User must manually ask for report document to be created ❌
+
+**Context**: During session 14, after running `/code-review`:
+1. Received excellent B+ grade with detailed findings in chat
+2. Had to explicitly request: "let's create a full detailed report document, put it in artifacts/code-reviews"
+3. Then manually created `session-14-review.md` based on chat output
+
+**Suggestion**:
+
+**Automatic Report Generation:**
+The `/code-review` command should automatically create a detailed markdown report:
+
+```markdown
+# Code Review Workflow
+
+1. Perform comprehensive analysis (current behavior ✅)
+2. Show summary in chat for immediate feedback (current behavior ✅)
+3. **NEW:** Automatically create artifacts/code-reviews/session-N-review.md
+4. **NEW:** Notify user: "📄 Detailed report saved to artifacts/code-reviews/session-N-review.md"
+5. Continue with current workflow
+```
+
+**Benefits:**
+- **Permanent record** - Review findings preserved for future reference
+- **Historical tracking** - Easy to compare reviews over time
+- **Handoff documentation** - New developers/AI agents can review past audits
+- **No manual work** - User doesn't need to ask for report separately
+- **Consistent format** - All reports follow same structure
+
+**Implementation Notes:**
+- Determine session number from SESSIONS.md (or use date-based naming)
+- Create `artifacts/code-reviews/` directory if it doesn't exist
+- Use template from session-8-review.md as reference format
+- Include all sections: Executive Summary, Detailed Findings, Recommendations, Metrics
+- Generate in addition to chat summary (not replacing it)
+
+**Similar Pattern:**
+The `/save` and `/save-full` commands already update documentation files automatically. `/code-review` should follow the same pattern for artifact generation.
+
+**Severity**: 🟡 Moderate (workaround: manually create report, but adds friction and inconsistency)
+
+**Environment**:
+- OS: macOS Darwin 24.6.0
+- Claude Code: Claude Sonnet 4.5
+- CCS: 3.4.0
+
+**Alternative Approach:**
+Could add a prompt at end of review:
+```
+Code review complete (Grade: B+)
+Would you like me to save a detailed report to artifacts/code-reviews/? [Y/n]
+```
+
+But automatic generation is preferable for consistency and to ensure reports are always created.
+
+---
+
 ## Examples (Delete after reading)
 
 ### Example 1: Bug Report

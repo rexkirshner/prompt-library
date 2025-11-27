@@ -7,9 +7,10 @@
 
 import { MetadataRoute } from 'next'
 import { prisma } from '@/lib/db/client'
+import { getBaseUrl } from '@/lib/utils/url'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://prompt-library.vercel.app'
+  const baseUrl = getBaseUrl()
 
   // Static pages
   const staticPages: MetadataRoute.Sitemap = [

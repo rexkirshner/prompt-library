@@ -1,8 +1,7 @@
 /**
- * URL Validation Utilities
+ * URL Utilities
  *
- * Provides secure URL validation with protocol scheme whitelisting
- * to prevent XSS attacks via malicious URLs (javascript:, data:, etc.)
+ * Helper functions for URL validation and generation that work across multiple domains.
  */
 
 /**
@@ -58,4 +57,47 @@ export function isValidUrl(url: string): boolean {
     // URL constructor throws if the URL is malformed
     return false
   }
+}
+
+/**
+ * Get the base URL for the application
+ *
+ * Supports multiple domains and deployment environments:
+ * - Production: Uses NEXT_PUBLIC_BASE_URL environment variable
+ * - Vercel: Uses VERCEL_URL environment variable
+ * - Development: Uses NEXTAUTH_URL or defaults to localhost:3001
+ *
+ * This allows the app to work on:
+ * - inputatlas.com (primary domain)
+ * - prompts.rexkirshner.com (secondary domain)
+ * - Any Vercel preview deployments
+ * - Local development
+ *
+ * @returns The base URL without trailing slash
+ *
+ * @example
+ * ```typescript
+ * const url = getBaseUrl()
+ * // Returns: 'https://inputatlas.com' in production
+ * // Returns: 'http://localhost:3001' in development
+ * ```
+ */
+export function getBaseUrl(): string {
+  // 1. Explicit base URL (set in production environment variables)
+  if (process.env.NEXT_PUBLIC_BASE_URL) {
+    return process.env.NEXT_PUBLIC_BASE_URL.replace(/\/$/, '')
+  }
+
+  // 2. Vercel automatic URL (preview and production deployments)
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`
+  }
+
+  // 3. NextAuth URL (typically set for local development)
+  if (process.env.NEXTAUTH_URL) {
+    return process.env.NEXTAUTH_URL.replace(/\/$/, '')
+  }
+
+  // 4. Fallback to localhost
+  return 'http://localhost:3001'
 }
