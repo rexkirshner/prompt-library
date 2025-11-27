@@ -8,6 +8,9 @@
 import { MetadataRoute } from 'next'
 import { prisma } from '@/lib/db/client'
 import { getBaseUrl } from '@/lib/utils/url'
+import { logger as baseLogger } from '@/lib/logging'
+
+const logger = baseLogger.child({ module: 'sitemap' })
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = getBaseUrl()
@@ -73,7 +76,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }))
   } catch (error) {
     // Database unavailable (likely during build) - return static pages only
-    console.warn('Sitemap: Database unavailable, returning static pages only')
+    logger.warn('Database unavailable, returning static pages only')
   }
 
   return [...staticPages, ...promptPages]
