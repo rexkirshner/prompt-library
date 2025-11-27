@@ -15,6 +15,9 @@ import { CopyButton } from '@/components/CopyButton'
 import { CopyPreview } from '@/components/CopyPreview'
 import { resolvePrompt } from '@/lib/compound-prompts/resolution'
 import type { CompoundPromptWithComponents } from '@/lib/compound-prompts/types'
+import { logger as baseLogger } from '@/lib/logging'
+
+const logger = baseLogger.child({ module: 'prompts/[slug]' })
 
 interface PromptPageProps {
   params: Promise<{
@@ -170,7 +173,12 @@ export default async function PromptPage({ params }: PromptPageProps) {
       where: { id: prompt.id },
       data: { view_count: { increment: 1 } },
     })
-    .catch((err) => console.error('Failed to increment view count:', err))
+    .catch((err) =>
+      logger.error('Failed to increment view count', err as Error, {
+        promptId: prompt.id,
+        slug: prompt.slug,
+      })
+    )
 
   // For compound prompts, resolve the text
   let displayText: string
@@ -178,7 +186,10 @@ export default async function PromptPage({ params }: PromptPageProps) {
     try {
       displayText = await resolvePrompt(prompt.id, getPromptWithComponents)
     } catch (error) {
-      console.error('Failed to resolve compound prompt:', error)
+      logger.error('Failed to resolve compound prompt', error as Error, {
+        promptId: prompt.id,
+        slug: prompt.slug,
+      })
       displayText = '[Error: Could not resolve compound prompt]'
     }
   } else {

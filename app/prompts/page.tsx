@@ -16,6 +16,9 @@ import { PromptsListClient } from '@/components/PromptsListClient'
 import { SortDropdown } from '@/components/SortDropdown'
 import { resolvePrompt } from '@/lib/compound-prompts/resolution'
 import type { CompoundPromptWithComponents } from '@/lib/compound-prompts/types'
+import { logger as baseLogger } from '@/lib/logging'
+
+const logger = baseLogger.child({ module: 'prompts' })
 
 export const metadata: Metadata = {
   title: 'Browse Prompts - Input Atlas',
@@ -141,7 +144,10 @@ export default async function PromptsPage({ searchParams }: PromptsPageProps) {
         try {
           resolvedText = await resolvePrompt(prompt.id, getPromptWithComponents)
         } catch (error) {
-          console.error('Failed to resolve compound prompt:', error)
+          logger.error('Failed to resolve compound prompt', error as Error, {
+            promptId: prompt.id,
+            slug: prompt.slug,
+          })
           resolvedText = ''
         }
       } else {

@@ -8,6 +8,7 @@
 
 import { useState } from 'react'
 import { createInviteAction } from './actions'
+import { clientLogger } from '@/lib/logging/client'
 
 export function InviteGenerator() {
   const [isGenerating, setIsGenerating] = useState(false)
@@ -43,7 +44,7 @@ export function InviteGenerator() {
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
     } catch (err) {
-      console.error('Failed to copy:', err)
+      clientLogger.error('Failed to copy invite to clipboard', err as Error)
     }
   }
 

@@ -9,6 +9,7 @@
 
 import { useEffect } from 'react'
 import Link from 'next/link'
+import { clientLogger } from '@/lib/logging/client'
 
 interface ErrorProps {
   error: Error & { digest?: string }
@@ -17,11 +18,10 @@ interface ErrorProps {
 
 export default function Error({ error, reset }: ErrorProps) {
   useEffect(() => {
-    // Log error to console in development
-    console.error('Application error:', error)
-
-    // In production, you could send to error tracking service here
-    // e.g., Sentry, LogRocket, etc.
+    // Log error with client logger (ready for Sentry integration)
+    clientLogger.error('Application error', error, {
+      digest: error.digest,
+    })
   }, [error])
 
   return (

@@ -11,6 +11,9 @@ import { prisma } from '@/lib/db/client'
 import { ModerationActions } from './ModerationActions'
 import { resolvePrompt } from '@/lib/compound-prompts/resolution'
 import type { CompoundPromptWithComponents } from '@/lib/compound-prompts/types'
+import { logger as baseLogger } from '@/lib/logging'
+
+const logger = baseLogger.child({ module: 'admin/queue' })
 
 export const metadata: Metadata = {
   title: 'Moderation Queue - Admin',
@@ -99,7 +102,10 @@ export default async function AdminQueuePage() {
         try {
           displayText = await resolvePrompt(prompt.id, getPromptWithComponents)
         } catch (error) {
-          console.error('Failed to resolve compound prompt:', error)
+          logger.error('Failed to resolve compound prompt', error as Error, {
+            promptId: prompt.id,
+            title: prompt.title,
+          })
           displayText = '[Error: Could not resolve compound prompt]'
         }
       } else {

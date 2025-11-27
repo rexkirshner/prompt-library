@@ -10,6 +10,7 @@
 import { useState, useRef } from 'react'
 import { validateImportAction, importPromptsAction } from './actions'
 import type { ImportResult } from '@/lib/import-export'
+import { clientLogger } from '@/lib/logging/client'
 
 type DuplicateStrategy = 'skip' | 'update' | 'error'
 
@@ -58,7 +59,7 @@ export function ImportButton() {
         setValidationPreview({ result, fileContent })
       }
     } catch (err) {
-      console.error('File read error:', err)
+      clientLogger.error('File read error', err as Error)
       setError('Failed to read file. Please ensure it is a valid JSON file.')
     } finally {
       setIsProcessing(false)
@@ -85,7 +86,7 @@ export function ImportButton() {
         fileInputRef.current.value = ''
       }
     } catch (err) {
-      console.error('Import error:', err)
+      clientLogger.error('Import error', err as Error)
       setError('An unexpected error occurred during import')
     } finally {
       setIsProcessing(false)

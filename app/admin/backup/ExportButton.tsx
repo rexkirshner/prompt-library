@@ -9,6 +9,7 @@
 
 import { useState } from 'react'
 import { exportPromptsAction } from './actions'
+import { clientLogger } from '@/lib/logging/client'
 
 export function ExportButton() {
   const [isExporting, setIsExporting] = useState(false)
@@ -49,7 +50,7 @@ export function ExportButton() {
         setError(result.error || 'Failed to export prompts')
       }
     } catch (err) {
-      console.error('Export error:', err)
+      clientLogger.error('Export error', err as Error)
       setError('An unexpected error occurred during export')
     } finally {
       setIsExporting(false)
