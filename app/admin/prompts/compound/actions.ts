@@ -19,6 +19,9 @@ import {
 } from '@/lib/compound-prompts/validation'
 import { previewComponents } from '@/lib/compound-prompts/resolution'
 import type { CompoundPromptWithComponents } from '@/lib/compound-prompts/types'
+import { logger as baseLogger } from '@/lib/logging'
+
+const logger = baseLogger.child({ module: 'admin/prompts/compound/actions' })
 
 export interface CompoundPromptResult {
   success: boolean
@@ -304,7 +307,11 @@ export async function createCompoundPrompt(
       promptId: compoundPrompt.id,
     }
   } catch (error) {
-    console.error('Failed to create compound prompt:', error)
+    logger.error(
+      'Failed to create compound prompt',
+      error as Error,
+      { title: data.title, componentCount: data.components.length }
+    )
     return { success: false, errors: { form: 'Failed to create compound prompt' } }
   }
 }
@@ -478,7 +485,11 @@ export async function updateCompoundPrompt(
       })
     })
   } catch (error) {
-    console.error('Failed to update compound prompt:', error)
+    logger.error(
+      'Failed to update compound prompt',
+      error as Error,
+      { promptId: data.id, componentCount: data.components.length }
+    )
     return { success: false, errors: { form: 'Failed to update compound prompt' } }
   }
 
@@ -515,7 +526,11 @@ export async function previewCompoundPrompt(
     const text = await previewComponents(components, getPromptWithComponents)
     return { success: true, text }
   } catch (error: any) {
-    console.error('Failed to preview compound prompt:', error)
+    logger.error(
+      'Failed to preview compound prompt',
+      error as Error,
+      { componentCount: components.length }
+    )
     return { success: false, error: error.message || 'Failed to preview' }
   }
 }
