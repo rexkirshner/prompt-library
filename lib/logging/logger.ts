@@ -17,7 +17,7 @@ import type { Logger, LoggerConfig, LogContext } from './types'
 const DEFAULT_CONFIG: LoggerConfig = {
   level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
   pretty: process.env.NODE_ENV !== 'production',
-  name: 'prompt-library',
+  name: 'input-atlas',
 }
 
 /**

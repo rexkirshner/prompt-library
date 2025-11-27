@@ -9,7 +9,7 @@ import { Metadata } from 'next'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: 'Submission Successful - AI Prompt Library',
+  title: 'Submission Successful - Input Atlas',
   description: 'Your prompt has been submitted for review',
 }
 
@@ -40,7 +40,7 @@ export default function SubmissionSuccessPage() {
             Submission Successful!
           </h1>
           <p className="mt-2 text-gray-600">
-            Thank you for contributing to the AI Prompt Library.
+            Thank you for contributing to the Input Atlas.
           </p>
         </div>
 

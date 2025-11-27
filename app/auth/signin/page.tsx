@@ -10,7 +10,7 @@ import Link from 'next/link'
 import { SignInForm } from './SignInForm'
 
 export const metadata: Metadata = {
-  title: 'Sign In - AI Prompt Library',
+  title: 'Sign In - Input Atlas',
   description: 'Sign in to your account to submit and manage AI prompts',
 }
 

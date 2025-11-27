@@ -42,7 +42,7 @@ export function NavBarClient({ isLoggedIn, isAdmin }: NavBarClientProps) {
           {/* Logo/Brand */}
           <div className="flex items-center">
             <Link href="/" className="text-xl font-bold text-gray-900 dark:text-gray-100">
-              AI Prompt Library
+              Input Atlas
             </Link>
           </div>
 

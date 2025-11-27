@@ -12,7 +12,7 @@ import Link from 'next/link'
 import { SignUpForm } from './SignUpForm'
 
 export const metadata: Metadata = {
-  title: 'Sign Up - AI Prompt Library',
+  title: 'Sign Up - Input Atlas',
   description: 'Create a new account to submit and manage AI prompts',
 }
 

@@ -1,7 +1,8 @@
 {
-  "name": "prompt-library",
+  "name": "input-atlas",
   "version": "0.1.0",
   "private": true,
+  "description": "Input Atlas - A curated collection of high-quality AI prompts for the community",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

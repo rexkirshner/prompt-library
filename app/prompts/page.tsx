@@ -18,7 +18,7 @@ import { resolvePrompt } from '@/lib/compound-prompts/resolution'
 import type { CompoundPromptWithComponents } from '@/lib/compound-prompts/types'
 
 export const metadata: Metadata = {
-  title: 'Browse Prompts - AI Prompt Library',
+  title: 'Browse Prompts - Input Atlas',
   description: 'Discover and explore AI prompts shared by the community',
 }
 

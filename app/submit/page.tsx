@@ -11,7 +11,7 @@ import { prisma } from '@/lib/db/client'
 import { SubmitPromptFormWrapper } from './SubmitPromptFormWrapper'
 
 export const metadata: Metadata = {
-  title: 'Submit a Prompt - AI Prompt Library',
+  title: 'Submit a Prompt - Input Atlas',
   description: 'Share your AI prompt with the community',
 }
 

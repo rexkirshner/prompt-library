@@ -637,3 +637,146 @@ When taking over development:
 3. Check "When to Reconsider" sections for current relevance
 4. Respect constraints that may still apply
 5. Document new decisions in same format
+
+---
+
+## D009 - Complete Rebrand to "Input Atlas"
+
+**Date:** 2025-11-26
+**Status:** Accepted
+**Session:** 15
+
+### Context
+
+The application was originally branded as "AI Prompt Library" - a generic, descriptive name that served well during initial development. As the product matures and prepares for launch on a dedicated domain (inputatlas.com), a distinct brand identity is needed.
+
+**Constraints:**
+- Must work across multiple domains (inputatlas.com, prompts.rexkirshner.com)
+- Need consistent branding in all user-facing materials
+- SEO and social sharing metadata must reflect new brand
+- Documentation and code comments should use correct branding
+
+**Triggers:**
+- New primary domain (inputatlas.com) secured
+- Product ready for public launch
+- Need to establish brand identity separate from generic description
+
+### Decision
+
+**Complete rebrand from "AI Prompt Library" to "Input Atlas"**
+
+**Scope:**
+1. All user-facing text (UI, pages, metadata)
+2. SEO metadata (titles, descriptions, Open Graph, Twitter Cards)
+3. Package and project configuration
+4. Documentation (README, context files)
+5. Code comments and logger names where user-visible
+
+**Not Changed:**
+- Database schema/table names (technical debt, not user-facing)
+- Git repository name (would break links, not worth the disruption)  
+- Internal variable names (unless exported/user-visible)
+- Historical documentation (sprint reports, decisions log)
+
+### Rationale
+
+**Why "Input Atlas":**
+
+1. **Distinctive** - Memorable brand name vs generic description
+2. **Domain Aligned** - Matches inputatlas.com domain
+3. **Metaphorically Apt** - "Atlas" suggests a comprehensive map/guide to inputs (prompts)
+4. **Professional** - Sounds like a product, not just a tool
+5. **SEO** - Unique brand name easier to rank for than generic terms
+
+**Why Now:**
+
+- New domain secured and ready for deployment
+- Product feature-complete enough for public branding
+- Multi-domain support just implemented (perfect timing)
+- Better to rebrand before significant user base
+
+**Why Complete (not gradual):**
+
+- Inconsistent branding confuses users and dilutes SEO
+- Single atomic change easier to review and rollback if needed
+- Avoids "half-rebranded" state that could persist
+
+### Alternatives Considered
+
+**1. Keep "AI Prompt Library"**
+- **Pros:** No work needed, SEO continuity, familiar to existing users
+- **Cons:** Generic, not ownable, doesn't match new domain
+- **Rejected:** Doesn't support product/brand growth
+
+**2. Partial rebrand (some pages only)**
+- **Pros:** Less work, gradual transition
+- **Cons:** Inconsistent, confusing, poor SEO
+- **Rejected:** Half-measures create more problems
+
+**3. Different name**
+- Various alternatives considered
+- **Rejected:** "Input Atlas" chosen as best fit (domain already secured)
+
+### Implementation
+
+**Systematic approach:**
+
+1. Document decision (this file)
+2. Create comprehensive file list via grep
+3. Update user-facing content:
+   - app/layout.tsx (metadata, Open Graph, Twitter)
+   - All page components
+   - Navigation and Footer
+   - Auth pages
+4. Update configuration:
+   - package.json
+   - README.md
+   - Documentation files
+5. Update logger names (where user-visible)
+6. Test build
+7. Single atomic commit
+
+**Files Changed:** ~20 files across:
+- UI components (NavBar, Footer)
+- Pages (home, browse, auth, legal)
+- Metadata and SEO  
+- Documentation (README, context)
+- Configuration (package.json)
+
+### Trade-offs
+
+**Positive:**
+- ✅ Clear, professional brand identity
+- ✅ Domain-aligned branding
+- ✅ Consistent user experience
+- ✅ Better SEO potential with unique brand
+- ✅ Sets foundation for marketing/growth
+
+**Negative:**
+- ❌ Breaks SEO continuity (if any existed) - minimal impact as product is pre-launch
+- ❌ Any existing external links will show wrong name - acceptable at this stage
+- ❌ Some technical debt remains (database names, repo name) - isolated, non-user-facing
+
+**Accepted Trade-offs:**
+- Database/repo names stay as-is (refactoring not worth disruption)
+- Historical docs reference old name (accurate historical record)
+- Internal code can gradually adopt new names over time
+
+### When to Reconsider
+
+**This decision should be reconsidered if:**
+- Complete rebrand to different name (unlikely after domain investment)
+- Acquisition requires different branding
+- User research shows "Input Atlas" causes confusion (monitor feedback)
+
+**Triggers:**
+- User feedback indicating brand confusion
+- Legal/trademark issues with "Input Atlas" name
+- Strategic pivot requiring different positioning
+
+### Related
+
+- See: D008 - Multi-domain support (enables clean brand transition)
+- See: STATUS.md - Multi-domain deployment configuration
+- Domain: inputatlas.com (primary), prompts.rexkirshner.com (secondary)
+

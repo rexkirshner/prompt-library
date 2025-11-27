@@ -1,8 +1,8 @@
-# AI Prompt Library
+# Input Atlas
 
 A lightweight, public-facing web application for saving, sharing, and discovering AI prompts. Built for a small community with emphasis on quality curation through manual moderation.
 
-**Production:** https://prompt-library-alpha-inky.vercel.app/
+**Production:** https://inputatlas.com/
 
 **Status:** Phase 0 Complete - Phase 1 Starting (User authentication forms)
 
@@ -121,7 +121,7 @@ Current test status: 22/22 tests passing
 
 Automatically deployed to Vercel on push to `main` branch.
 
-**Production URL:** https://prompt-library-alpha-inky.vercel.app/
+**Production URL:** https://inputatlas.com/
 
 ## Contributing
 

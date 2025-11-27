@@ -76,7 +76,7 @@ LOG_LEVEL=info
 LOG_PRETTY=true
 
 # Set application name in logs
-LOG_NAME="prompt-library"
+LOG_NAME="input-atlas"
 ```
 
 ### Custom Configuration
@@ -99,9 +99,9 @@ const customLogger = createLogger({
 ### Development (Pretty)
 
 ```
-[13:45:23] INFO (prompt-library): Server started
+[13:45:23] INFO (input-atlas): Server started
     port: 3000
-[13:45:24] ERROR (prompt-library): Database connection failed
+[13:45:24] ERROR (input-atlas): Database connection failed
     err: {
       "type": "Error",
       "message": "Connection timeout",
@@ -112,8 +112,8 @@ const customLogger = createLogger({
 ### Production (JSON)
 
 ```json
-{"level":30,"time":"2025-11-26T13:45:23.000Z","name":"prompt-library","msg":"Server started","port":3000}
-{"level":50,"time":"2025-11-26T13:45:24.000Z","name":"prompt-library","msg":"Database connection failed","err":{"type":"Error","message":"Connection timeout","stack":"Error: Connection timeout\n    at connect (db.ts:12)"}}
+{"level":30,"time":"2025-11-26T13:45:23.000Z","name":"input-atlas","msg":"Server started","port":3000}
+{"level":50,"time":"2025-11-26T13:45:24.000Z","name":"input-atlas","msg":"Database connection failed","err":{"type":"Error","message":"Connection timeout","stack":"Error: Connection timeout\n    at connect (db.ts:12)"}}
 ```
 
 ## Best Practices
