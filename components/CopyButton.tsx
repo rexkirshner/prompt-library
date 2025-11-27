@@ -15,6 +15,7 @@ import {
   getPromptCopyPreferences,
   savePromptCopyPreferences,
 } from '@/lib/prompts/copy-preferences'
+import { clientLogger } from '@/lib/logging/client'
 
 interface CopyButtonProps {
   text: string
@@ -76,7 +77,9 @@ export function CopyButton({
             setGithubReminder(prefs.copyGithubReminder)
           }
         } catch (error) {
-          console.error('Failed to load preferences from database:', error)
+          clientLogger.error('Failed to load preferences from database', error as Error, {
+            promptId,
+          })
           // Fall back to localStorage on error
           loadFromLocalStorage()
         }
@@ -140,7 +143,9 @@ export function CopyButton({
         try {
           await savePromptCopyPreferences(promptId, prefs)
         } catch (error) {
-          console.error('Failed to save preferences to database:', error)
+          clientLogger.error('Failed to save preferences to database', error as Error, {
+            promptId,
+          })
         }
       }
     }
@@ -171,14 +176,14 @@ export function CopyButton({
       // Track copy count if promptId provided (fire and forget)
       if (promptId) {
         incrementCopyCount(promptId).catch((err) =>
-          console.error('Failed to track copy:', err)
+          clientLogger.error('Failed to track copy', err as Error, { promptId })
         )
       }
 
       // Reset after 2 seconds
       setTimeout(() => setCopied(false), 2000)
     } catch (err) {
-      console.error('Failed to copy text:', err)
+      clientLogger.error('Failed to copy text', err as Error)
     }
   }
 

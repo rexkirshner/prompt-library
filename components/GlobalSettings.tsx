@@ -9,6 +9,7 @@
 
 import { useState, useEffect } from 'react'
 import { getCopyPreferences, saveCopyPreferences } from '@/lib/users/actions'
+import { clientLogger } from '@/lib/logging/client'
 
 interface GlobalSettingsProps {
   userId?: string
@@ -43,7 +44,7 @@ export function GlobalSettings({ userId }: GlobalSettingsProps) {
             setGithubReminder(prefs.copyGithubReminder)
           }
         } catch (error) {
-          console.error('Failed to load preferences from database:', error)
+          clientLogger.error('Failed to load preferences from database', error as Error)
           // Fall back to localStorage on error
           loadFromLocalStorage()
         }
@@ -99,7 +100,7 @@ export function GlobalSettings({ userId }: GlobalSettingsProps) {
       try {
         await saveCopyPreferences(prefs)
       } catch (error) {
-        console.error('Failed to save preferences to database:', error)
+        clientLogger.error('Failed to save preferences to database', error as Error)
       }
     }
 

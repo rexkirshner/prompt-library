@@ -10,6 +10,7 @@
 
 import { useState, useEffect } from 'react'
 import { getPromptCopyPreferences } from '@/lib/prompts/copy-preferences'
+import { clientLogger } from '@/lib/logging/client'
 
 interface CopyPreviewProps {
   text: string
@@ -44,7 +45,9 @@ export function CopyPreview({ text, promptId, userId }: CopyPreviewProps) {
             setGithubReminder(prefs.copyGithubReminder)
           }
         } catch (error) {
-          console.error('Failed to load preferences from database:', error)
+          clientLogger.error('Failed to load preferences from database', error as Error, {
+            promptId,
+          })
           // Fall back to localStorage on error
           loadFromLocalStorage()
         }
