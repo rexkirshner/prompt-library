@@ -882,3 +882,186 @@ Settings Storage:
 
 ---
 
+
+## Session 16 - 2025-11-27
+
+**Duration:** 2h | **Focus:** Code quality - M2 Type Hierarchy Inconsistency | **Status:** ✅ Complete
+
+### TL;DR
+
+- Fixed M2 (Type Hierarchy Inconsistency) from Session 14 code review
+- Added optional `title` and `slug` metadata fields to BasePrompt type
+- Updated import service to utilize new metadata fields for better debugging
+- Fixed 17 test fixtures with required compound prompt fields
+- All verification complete (TypeScript, tests, build)
+- Project entering maintenance mode with comprehensive documentation
+
+### Problem Solved
+
+**Issue:** BasePrompt type was too minimal - only included fields required for resolution logic (id, prompt_text, is_compound, max_depth). Import service and debugging scenarios needed additional metadata like `slug` and `title`, but Session 14 had to remove this usage due to type mismatch, creating workarounds with Map<slug, id>.
+
+**Constraints:**
+- Must maintain backward compatibility (existing code uses minimal type)
+- Cannot create type proliferation (avoid dozens of similar types)
+- Resolution logic must not require metadata fields
+- Debugging and error messages would benefit from metadata
+
+**Approach:** Extended BasePrompt interface with optional `title` and `slug` fields, documented which fields are required vs optional in comprehensive JSDoc, updated import service to include metadata fields
+
+**Why this approach:** YAGNI principle - adds only what's needed (optional fields) without forcing all code to provide them. Maintains backward compatibility while improving debugging capabilities. Single type serves both minimal resolution and rich debugging scenarios.
+
+### Decisions
+
+**D010 (Session 16):** Add optional metadata fields to BasePrompt type
+- **Context:** Type system was forcing removal of useful debugging fields
+- **Decision:** Add optional `title?: string` and `slug?: string` to BasePrompt
+- **Rationale:** Supports both minimal resolution (existing code) and rich debugging (import service, error messages) without type proliferation
+- **Trade-offs:**
+  - ✅ Single type serves multiple use cases
+  - ✅ Backward compatible (optional fields)
+  - ✅ Better debugging and error messages
+  - ❌ Slight type complexity increase
+- **When to reconsider:** If optional fields become confusing or if resolution logic accidentally depends on metadata
+
+### Files
+
+**Modified Files:**
+
+**MOD:** `lib/compound-prompts/types.ts:38-47` - Enhanced BasePrompt interface
+- Added optional `title?: string` field
+- Added optional `slug?: string` field
+- Added comprehensive JSDoc explaining core vs optional fields
+- Clarifies which fields required for resolution vs useful for debugging
+
+**MOD:** `lib/import-export/services/import-service.ts:474-482` - Updated component mapping
+- Now includes `prompt_text` field (was missing)
+- Now includes `title` and `slug` for better traceability
+- Removed previous Map<slug, id> workaround need
+- Better debugging capabilities for compound prompt import
+
+**MOD:** `lib/import-export/importers/__tests__/json-importer.test.ts` - Test fixture updates
+- Fixed 17 test fixtures missing required `is_compound` and `max_depth` fields
+- All PromptData objects now comply with type definition
+- Tests passing (20/20 in JSON importer suite)
+
+**MOD:** `artifacts/code-reviews/session-14-review.md` - Code review documentation
+- Marked M2 as RESOLVED (Session 16)
+- Updated Medium Priority count from 2 to 1
+- Added Session 16 resolution details
+- Removed type hierarchy uncertainty
+
+### Mental Models
+
+**Current understanding:**
+
+**Type System Philosophy:** BasePrompt serves dual purpose - minimal for resolution logic, rich for debugging. Optional fields enable this without forcing all code paths to provide metadata. Resolution logic in `lib/compound-prompts/resolution.ts` only uses core fields (id, prompt_text, is_compound, max_depth), but import service, error messages, and debugging scenarios benefit from title/slug metadata.
+
+**Compound Prompts Architecture:**
+- BasePrompt = minimal data for resolution (type-safe with Prisma mappings)
+- CompoundPromptWithComponents extends BasePrompt with loaded components
+- Resolution walks component tree recursively, doesn't need metadata
+- Import/export needs slug for cross-system portability
+- Debugging benefits from title for human-readable error messages
+
+**Key insights:**
+- Optional fields enable single type to serve multiple use cases (YAGNI)
+- JSDoc documentation critical for explaining field usage patterns
+- Type hierarchy designed for specific use case can be safely extended
+- Backward compatibility maintained through optionality
+
+**Gotchas discovered:**
+- PromptData type (import/export) requires is_compound and max_depth (compound prompt v2.0 fields)
+- Test fixtures often miss required fields during type evolution
+- Import service was using `any` types, masking field requirements
+- General-purpose Task agent excellent for systematic test fixture updates
+
+### Work In Progress
+
+**Status:** Session complete - No work in progress
+
+**Project Status:** Entering maintenance mode
+- All code review HIGH and most MEDIUM priorities resolved
+- Comprehensive documentation created for returning to project
+- Production deployment successful and stable
+- Ready for maintenance mode hiatus
+
+### TodoWrite State
+
+**Completed:**
+- ✅ Review BasePrompt type and identify needed fields
+- ✅ Add optional metadata fields to BasePrompt type
+- ✅ Update import service to use new fields
+- ✅ Fix test fixtures with required fields
+- ✅ Run TypeScript compiler to verify types
+- ✅ Run tests to verify changes
+- ✅ Verify build passes
+- ✅ Commit changes
+- ✅ Update code review document
+
+**Pending:**
+- Document Session 16 in SESSIONS.md (in progress)
+- Review and enhance README.md for maintenance mode
+- Create MAINTENANCE.md guide for returning to project
+- Review ARCHITECTURE.md for completeness
+- Create clear roadmap of outstanding items
+- Verify all documentation is cross-referenced
+- Final commit and summary
+
+### Verification Results
+
+**TypeScript Compilation:** ✅ PASSED (no errors)
+
+**Test Results:** ✅ ALL PASSED
+- Compound prompts: 55/55 tests passed
+- JSON importer: 20/20 tests passed
+- Import/export suite: All tests passing
+
+**Production Build:** ✅ PASSED
+- Build completed successfully
+- All routes generated
+- No type errors
+- No runtime errors
+
+**Git Status:** ✅ Clean
+- All changes committed
+- 3 commits for Session 16
+- Pushed to GitHub (origin/main)
+
+### Commits (Session 16)
+
+1. `0f71cbd` - Fix M2: Add optional metadata fields to BasePrompt type
+2. `83ac0fe` - Update code review: Mark M2 as resolved
+3. `bf44ce4` - Final code review update: Mark all Session 16 items resolved
+
+### Code Review Progress
+
+**Session 14 Review Status:**
+- **Critical:** 0
+- **High Priority:** 0 (H1 Complete ✅)
+- **Medium Priority:** 1 (M2, M3 Resolved ✅)
+- **Low Priority:** 2
+
+**Outstanding Items:**
+- M1: Component prop validation gaps (pre-commit hooks, stricter linting)
+- L1: Metrics display enhancement (number formatting, icons)
+- L2: Git workflow streamlining (automated checks)
+
+### Next Session
+
+**Priority:** Maintenance mode documentation
+- Create MAINTENANCE.md guide for returning to project
+- Document outstanding code review items clearly
+- Ensure all documentation cross-referenced
+- Create clear roadmap for resuming development
+
+**Blockers:** None - Project in excellent state for maintenance mode
+
+**Context for Return:**
+- Input Atlas production deployment: https://prompt-library-alpha-inky.vercel.app/
+- All HIGH priority code review items resolved
+- 2 MEDIUM + 2 LOW priority items documented in code review
+- Comprehensive logging infrastructure in place
+- Type system clean and maintainable
+- Test coverage excellent (compound prompts, import/export)
+
+---
