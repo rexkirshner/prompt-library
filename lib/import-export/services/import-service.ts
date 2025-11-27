@@ -474,9 +474,11 @@ export class ImportService {
           component_prompt: comp.component_prompt
             ? {
                 id: comp.component_prompt.id,
-                slug: comp.component_prompt.slug,
+                prompt_text: comp.component_prompt.prompt_text,
                 is_compound: comp.component_prompt.is_compound,
                 max_depth: comp.component_prompt.max_depth,
+                title: comp.component_prompt.title,
+                slug: comp.component_prompt.slug,
               }
             : null,
         })),

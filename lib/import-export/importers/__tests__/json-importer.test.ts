@@ -47,6 +47,8 @@ describe('JSONImporter', () => {
             created_at: '2025-01-15T09:00:00.000Z',
             updated_at: '2025-01-15T09:00:00.000Z',
             approved_at: '2025-01-15T09:30:00.000Z',
+            is_compound: false,
+            max_depth: null,
           },
         ],
       }
@@ -99,6 +101,8 @@ describe('JSONImporter', () => {
             created_at: '2025-01-15T09:00:00.000Z',
             updated_at: '2025-01-15T09:00:00.000Z',
             approved_at: null,
+            is_compound: false,
+            max_depth: null,
           },
         ],
       }
@@ -130,6 +134,8 @@ describe('JSONImporter', () => {
             created_at: '2025-01-15T09:00:00.000Z',
             updated_at: '2025-01-15T09:00:00.000Z',
             approved_at: null,
+            is_compound: false,
+            max_depth: null,
           },
         ],
       }
@@ -161,6 +167,8 @@ describe('JSONImporter', () => {
             created_at: '2025-01-15T09:00:00.000Z',
             updated_at: '2025-01-15T09:00:00.000Z',
             approved_at: null, // Missing approved_at
+            is_compound: false,
+            max_depth: null,
           },
         ],
       }
@@ -195,6 +203,8 @@ describe('JSONImporter', () => {
             created_at: '2025-01-15T09:00:00.000Z',
             updated_at: '2025-01-15T09:00:00.000Z',
             approved_at: '2025-01-15T09:30:00.000Z',
+            is_compound: false,
+            max_depth: null,
           },
         ],
       }
@@ -230,6 +240,8 @@ describe('JSONImporter', () => {
             created_at: '2025-01-15T09:00:00.000Z',
             updated_at: '2025-01-15T09:00:00.000Z',
             approved_at: '2025-01-15T09:30:00.000Z',
+            is_compound: false,
+            max_depth: null,
           },
           {
             title: 'Test 2',
@@ -246,6 +258,8 @@ describe('JSONImporter', () => {
             created_at: '2025-01-15T09:00:00.000Z',
             updated_at: '2025-01-15T09:00:00.000Z',
             approved_at: null,
+            is_compound: false,
+            max_depth: null,
           },
         ],
       }
@@ -289,6 +303,8 @@ describe('JSONImporter', () => {
             created_at: '2025-01-15T09:00:00.000Z',
             updated_at: '2025-01-15T09:00:00.000Z',
             approved_at: '2025-01-15T09:30:00.000Z',
+            is_compound: false,
+            max_depth: null,
           },
           {
             title: 'Test 2',
@@ -305,6 +321,8 @@ describe('JSONImporter', () => {
             created_at: '2025-01-15T09:00:00.000Z',
             updated_at: '2025-01-15T09:00:00.000Z',
             approved_at: '2025-01-15T09:30:00.000Z',
+            is_compound: false,
+            max_depth: null,
           },
         ],
       }
@@ -343,6 +361,8 @@ describe('JSONImporter', () => {
             created_at: '2025-01-15T09:00:00.000Z',
             updated_at: '2025-01-15T09:00:00.000Z',
             approved_at: '2025-01-15T09:30:00.000Z',
+            is_compound: false,
+            max_depth: null,
           },
         ],
       }
@@ -385,6 +405,8 @@ describe('JSONImporter', () => {
             created_at: '2025-01-15T09:00:00.000Z',
             updated_at: '2025-01-15T09:00:00.000Z',
             approved_at: '2025-01-15T09:30:00.000Z',
+            is_compound: false,
+            max_depth: null,
           },
         ],
       }
@@ -421,6 +443,8 @@ describe('JSONImporter', () => {
             created_at: '2025-01-15T09:00:00.000Z',
             updated_at: '2025-01-15T09:00:00.000Z',
             approved_at: '2025-01-15T09:30:00.000Z',
+            is_compound: false,
+            max_depth: null,
           },
         ],
       }
@@ -451,6 +475,8 @@ describe('JSONImporter', () => {
           created_at: '2025-01-15T09:00:00.000Z',
           updated_at: '2025-01-15T09:00:00.000Z',
           approved_at: '2025-01-15T09:30:00.000Z',
+          is_compound: false,
+          max_depth: null,
         },
       ]
 
@@ -478,6 +504,8 @@ describe('JSONImporter', () => {
           created_at: '2025-01-15T09:00:00.000Z',
           updated_at: '2025-01-15T09:00:00.000Z',
           approved_at: '2025-01-15T09:30:00.000Z',
+          is_compound: false,
+          max_depth: null,
         },
       ]
 
@@ -506,6 +534,8 @@ describe('JSONImporter', () => {
         created_at: '2025-01-15T09:00:00.000Z',
         updated_at: '2025-01-15T09:00:00.000Z',
         approved_at: '2025-01-15T09:30:00.000Z',
+        is_compound: false,
+        max_depth: null,
       },
       {
         title: 'Prompt 2',
@@ -522,6 +552,8 @@ describe('JSONImporter', () => {
         created_at: '2025-01-15T09:00:00.000Z',
         updated_at: '2025-01-15T09:00:00.000Z',
         approved_at: '2025-01-15T09:30:00.000Z',
+        is_compound: false,
+        max_depth: null,
       },
       {
         title: 'Prompt 3',
@@ -538,6 +570,8 @@ describe('JSONImporter', () => {
         created_at: '2025-01-15T09:00:00.000Z',
         updated_at: '2025-01-15T09:00:00.000Z',
         approved_at: '2025-01-15T09:30:00.000Z',
+        is_compound: false,
+        max_depth: null,
       },
     ]
 

@@ -21,7 +21,19 @@ export interface CompoundPromptComponent {
 
 /**
  * Base prompt data needed for resolution
- * Only includes fields required to resolve the final text
+ *
+ * Core fields (required for resolution):
+ * - id: Unique identifier for the prompt
+ * - prompt_text: The actual prompt content (for simple prompts)
+ * - is_compound: Whether this prompt is composed of other prompts
+ * - max_depth: Maximum nesting depth for compound prompts
+ *
+ * Optional metadata fields (useful for debugging, error messages, and tracking):
+ * - title: Human-readable name of the prompt
+ * - slug: URL-friendly identifier
+ *
+ * These optional fields are not required for resolution logic but can be
+ * included for better error messages and debugging information.
  */
 export interface BasePrompt {
   id: string
@@ -29,6 +41,9 @@ export interface BasePrompt {
   is_compound: boolean
   max_depth: number | null
   compound_components?: CompoundPromptComponent[]
+  // Optional metadata for debugging and display
+  title?: string
+  slug?: string
 }
 
 /**
