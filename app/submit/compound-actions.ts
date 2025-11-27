@@ -15,6 +15,9 @@ import {
   validateComponentStructure,
 } from '@/lib/compound-prompts/validation'
 import type { CompoundPromptWithComponents } from '@/lib/compound-prompts/types'
+import { logger as baseLogger } from '@/lib/logging'
+
+const logger = baseLogger.child({ module: 'submit/compound-actions' })
 
 export interface CompoundSubmissionResult {
   success: boolean
@@ -289,7 +292,7 @@ export async function submitCompoundPrompt(
         'Compound prompt submitted successfully! It will be reviewed by moderators before publication.',
     }
   } catch (error: any) {
-    console.error('Error submitting compound prompt:', error)
+    logger.error('Error submitting compound prompt', error as Error)
     return {
       success: false,
       errors: { form: error.message || 'Failed to submit compound prompt' },
