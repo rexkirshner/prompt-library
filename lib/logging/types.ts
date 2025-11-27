@@ -62,12 +62,6 @@ export interface LoggerConfig {
   level?: LogLevel
 
   /**
-   * Enable pretty printing for development
-   * @default true in development, false in production
-   */
-  pretty?: boolean
-
-  /**
    * Application name to include in logs
    */
   name?: string

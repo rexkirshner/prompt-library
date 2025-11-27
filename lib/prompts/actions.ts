@@ -7,6 +7,9 @@
 'use server'
 
 import { prisma } from '@/lib/db/client'
+import { logger as baseLogger } from '@/lib/logging'
+
+const logger = baseLogger.child({ module: 'prompts/actions' })
 
 /**
  * Increment copy count for a prompt
@@ -25,6 +28,6 @@ export async function incrementCopyCount(promptId: string): Promise<void> {
     })
   } catch (error) {
     // Log error but don't throw - copy tracking should not block user interaction
-    console.error('Failed to increment copy count:', error)
+    logger.error('Failed to increment copy count', error as Error, { promptId })
   }
 }

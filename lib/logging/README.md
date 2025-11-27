@@ -1,6 +1,6 @@
 # Logging Module
 
-Structured logging for the AI Prompt Library application using [Pino](https://getpino.io).
+Structured logging for Input Atlas with a lightweight custom logger implementation.
 
 ## Features
 
@@ -96,25 +96,31 @@ const customLogger = createLogger({
 
 ## Output Formats
 
-### Development (Pretty)
+### Development (Pretty Console)
 
 ```
-[13:45:23] INFO (input-atlas): Server started
-    port: 3000
-[13:45:24] ERROR (input-atlas): Database connection failed
-    err: {
+[1:45:23 PM] INFO: Server started
+  {
+    "port": 3000
+  }
+[1:45:24 PM] ERROR: Database connection failed
+  {
+    "err": {
       "type": "Error",
       "message": "Connection timeout",
       "stack": "Error: Connection timeout\n    at connect (db.ts:12)"
     }
+  }
 ```
 
 ### Production (JSON)
 
 ```json
-{"level":30,"time":"2025-11-26T13:45:23.000Z","name":"input-atlas","msg":"Server started","port":3000}
-{"level":50,"time":"2025-11-26T13:45:24.000Z","name":"input-atlas","msg":"Database connection failed","err":{"type":"Error","message":"Connection timeout","stack":"Error: Connection timeout\n    at connect (db.ts:12)"}}
+{"level":20,"time":"2025-11-26T13:45:23.000Z","name":"input-atlas","msg":"Server started","port":3000}
+{"level":40,"time":"2025-11-26T13:45:24.000Z","name":"input-atlas","msg":"Database connection failed","err":{"type":"Error","message":"Connection timeout","stack":"Error: Connection timeout\n    at connect (db.ts:12)"}}
 ```
+
+Note: Log levels are numeric (debug=10, info=20, warn=30, error=40, fatal=50).
 
 ## Best Practices
 
@@ -240,10 +246,11 @@ const logger = {
 
 ## Performance
 
-Pino is designed for high performance:
-- **Zero overhead** in production when level filters logs
-- **Asynchronous** I/O doesn't block application
-- **Minimal allocations** for garbage collection efficiency
+The custom logger is designed for minimal overhead:
+- **Zero dependencies** - No external logging libraries
+- **Level filtering** - Logs below configured level are skipped
+- **Lightweight** - Simple console-based implementation
+- **Next.js compatible** - Works with Turbopack builds
 
 ## Troubleshooting
 
@@ -256,24 +263,24 @@ Check your `LOG_LEVEL` environment variable:
 LOG_LEVEL=debug npm run dev
 ```
 
-### Pretty printing not working
+### JSON logs in development
 
-Ensure `pino-pretty` is installed:
-
-```bash
-npm install --save-dev pino-pretty
-```
-
-### JSON in development
-
-Disable pretty printing:
+The logger automatically uses pretty console output in development (NODE_ENV !== 'production'). To force JSON output:
 
 ```bash
-LOG_PRETTY=false npm run dev
+NODE_ENV=production npm run dev
 ```
+
+## Architecture Notes
+
+This is a custom lightweight logger implementation built specifically for Next.js compatibility. Earlier versions used Pino, but it had bundling issues with Next.js Turbopack. The custom implementation:
+
+- Uses native console methods for output
+- Formats as JSON in production for log aggregation
+- Formats as pretty console output in development
+- Maintains the same API surface as the Pino implementation
 
 ## References
 
-- [Pino Documentation](https://getpino.io)
-- [Pino Best Practices](https://getpino.io/#/docs/best-practices)
 - [Structured Logging Guide](https://www.honeycomb.io/blog/structured-logging-and-your-team)
+- [Next.js Logging Best Practices](https://nextjs.org/docs)
