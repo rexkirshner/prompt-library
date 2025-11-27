@@ -16,6 +16,9 @@ import {
   normalizeTag,
   type PromptSubmissionData,
 } from '@/lib/prompts/validation'
+import { logger as baseLogger } from '@/lib/logging'
+
+const logger = baseLogger.child({ module: 'submit/actions' })
 
 export interface SubmitPromptResult {
   success: boolean
@@ -80,7 +83,10 @@ async function generateUniqueSlug(title: string): Promise<string> {
     if (!existing) {
       // Log warning if took many attempts
       if (attempt > 10) {
-        console.warn(`Slug generation took ${attempt} attempts for title: "${title}"`)
+        logger.warn(
+          `Slug generation took ${attempt} attempts`,
+          { title, attempts: attempt }
+        )
       }
       return slug
     }
@@ -171,7 +177,7 @@ export async function submitPrompt(
       promptId: prompt.id,
     }
   } catch (error) {
-    console.error('Prompt submission error:', error)
+    logger.error('Prompt submission error', error as Error)
     return {
       success: false,
       errors: {
