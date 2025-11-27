@@ -12,6 +12,9 @@ import { prisma } from '@/lib/db/client'
 import { getAdminUser } from '@/lib/auth/admin'
 import { generateSlug } from '@/lib/prompts/validation'
 import { isValidUrl } from '@/lib/utils/url'
+import { logger as baseLogger } from '@/lib/logging'
+
+const logger = baseLogger.child({ module: 'admin/prompts/edit/actions' })
 
 export interface EditPromptResult {
   success: boolean
@@ -293,7 +296,11 @@ export async function updatePrompt(
     })
 
   } catch (error) {
-    console.error('Failed to update prompt:', error)
+    logger.error(
+      'Failed to update prompt',
+      error as Error,
+      { promptId: data.id }
+    )
     return { success: false, errors: { form: 'Failed to update prompt' } }
   }
 
