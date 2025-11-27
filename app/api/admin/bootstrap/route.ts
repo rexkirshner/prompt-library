@@ -27,6 +27,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db/client'
 import bcrypt from 'bcryptjs'
+import { logger as baseLogger } from '@/lib/logging'
+
+const logger = baseLogger.child({ module: 'api/admin/bootstrap' })
 
 export async function POST(request: NextRequest) {
   try {
@@ -114,7 +117,7 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     )
   } catch (error) {
-    console.error('Bootstrap admin creation failed:', error)
+    logger.error('Bootstrap admin creation failed', error as Error)
     return NextResponse.json(
       {
         error: 'Failed to create admin user',
