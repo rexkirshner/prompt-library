@@ -10,6 +10,9 @@
 import { getAdminUser } from '@/lib/auth/admin'
 import { ExportService, ImportService } from '@/lib/import-export'
 import type { ExportData, ImportResult } from '@/lib/import-export'
+import { logger as baseLogger } from '@/lib/logging'
+
+const logger = baseLogger.child({ module: 'admin/backup/actions' })
 
 export interface ExportPromptsActionResult {
   success: boolean
@@ -113,7 +116,10 @@ export async function exportPromptsAction(): Promise<ExportPromptsActionResult> 
       count: result.count,
     }
   } catch (error) {
-    console.error('Failed to export prompts:', error)
+    logger.error(
+      'Failed to export prompts',
+      error as Error
+    )
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to export prompts',
@@ -220,7 +226,10 @@ export async function validateImportAction(
 
     return result
   } catch (error) {
-    console.error('Failed to validate import data:', error)
+    logger.error(
+      'Failed to validate import data',
+      error as Error
+    )
     return {
       success: false,
       total: 0,
@@ -356,7 +365,11 @@ export async function importPromptsAction(
 
     return result
   } catch (error) {
-    console.error('Failed to import prompts:', error)
+    logger.error(
+      'Failed to import prompts',
+      error as Error,
+      { onDuplicate: options?.onDuplicate }
+    )
     return {
       success: false,
       total: 0,
