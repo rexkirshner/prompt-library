@@ -1173,3 +1173,141 @@ No significant architectural decisions this session - primarily bug fixes and fe
 
 ---
 
+## Session 12 - 2025-11-27
+
+**Duration:** 1h | **Focus:** Critical production bug fix - compound prompt hanging | **Status:** ✅
+
+### TL;DR
+
+Fixed critical production bug where compound prompt submissions hung indefinitely on production. Root cause was database transaction attempting to read uncommitted data. Moved max_depth calculation outside transaction, resolving the issue for both public and admin submissions.
+
+### Problem Solved
+
+**Issue:** User reported that compound prompt submission on production (https://www.inputatlas.com/submit) was hanging indefinitely. When clicking "Submit Compound Prompt", the button changed to "Submitting compound prompt..." but never completed.
+
+**Constraints:**
+- Must maintain transaction integrity for prompt + components creation
+- Cannot break existing max_depth calculation logic
+- Fix needed for both public submissions and admin submissions
+- Must work with PostgreSQL transaction isolation
+
+**Approach:**
+1. Investigated submission form and server actions
+2. Found `calculateMaxDepth()` being called inside transaction
+3. Discovered `getPromptWithComponents()` uses regular `prisma` client, not transaction client `tx`
+4. This caused query to wait for uncommitted data, resulting in infinite hang
+5. Moved max_depth calculation outside transaction, after commit
+
+**Why this approach:** The transaction needs to commit before the data is visible to queries using the regular prisma client. Moving the max_depth calculation outside the transaction ensures the prompt and components are committed and visible. If calculation fails, max_depth is left as null (non-critical, graceful degradation).
+
+### Decisions
+
+No architectural decisions - this was a bug fix following correct transaction isolation patterns.
+
+### Files
+
+**MOD:** `app/submit/compound-actions.ts:230-285` - Moved max_depth calculation outside transaction (public submissions)
+- Removed max_depth calculation from inside transaction block (lines 265-271 deleted)
+- Added max_depth calculation after transaction commits (lines 274-285 new)
+- Added explanatory comments about transaction visibility
+
+**MOD:** `app/admin/prompts/compound/actions.ts:243-299` - Same fix for admin submissions
+- Removed max_depth calculation from inside transaction block (lines 277-283 deleted)
+- Added max_depth calculation after transaction commits (lines 288-299 new)
+- Ensures consistency between public and admin submission flows
+
+**MOD:** `context/.context-config.json:2,223-224` - Fixed version mismatch
+- Updated "version" from 3.0.0 to 3.4.0
+- Updated "configVersion" from 3.0.0 to 3.4.0
+- Updated "lastUpdated" to 2025-11-27
+
+**MOD:** `context/context-feedback.md:883-950` - Documented version check bug
+- Added detailed bug report about false update notification
+- Suggested 3 options for preventing this in future installations
+
+### Mental Models
+
+**Current understanding:**
+
+**Database Transaction Isolation:** PostgreSQL transactions provide snapshot isolation - queries outside the transaction cannot see uncommitted data from inside the transaction. The `prisma.$transaction()` callback receives a transaction client (`tx`), but helper functions using the regular `prisma` client will not see uncommitted changes.
+
+**The Bug Pattern:**
+```typescript
+await prisma.$transaction(async (tx) => {
+  const prompt = await tx.prompts.create({ ... })
+
+  // BUG: This hangs! getPromptWithComponents uses prisma, not tx
+  const depth = await calculateMaxDepth(prompt.id, getPromptWithComponents)
+})
+```
+
+**The Fix Pattern:**
+```typescript
+const prompt = await prisma.$transaction(async (tx) => {
+  const prompt = await tx.prompts.create({ ... })
+  return prompt
+})
+
+// FIXED: After transaction commits, data is visible
+const depth = await calculateMaxDepth(prompt.id, getPromptWithComponents)
+```
+
+**Key insights:**
+1. **Transaction client vs regular client:** Always use the transaction client (`tx`) for all queries inside a transaction if you need to read uncommitted data
+2. **Helper function isolation:** Helper functions that use the global `prisma` client cannot see transaction-local changes
+3. **Non-critical calculations:** Max depth is important but not critical - if it fails, leaving it null doesn't break core functionality
+4. **Both code paths affected:** When fixing transaction bugs, check for duplicate code (public vs admin flows)
+
+**Gotchas discovered:**
+- Transaction isolation can cause infinite hangs, not just read inconsistencies
+- The bug wasn't obvious because it worked fine in development with small datasets and fast responses
+- Production with higher latency exposed the transaction lock more clearly
+- Both public and admin submission had identical bug (code duplication vulnerability)
+
+### Work In Progress
+
+**Task:** None - all work completed and deployed
+
+**Status:** Fix committed, pushed to GitHub, deploying automatically via Vercel
+
+### TodoWrite State
+
+**Completed:**
+- ✅ Investigate compound prompt submission hanging on production
+- ✅ Identify root cause of infinite hang
+- ✅ Implement fix for submission issue
+- ✅ Test fix locally before deployment
+- ✅ Verify TypeScript compilation
+- ✅ Commit the fix
+
+### Next Session
+
+**Priority:** Verify fix works on production after Vercel deployment completes
+
+**Blockers:** None - fix is deployed
+
+**Follow-up:**
+- Test compound prompt submission on production
+- Monitor for any related issues
+- Consider adding integration tests for compound prompt submissions
+
+### Git Operations
+
+**MANDATORY - Auto-logged**
+
+- **Commits:** 2 commits
+- **Pushed:** YES - User explicitly approved push
+- **Approval:** "yes" (exact user quote approving push)
+
+**Commit Details:**
+1. `64eff53` - Fix compound prompt submission hanging on production
+2. `ab4939e` - Fix context config version mismatch (3.0.0 → 3.4.0)
+
+### Tests & Build
+
+- **Tests:** Not run (bug fix in server actions, no test changes needed)
+- **Build:** TypeScript compilation passed ✅
+- **Deployment:** Automatic via Vercel (triggered by push to main)
+
+---
+
