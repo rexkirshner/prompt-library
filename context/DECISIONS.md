@@ -479,6 +479,127 @@ model invite_codes {
 
 ---
 
+## D005 - Standardize Branding to "AI Prompt Library" (Singular)
+
+**Date:** 2025-11-26
+**Status:** Accepted
+**Session:** 14
+
+### Context
+
+The application had inconsistent branding across the codebase, using both "AI Prompts Library" (plural) and "AI Prompt Library" (singular) in different locations. This created:
+- Inconsistent user experience
+- Confusion in documentation
+- Unprofessional appearance
+- SEO inconsistency (multiple variations dilute search ranking)
+
+The inconsistency spanned 20+ files including navigation, metadata, authentication pages, and documentation.
+
+### Decision
+
+Standardize on "AI Prompt Library" (singular "Prompt") across all files, documentation, and UI elements.
+
+### Rationale
+
+**Key factors:**
+
+- **Grammatical correctness**: "Prompt Library" is the correct grammatical construction (like "Book Library", not "Books Library")
+- **Industry standard**: Most software libraries use singular form (React Component Library, UI Pattern Library)
+- **SEO consistency**: Single canonical name improves search engine optimization
+- **Professional appearance**: Consistency signals quality and attention to detail
+- **User clarity**: One clear brand name reduces confusion
+
+### Alternatives Considered
+
+1. **Use "AI Prompts Library" (plural)**
+   - Pros: Emphasizes that library contains multiple prompts
+   - Cons: Grammatically awkward, not industry standard
+   - Why not: "Library" already implies collection, plural is redundant
+
+2. **Use different names in different contexts**
+   - Pros: Could tailor messaging to specific audiences
+   - Cons: Confusing, unprofessional, bad for SEO
+   - Why not: Consistency is more valuable than context-specific messaging
+
+3. **Rebrand to entirely different name**
+   - Pros: Opportunity to create unique brand identity
+   - Cons: Significant effort, existing users already know current name
+   - Why not: Current name is descriptive and appropriate, just needs consistency
+
+### Tradeoffs Accepted
+
+- ✅ Consistent professional branding, better SEO, clear identity
+- ❌ No significant downsides - this was purely fixing an inconsistency
+
+### Consequences
+
+**Positive:**
+- Unified brand identity across all touchpoints
+- Improved SEO (single canonical name in all metadata)
+- Professional, polished appearance
+- Easier for users to remember and reference
+- Consistent Open Graph and Twitter Card metadata
+
+**Negative:**
+- None - this was an unambiguous improvement
+
+### Implementation
+
+**Changed 20 files across the codebase:**
+
+**UI Components:**
+- `components/NavBarClient.tsx` - Navigation branding
+- `components/Footer.tsx` - Footer branding
+
+**Pages and Metadata:**
+- `app/layout.tsx` - Site metadata, Open Graph, Twitter Cards
+- `app/prompts/page.tsx` - Browse page title
+- `app/submit/page.tsx` - Submit page metadata
+- `app/auth/signin/page.tsx` - Sign-in page
+- `app/auth/signup/page.tsx` - Sign-up page
+- Plus 13 additional files
+
+**Documentation:**
+- `README.md`
+- `context/CONTEXT.md`
+- `context/STATUS.md`
+- `prisma/README.md`
+- And others
+
+**Method:** Used systematic grep + sed approach:
+```bash
+find . -type f \( -name "*.ts" -o -name "*.tsx" -o -name "*.md" \) \
+  -exec sed -i '' 's/AI Prompts Library/AI Prompt Library/g' {} \;
+```
+
+### When to Reconsider
+
+**This decision should be reconsidered if:**
+- Complete rebranding initiative (new name entirely)
+- User research shows confusion with singular form (unlikely)
+- Acquisition/merger requires name change
+
+**Triggers:**
+- Never - this is a permanent branding standard unless complete rebrand occurs
+
+### Related
+
+- See: `SESSIONS.md` Session 14
+- Commit: 51446f4 - "Update branding from 'AI Prompts Library' to 'AI Prompt Library'"
+- Related: All metadata files, Open Graph tags, site navigation
+
+**For AI agents:** The canonical brand name is **"AI Prompt Library"** (singular). Use this exact form in:
+- All user-facing text
+- Metadata (title, og:title, twitter:title)
+- Documentation
+- Code comments referring to the application name
+- README files
+- Error messages and user communications
+
+Never use "AI Prompts Library" (plural) or other variations. This is a hard standard.
+
+---
+
 ## Active Decisions
 
 | ID   | Title                              | Date       | Status      |
@@ -487,6 +608,7 @@ model invite_codes {
 | D002 | Email/Password Auth over Google    | 2025-11-23 | ✅ Accepted |
 | D003 | Boolean Admin Flag over Roles      | 2025-11-24 | ✅ Accepted |
 | D004 | Invite-Only Registration           | 2025-01-24 | ✅ Accepted |
+| D005 | Branding: "AI Prompt Library"      | 2025-11-26 | ✅ Accepted |
 
 ---
 
