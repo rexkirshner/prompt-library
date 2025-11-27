@@ -9,6 +9,9 @@
 
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/db/client'
+import { logger as baseLogger } from '@/lib/logging'
+
+const logger = baseLogger.child({ module: 'prompts/copy-preferences' })
 
 export interface PromptCopyPreferences {
   copyPrefix: string
@@ -54,7 +57,10 @@ export async function getPromptCopyPreferences(
       copyGithubReminder: prefs.copy_github_reminder,
     }
   } catch (error) {
-    console.error('Failed to get prompt copy preferences:', error)
+    logger.error('Failed to get prompt copy preferences', error as Error, {
+      userId: session.user.id,
+      promptId,
+    })
     return null
   }
 }
@@ -103,7 +109,10 @@ export async function savePromptCopyPreferences(
 
     return true
   } catch (error) {
-    console.error('Failed to save prompt copy preferences:', error)
+    logger.error('Failed to save prompt copy preferences', error as Error, {
+      userId: session.user.id,
+      promptId,
+    })
     return false
   }
 }
