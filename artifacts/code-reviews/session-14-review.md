@@ -534,7 +534,7 @@ The codebase continues to maintain solid engineering standards with TypeScript s
 
 **New Issues Identified:**
 - Component prop validation gaps (MEDIUM M1)
-- Type hierarchy inconsistency (MEDIUM M2)
+- ~~Type hierarchy inconsistency (MEDIUM M2)~~ - ✅ **RESOLVED Session 16**
 - ~~Missing branding decision documentation (MEDIUM M3)~~ - ✅ **RESOLVED Session 15**
 
 **Overall Trend:** ✅ Positive - Many UI/UX improvements made, core functionality stable, but security/operations items still need attention
@@ -553,8 +553,8 @@ The codebase continues to maintain solid engineering standards with TypeScript s
 
 **Uncertainties:**
 - Not clear why TypeScript errors weren't caught locally (IDE configuration?)
-- Not sure if CompoundPromptWithComponents type should include `slug` field
-- Timeline for implementing structured logging needs discussion
+- ~~Not sure if CompoundPromptWithComponents type should include `slug` field~~ - ✅ **RESOLVED Session 16**: Added optional metadata fields
+- ~~Timeline for implementing structured logging needs discussion~~ - ✅ **RESOLVED Session 15**: Complete
 - Priority of security items vs feature development needs clarification
 
 ---
