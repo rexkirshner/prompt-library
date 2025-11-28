@@ -39,20 +39,11 @@ export const metadata: Metadata = {
     siteName: 'Input Atlas',
     title: 'Input Atlas',
     description: 'A curated collection of high-quality AI prompts for the community',
-    images: [
-      {
-        url: '/og-image.png',
-        width: 1200,
-        height: 630,
-        alt: 'Input Atlas',
-      },
-    ],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Input Atlas',
     description: 'A curated collection of high-quality AI prompts for the community',
-    images: ['/og-image.png'],
   },
   robots: {
     index: true,
