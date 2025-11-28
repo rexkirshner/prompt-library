@@ -123,7 +123,16 @@ export function Footer() {
         {/* Copyright */}
         <div className="mt-8 border-t border-gray-200 dark:border-gray-700 pt-8 text-center text-sm text-gray-500 dark:text-gray-400">
           <p>
-            © {currentYear} Input Atlas. All prompts are public domain under CC0.
+            © {currentYear} Input Atlas. A{' '}
+            <a
+              href="https://scratchspace.dev"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 dark:text-blue-400 hover:underline"
+            >
+              Scratch Space
+            </a>{' '}
+            Project.
           </p>
         </div>
       </div>
