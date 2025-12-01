@@ -5,52 +5,56 @@ import { prisma } from '@/lib/db/client'
 export const dynamic = 'force-dynamic'
 
 export default async function Home() {
-  // Fetch featured prompts
-  const featuredPrompts = await prisma.prompts.findMany({
-    where: {
-      status: 'APPROVED',
-      deleted_at: null,
-      featured: true,
-    },
-    include: {
-      prompt_tags: {
-        include: {
-          tags: true,
+  // Fetch all home page data in parallel for better performance
+  // Previously these were sequential, adding ~200-400ms latency
+  const [featuredPrompts, recentPrompts, totalCount] = await Promise.all([
+    // Featured prompts for hero section
+    prisma.prompts.findMany({
+      where: {
+        status: 'APPROVED',
+        deleted_at: null,
+        featured: true,
+      },
+      include: {
+        prompt_tags: {
+          include: {
+            tags: true,
+          },
         },
       },
-    },
-    orderBy: {
-      created_at: 'desc',
-    },
-    take: 3,
-  })
+      orderBy: {
+        created_at: 'desc',
+      },
+      take: 3,
+    }),
 
-  // Fetch recent prompts
-  const recentPrompts = await prisma.prompts.findMany({
-    where: {
-      status: 'APPROVED',
-      deleted_at: null,
-    },
-    include: {
-      prompt_tags: {
-        include: {
-          tags: true,
+    // Recent prompts for main grid
+    prisma.prompts.findMany({
+      where: {
+        status: 'APPROVED',
+        deleted_at: null,
+      },
+      include: {
+        prompt_tags: {
+          include: {
+            tags: true,
+          },
         },
       },
-    },
-    orderBy: {
-      created_at: 'desc',
-    },
-    take: 6,
-  })
+      orderBy: {
+        created_at: 'desc',
+      },
+      take: 6,
+    }),
 
-  // Get total count
-  const totalCount = await prisma.prompts.count({
-    where: {
-      status: 'APPROVED',
-      deleted_at: null,
-    },
-  })
+    // Total count for "Browse X Prompts" button
+    prisma.prompts.count({
+      where: {
+        status: 'APPROVED',
+        deleted_at: null,
+      },
+    }),
+  ])
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
