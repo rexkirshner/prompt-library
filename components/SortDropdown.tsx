@@ -7,7 +7,6 @@
 
 'use client'
 
-import { useEffect, useRef } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { saveSortPreference } from '@/lib/users/actions'
 
@@ -25,29 +24,17 @@ interface SortDropdownProps {
 export function SortDropdown({ userId, initialSortPreference }: SortDropdownProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const hasAppliedInitialSort = useRef(false)
 
   // Use URL param if present, otherwise use saved preference for logged-in users
   const urlSort = searchParams.get('sort')
   const currentSort = urlSort || initialSortPreference || 'newest'
 
-  // On mount, if user is logged in and has a saved preference, apply it
-  useEffect(() => {
-    if (
-      userId &&
-      initialSortPreference &&
-      initialSortPreference !== 'newest' &&
-      !urlSort &&
-      !hasAppliedInitialSort.current
-    ) {
-      hasAppliedInitialSort.current = true
-      const params = new URLSearchParams(searchParams.toString())
-      params.set('sort', initialSortPreference)
-      router.replace(`/prompts?${params.toString()}`)
-    }
-  }, [userId, initialSortPreference, urlSort, searchParams, router])
-
   const handleSortChange = async (newSort: string) => {
+    // Save preference for logged-in users FIRST (before navigation)
+    if (userId) {
+      await saveSortPreference(newSort)
+    }
+
     const params = new URLSearchParams(searchParams.toString())
 
     if (newSort === 'newest') {
@@ -61,11 +48,6 @@ export function SortDropdown({ userId, initialSortPreference }: SortDropdownProp
     params.delete('page')
 
     router.push(`/prompts?${params.toString()}`)
-
-    // Save preference for logged-in users (fire and forget)
-    if (userId) {
-      saveSortPreference(newSort)
-    }
   }
 
   return (
