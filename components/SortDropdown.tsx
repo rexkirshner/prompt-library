@@ -2,11 +2,14 @@
  * Sort Dropdown Component
  *
  * Client component for sorting prompts list.
+ * Saves sort preference to database for logged-in users.
  */
 
 'use client'
 
+import { useEffect, useRef } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { saveSortPreference } from '@/lib/users/actions'
 
 const SORT_OPTIONS = [
   { value: 'newest', label: 'Newest First' },
@@ -14,12 +17,37 @@ const SORT_OPTIONS = [
   { value: 'popular', label: 'Most Popular' },
 ]
 
-export function SortDropdown() {
+interface SortDropdownProps {
+  userId?: string
+  initialSortPreference?: string
+}
+
+export function SortDropdown({ userId, initialSortPreference }: SortDropdownProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const currentSort = searchParams.get('sort') || 'newest'
+  const hasAppliedInitialSort = useRef(false)
 
-  const handleSortChange = (newSort: string) => {
+  // Use URL param if present, otherwise use saved preference for logged-in users
+  const urlSort = searchParams.get('sort')
+  const currentSort = urlSort || initialSortPreference || 'newest'
+
+  // On mount, if user is logged in and has a saved preference, apply it
+  useEffect(() => {
+    if (
+      userId &&
+      initialSortPreference &&
+      initialSortPreference !== 'newest' &&
+      !urlSort &&
+      !hasAppliedInitialSort.current
+    ) {
+      hasAppliedInitialSort.current = true
+      const params = new URLSearchParams(searchParams.toString())
+      params.set('sort', initialSortPreference)
+      router.replace(`/prompts?${params.toString()}`)
+    }
+  }, [userId, initialSortPreference, urlSort, searchParams, router])
+
+  const handleSortChange = async (newSort: string) => {
     const params = new URLSearchParams(searchParams.toString())
 
     if (newSort === 'newest') {
@@ -33,6 +61,11 @@ export function SortDropdown() {
     params.delete('page')
 
     router.push(`/prompts?${params.toString()}`)
+
+    // Save preference for logged-in users (fire and forget)
+    if (userId) {
+      saveSortPreference(newSort)
+    }
   }
 
   return (

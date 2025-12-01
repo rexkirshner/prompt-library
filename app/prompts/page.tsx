@@ -84,6 +84,16 @@ export default async function PromptsPage({ searchParams }: PromptsPageProps) {
   // Get current session
   const session = await auth()
 
+  // Fetch user's sort preference from database
+  let userSortPreference: string | undefined
+  if (session?.user?.id) {
+    const user = await prisma.users.findUnique({
+      where: { id: session.user.id },
+      select: { sort_preference: true },
+    })
+    userSortPreference = user?.sort_preference || undefined
+  }
+
   // Build search filters
   const filters = {
     query: params.q,
@@ -94,8 +104,8 @@ export default async function PromptsPage({ searchParams }: PromptsPageProps) {
   // Parse page number
   const currentPage = Math.max(1, parseInt(params.page || '1', 10))
 
-  // Parse sort parameter
-  const sortBy = params.sort || 'newest'
+  // Parse sort parameter - use URL param first, then user's saved preference, then default
+  const sortBy = params.sort || userSortPreference || 'newest'
 
   // Build where clause
   const where = buildSearchWhere(filters)
@@ -238,7 +248,11 @@ export default async function PromptsPage({ searchParams }: PromptsPageProps) {
           )}
         </div>
       ) : (
-        <PromptsListClient prompts={promptsWithResolvedText} userId={session?.user?.id} />
+        <PromptsListClient
+          prompts={promptsWithResolvedText}
+          userId={session?.user?.id}
+          sortPreference={userSortPreference}
+        />
       )}
 
       {/* Pagination */}

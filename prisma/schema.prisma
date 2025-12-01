@@ -150,6 +150,7 @@ model users {
   copy_add_suffix                                       Boolean         @default(false)
   copy_use_ultrathink                                   Boolean         @default(false)
   copy_github_reminder                                  Boolean         @default(false)
+  sort_preference                                       String          @default("newest")
   admin_actions                                         admin_actions[]
   user_actions                                          user_actions[]
   prompt_edits_prompt_edits_reviewed_by_user_idTousers  prompt_edits[]  @relation("prompt_edits_reviewed_by_user_idTousers")

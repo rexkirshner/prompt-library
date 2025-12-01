@@ -37,9 +37,10 @@ interface Prompt {
 interface PromptsListClientProps {
   prompts: Prompt[]
   userId?: string
+  sortPreference?: string
 }
 
-export function PromptsListClient({ prompts, userId }: PromptsListClientProps) {
+export function PromptsListClient({ prompts, userId, sortPreference }: PromptsListClientProps) {
   const [viewMode, setViewMode] = useState<ViewMode>('grid')
 
   if (prompts.length === 0) {
@@ -50,7 +51,7 @@ export function PromptsListClient({ prompts, userId }: PromptsListClientProps) {
     <>
       {/* Sort and View Mode Toggle */}
       <div className="mb-6 flex items-center justify-between">
-        <SortDropdown />
+        <SortDropdown userId={userId} initialSortPreference={sortPreference} />
         <ViewModeToggle
           defaultMode="grid"
           onViewModeChange={setViewMode}

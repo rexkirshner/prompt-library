@@ -1,7 +1,7 @@
 /**
  * User Preferences Actions
  *
- * Server actions for managing user copy preferences.
+ * Server actions for managing user preferences (copy settings, sort order, etc.).
  */
 
 'use server'
@@ -95,6 +95,70 @@ export async function saveCopyPreferences(
   } catch (error) {
     logger.error(
       'Failed to save copy preferences',
+      error as Error,
+      { userId: session.user.id }
+    )
+    return false
+  }
+}
+
+/**
+ * Get user's sort preference from database
+ */
+export async function getSortPreference(): Promise<string | null> {
+  const session = await auth()
+
+  if (!session?.user?.id) {
+    return null
+  }
+
+  try {
+    const user = await prisma.users.findUnique({
+      where: { id: session.user.id },
+      select: {
+        sort_preference: true,
+      },
+    })
+
+    return user?.sort_preference || 'newest'
+  } catch (error) {
+    logger.error(
+      'Failed to get sort preference',
+      error as Error,
+      { userId: session.user.id }
+    )
+    return null
+  }
+}
+
+/**
+ * Save user's sort preference to database
+ */
+export async function saveSortPreference(sortPreference: string): Promise<boolean> {
+  const session = await auth()
+
+  if (!session?.user?.id) {
+    return false
+  }
+
+  // Validate sort preference
+  const validOptions = ['newest', 'alphabetical', 'popular']
+  if (!validOptions.includes(sortPreference)) {
+    return false
+  }
+
+  try {
+    await prisma.users.update({
+      where: { id: session.user.id },
+      data: {
+        sort_preference: sortPreference,
+      },
+    })
+
+    return true
+  } catch (error) {
+    logger.error(
+      'Failed to save sort preference',
       error as Error,
       { userId: session.user.id }
     )
