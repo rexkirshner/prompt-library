@@ -1,59 +1,20 @@
 import Link from 'next/link'
-import { prisma } from '@/lib/db/client'
+import {
+  getFeaturedPrompts,
+  getRecentPrompts,
+  getApprovedPromptCount,
+} from '@/lib/db/cached-queries'
 
 // Force dynamic rendering - page fetches latest prompts
 export const dynamic = 'force-dynamic'
 
 export default async function Home() {
-  // Fetch all home page data in parallel for better performance
-  // Previously these were sequential, adding ~200-400ms latency
+  // Fetch all home page data in parallel using cached queries
+  // React.cache() deduplicates if same data is needed elsewhere in render tree
   const [featuredPrompts, recentPrompts, totalCount] = await Promise.all([
-    // Featured prompts for hero section
-    prisma.prompts.findMany({
-      where: {
-        status: 'APPROVED',
-        deleted_at: null,
-        featured: true,
-      },
-      include: {
-        prompt_tags: {
-          include: {
-            tags: true,
-          },
-        },
-      },
-      orderBy: {
-        created_at: 'desc',
-      },
-      take: 3,
-    }),
-
-    // Recent prompts for main grid
-    prisma.prompts.findMany({
-      where: {
-        status: 'APPROVED',
-        deleted_at: null,
-      },
-      include: {
-        prompt_tags: {
-          include: {
-            tags: true,
-          },
-        },
-      },
-      orderBy: {
-        created_at: 'desc',
-      },
-      take: 6,
-    }),
-
-    // Total count for "Browse X Prompts" button
-    prisma.prompts.count({
-      where: {
-        status: 'APPROVED',
-        deleted_at: null,
-      },
-    }),
+    getFeaturedPrompts(3),
+    getRecentPrompts(6),
+    getApprovedPromptCount(),
   ])
 
   return (

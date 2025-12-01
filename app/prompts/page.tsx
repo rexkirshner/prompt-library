@@ -8,6 +8,7 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
 import { prisma } from '@/lib/db/client'
+import { getCategories, getPopularTags } from '@/lib/db/cached-queries'
 import { auth } from '@/lib/auth'
 import { buildSearchWhere, parseTagFilter } from '@/lib/prompts/search'
 import { PromptFilters } from '@/components/PromptFilters'
@@ -123,12 +124,12 @@ export default async function PromptsPage({ searchParams }: PromptsPageProps) {
   })()
 
   // Fetch all page data in parallel for better performance
-  // Previously these were sequential, adding ~200-400ms latency
+  // Categories and tags use cached queries for deduplication across components
   const [totalCount, prompts, categories, allTags] = await Promise.all([
-    // Total count for pagination
+    // Total count for pagination (search-specific, not cached)
     prisma.prompts.count({ where }),
 
-    // Main prompts query with pagination
+    // Main prompts query with pagination (search-specific, not cached)
     prisma.prompts.findMany({
       where,
       include: {
@@ -143,28 +144,11 @@ export default async function PromptsPage({ searchParams }: PromptsPageProps) {
       take: ITEMS_PER_PAGE,
     }),
 
-    // Categories for filter dropdown
-    prisma.prompts.findMany({
-      where: {
-        status: 'APPROVED',
-        deleted_at: null,
-      },
-      select: {
-        category: true,
-      },
-      distinct: ['category'],
-      orderBy: {
-        category: 'asc',
-      },
-    }),
+    // Categories for filter dropdown (cached, deduped with other components)
+    getCategories(),
 
-    // Tags for filter chips (top 20 by usage)
-    prisma.tags.findMany({
-      orderBy: {
-        usage_count: 'desc',
-      },
-      take: 20,
-    }),
+    // Tags for filter chips (cached, deduped with other components)
+    getPopularTags(20),
   ])
 
   // Calculate pagination values (uses totalCount from parallel fetch)
@@ -208,8 +192,8 @@ export default async function PromptsPage({ searchParams }: PromptsPageProps) {
 
       {/* Search and Filters */}
       <PromptFilters
-        categories={categories.map((c) => c.category)}
-        allTags={allTags.map((t) => ({ slug: t.slug, name: t.name }))}
+        categories={categories}
+        allTags={allTags}
       />
 
       {/* Stats bar */}

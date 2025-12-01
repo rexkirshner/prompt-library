@@ -7,7 +7,7 @@
 
 import { Metadata } from 'next'
 import { getCurrentUser } from '@/lib/auth'
-import { prisma } from '@/lib/db/client'
+import { getAvailablePromptsForCompound } from '@/lib/db/cached-queries'
 import { SubmitPromptFormWrapper } from './SubmitPromptFormWrapper'
 
 export const metadata: Metadata = {
@@ -21,22 +21,8 @@ export const dynamic = 'force-dynamic'
 export default async function SubmitPage() {
   const user = await getCurrentUser()
 
-  // Fetch approved prompts for compound prompt creation
-  const availablePrompts = await prisma.prompts.findMany({
-    where: {
-      status: 'APPROVED',
-      deleted_at: null,
-    },
-    select: {
-      id: true,
-      slug: true,
-      title: true,
-      description: true,
-      category: true,
-      is_compound: true,
-    },
-    orderBy: [{ category: 'asc' }, { title: 'asc' }],
-  })
+  // Fetch approved prompts for compound prompt creation (cached, deduped)
+  const availablePrompts = await getAvailablePromptsForCompound()
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-12">
