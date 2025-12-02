@@ -97,6 +97,14 @@ export function Footer() {
             </h3>
             <ul className="space-y-2 text-sm">
               <li>
+                <Link
+                  href="/api-docs"
+                  className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
+                >
+                  API Documentation
+                </Link>
+              </li>
+              <li>
                 <a
                   href="https://github.com/rexkirshner/prompt-library"
                   target="_blank"
