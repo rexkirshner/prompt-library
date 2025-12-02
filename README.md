@@ -85,21 +85,24 @@ npm run db:studio       # Open Prisma Studio (database GUI)
 
 ## Key Features
 
+- **Public API:** RESTful JSON API for programmatic access to prompts (see [/api-docs](https://www.inputatlas.com/api-docs))
 - **Compound Prompts v2.0:** Prompts composed of other prompts with recursive resolution
 - **Import/Export System:** JSON-based prompt portability with validation
 - **Per-Prompt Copy Preferences:** Customizable copy formatting per prompt
 - **Audit Logging:** Comprehensive tracking of all database mutations
 - **Type-Safe Architecture:** Strict TypeScript with comprehensive type definitions
-- **Full Test Coverage:** 75 tests across core functionality
+- **Full Test Coverage:** 116 tests across core functionality
 
 ## Project Structure
 
 ```
 prompt-library/
 ├── app/                      # Next.js App Router (pages & API routes)
+│   └── api/v1/               # Public API endpoints
 ├── lib/                      # Shared modules
 │   ├── auth/                 # Authentication (NextAuth.js)
 │   ├── db/                   # Database client (Prisma)
+│   ├── api/                  # API utilities (rate limiting, serializers)
 │   ├── compound-prompts/     # Compound prompts v2.0 system
 │   ├── import-export/        # Import/export functionality
 │   ├── audit/                # Audit logging system
@@ -108,6 +111,8 @@ prompt-library/
 ├── types/                    # TypeScript types
 ├── prisma/                   # Database schema & migrations
 ├── context/                  # AI Context System documentation
+├── docs/                     # Development documentation
+│   └── planning/             # Feature planning documents
 └── artifacts/                # Code reviews and analysis
     └── code-reviews/         # Session-based code quality tracking
 ```
@@ -147,6 +152,26 @@ docker compose down
 npm run db:studio
 ```
 
+## Public API
+
+RESTful JSON API for programmatic access to prompts. No authentication required.
+
+**Base URL:** `https://www.inputatlas.com/api/v1`
+
+**Endpoints:**
+- `GET /prompts` - List prompts with search, filters, and pagination
+- `GET /prompts/[identifier]` - Get single prompt by slug or UUID
+- `GET /categories` - List all categories
+- `GET /tags` - List popular tags
+
+**Features:**
+- Rate limiting: 100 requests/hour per IP
+- CORS enabled for cross-origin access
+- Compound prompts include resolved text
+- Comprehensive field validation
+
+**Documentation:** Visit [/api-docs](https://www.inputatlas.com/api-docs) for full API reference with examples.
+
 ## Authentication
 
 NextAuth.js v5 with email/password authentication. See [lib/auth/README.md](lib/auth/README.md) for implementation details.
@@ -160,7 +185,7 @@ NextAuth.js v5 with email/password authentication. See [lib/auth/README.md](lib/
 ## Testing
 
 ```bash
-npm test              # Run all tests (75 total)
+npm test              # Run all tests (116 total)
 npm run test:watch    # Watch mode
 npm run test:coverage # Coverage report
 ```
@@ -168,7 +193,8 @@ npm run test:coverage # Coverage report
 **Test Coverage:**
 - ✅ Compound Prompts: 55 tests (resolution, depth calculation, circular dependencies)
 - ✅ Import/Export: 20 tests (JSON validation, import service, export service)
-- ✅ All tests passing (as of Session 16, 2025-11-27)
+- ✅ Public API: 41 tests (serializers, endpoints, rate limiting, CORS)
+- ✅ All tests passing (as of Session 13, 2025-12-01)
 
 ## Deployment
 
