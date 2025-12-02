@@ -261,10 +261,14 @@ export default async function PromptPage({ params }: PromptPageProps) {
               </a>
             </>
           )}
-          <span>•</span>
-          <span>{prompt.view_count} views</span>
-          <span>•</span>
-          <span>{prompt.copy_count} copied</span>
+          {currentUser && (
+            <>
+              <span>•</span>
+              <span>{prompt.view_count} views</span>
+              <span>•</span>
+              <span>{prompt.copy_count} copied</span>
+            </>
+          )}
         </div>
       </div>
 
