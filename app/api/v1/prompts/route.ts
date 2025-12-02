@@ -206,7 +206,7 @@ export async function GET(request: NextRequest) {
         } else {
           resolvedText = prompt.prompt_text || ''
         }
-        return [prompt, resolvedText] as const
+        return [prompt, resolvedText] as [typeof prompt, string]
       })
     )
 
