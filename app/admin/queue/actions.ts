@@ -21,7 +21,10 @@ export interface ModerationResult {
 /**
  * Approve a pending prompt
  */
-export async function approvePrompt(promptId: string): Promise<ModerationResult> {
+export async function approvePrompt(
+  promptId: string,
+  featured: boolean = false
+): Promise<ModerationResult> {
   try {
     const admin = await getAdminUser()
     if (!admin) {
@@ -35,19 +38,21 @@ export async function approvePrompt(promptId: string): Promise<ModerationResult>
         status: 'APPROVED',
         approved_at: new Date(),
         approved_by_user_id: admin.id,
+        featured,
       },
     })
 
     // Revalidate relevant pages
     revalidatePath('/admin/queue')
     revalidatePath('/prompts')
+    revalidatePath('/')
 
     return { success: true }
   } catch (error) {
     logger.error(
       'Failed to approve prompt',
       error as Error,
-      { promptId }
+      { promptId, featured }
     )
     return { success: false, error: 'Failed to approve prompt' }
   }

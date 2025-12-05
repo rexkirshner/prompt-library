@@ -43,6 +43,7 @@ export interface EditPromptData {
   exampleOutput: string
   authorName: string
   authorUrl: string
+  featured: boolean
   tags: string[]
 }
 
@@ -278,6 +279,7 @@ export async function updatePrompt(
           example_output: data.exampleOutput || null,
           author_name: data.authorName,
           author_url: data.authorUrl || null,
+          featured: data.featured,
         },
       })
 
@@ -310,6 +312,7 @@ export async function updatePrompt(
   revalidatePath('/prompts')
   revalidatePath('/admin')
   revalidatePath('/admin/queue')
+  revalidatePath('/')
 
   // Redirect based on prompt status
   // If pending, go back to queue; if approved, go to prompt page

@@ -41,6 +41,7 @@ interface EditPromptFormProps {
     exampleOutput: string
     authorName: string
     authorUrl: string
+    featured: boolean
     tags: string[]
   }
 }
@@ -51,6 +52,7 @@ interface EditPromptFormProps {
 export function EditPromptForm({ prompt }: EditPromptFormProps) {
   const [tags, setTags] = useState<string[]>(prompt.tags)
   const [promptText, setPromptText] = useState(prompt.promptText)
+  const [featured, setFeatured] = useState(prompt.featured)
   const [showPreview, setShowPreview] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
@@ -70,6 +72,7 @@ export function EditPromptForm({ prompt }: EditPromptFormProps) {
       exampleOutput: formData.get('exampleOutput') as string,
       authorName: formData.get('authorName') as string,
       authorUrl: formData.get('authorUrl') as string,
+      featured,
       tags,
     }
 
@@ -346,6 +349,23 @@ export function EditPromptForm({ prompt }: EditPromptFormProps) {
             {state.errors.authorUrl}
           </p>
         )}
+      </div>
+
+      {/* Featured checkbox */}
+      <div className="flex items-center gap-2">
+        <input
+          type="checkbox"
+          id="featured"
+          checked={featured}
+          onChange={(e) => setFeatured(e.target.checked)}
+          className="h-4 w-4 rounded border-gray-300 text-yellow-600 focus:ring-yellow-500"
+        />
+        <label
+          htmlFor="featured"
+          className="text-sm font-medium text-gray-700 dark:text-gray-300"
+        >
+          ⭐ Feature this prompt on homepage
+        </label>
       </div>
 
       {/* Submit button */}

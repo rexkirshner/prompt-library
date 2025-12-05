@@ -88,6 +88,7 @@ export default async function EditPromptPage({ params }: EditPromptPageProps) {
           exampleOutput: prompt.example_output || '',
           authorName: prompt.author_name,
           authorUrl: prompt.author_url || '',
+          featured: prompt.featured,
           tags: tagNames,
         }}
       />
