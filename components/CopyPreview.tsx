@@ -10,6 +10,7 @@
 
 import { useState, useEffect } from 'react'
 import { getPromptCopyPreferences } from '@/lib/prompts/copy-preferences'
+import { getCopyPreferences } from '@/lib/users/actions'
 import { clientLogger } from '@/lib/logging/client'
 
 interface CopyPreviewProps {
@@ -33,16 +34,31 @@ export function CopyPreview({ text, promptId, userId }: CopyPreviewProps) {
 
     const loadPreferences = async () => {
       if (userId) {
-        // User is logged in - load from database for this specific prompt
+        // User is logged in - try per-prompt settings first, then fall back to global
         try {
-          const prefs = await getPromptCopyPreferences(promptId)
-          if (prefs) {
-            setPrefix(prefs.copyPrefix)
-            setSuffix(prefs.copySuffix)
-            setAddPrefix(prefs.copyAddPrefix)
-            setAddSuffix(prefs.copyAddSuffix)
-            setUseUltrathink(prefs.copyUseUltrathink)
-            setGithubReminder(prefs.copyGithubReminder)
+          const promptPrefs = await getPromptCopyPreferences(promptId)
+          if (promptPrefs) {
+            // Use per-prompt preferences
+            setPrefix(promptPrefs.copyPrefix)
+            setSuffix(promptPrefs.copySuffix)
+            setAddPrefix(promptPrefs.copyAddPrefix)
+            setAddSuffix(promptPrefs.copyAddSuffix)
+            setUseUltrathink(promptPrefs.copyUseUltrathink)
+            setGithubReminder(promptPrefs.copyGithubReminder)
+          } else {
+            // No per-prompt preferences, try global settings
+            const globalPrefs = await getCopyPreferences()
+            if (globalPrefs) {
+              setPrefix(globalPrefs.copyPrefix)
+              setSuffix(globalPrefs.copySuffix)
+              setAddPrefix(globalPrefs.copyAddPrefix)
+              setAddSuffix(globalPrefs.copyAddSuffix)
+              setUseUltrathink(globalPrefs.copyUseUltrathink)
+              setGithubReminder(globalPrefs.copyGithubReminder)
+            } else {
+              // Fall back to localStorage
+              loadFromLocalStorage()
+            }
           }
         } catch (error) {
           clientLogger.error('Failed to load preferences from database', error as Error, {
@@ -58,13 +74,43 @@ export function CopyPreview({ text, promptId, userId }: CopyPreviewProps) {
     }
 
     const loadFromLocalStorage = () => {
-      // Use prompt-specific keys
-      const savedPrefix = localStorage.getItem(`prompt-${promptId}-copy-prefix`)
-      const savedSuffix = localStorage.getItem(`prompt-${promptId}-copy-suffix`)
-      const savedAddPrefix = localStorage.getItem(`prompt-${promptId}-copy-add-prefix`) === 'true'
-      const savedAddSuffix = localStorage.getItem(`prompt-${promptId}-copy-add-suffix`) === 'true'
-      const savedUseUltrathink = localStorage.getItem(`prompt-${promptId}-copy-use-ultrathink`) === 'true'
-      const savedGithubReminder = localStorage.getItem(`prompt-${promptId}-copy-github-reminder`) === 'true'
+      // Check for per-prompt settings first, then fall back to global settings
+      const getWithFallback = (promptKey: string, globalKey: string): string | null => {
+        const promptValue = localStorage.getItem(promptKey)
+        if (promptValue !== null) return promptValue
+        return localStorage.getItem(globalKey)
+      }
+
+      const getBoolWithFallback = (promptKey: string, globalKey: string): boolean => {
+        const promptValue = localStorage.getItem(promptKey)
+        if (promptValue !== null) return promptValue === 'true'
+        return localStorage.getItem(globalKey) === 'true'
+      }
+
+      const savedPrefix = getWithFallback(
+        `prompt-${promptId}-copy-prefix`,
+        'prompt-copy-prefix'
+      )
+      const savedSuffix = getWithFallback(
+        `prompt-${promptId}-copy-suffix`,
+        'prompt-copy-suffix'
+      )
+      const savedAddPrefix = getBoolWithFallback(
+        `prompt-${promptId}-copy-add-prefix`,
+        'prompt-copy-add-prefix'
+      )
+      const savedAddSuffix = getBoolWithFallback(
+        `prompt-${promptId}-copy-add-suffix`,
+        'prompt-copy-add-suffix'
+      )
+      const savedUseUltrathink = getBoolWithFallback(
+        `prompt-${promptId}-copy-use-ultrathink`,
+        'prompt-copy-use-ultrathink'
+      )
+      const savedGithubReminder = getBoolWithFallback(
+        `prompt-${promptId}-copy-github-reminder`,
+        'prompt-copy-github-reminder'
+      )
 
       if (savedPrefix !== null) setPrefix(savedPrefix)
       if (savedSuffix !== null) setSuffix(savedSuffix)
