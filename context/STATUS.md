@@ -81,16 +81,16 @@ npm run test:db         # Test database connection
 - `ead01bb` - Fix all ESLint errors and improve type safety
 - `b88f434` - Fix test suite environment and remove hardcoded test data
 
-**Remaining from Sprint 003:**
-1. **High Priority:** Investigate audit/import-export test hangs
-2. **Medium Priority:** useCopyPreferences hook extraction (deferred - risky)
-3. **Low Priority:** generateUniqueSlug duplication extraction
+**Remaining from Code Review:**
+1. **Medium Priority:** useCopyPreferences hook extraction (deferred - risky)
+2. **Low Priority:** Type safety for compound component relationships (M1)
+3. **Low Priority:** Edge case handling for circular dependencies (L2)
 
 ## Blockers & Decisions
 
 **Current Blockers:**
 
-- Audit/import-export tests hang indefinitely - needs investigation
+- None - all critical issues resolved
 
 **Recent Decisions:**
 
@@ -102,35 +102,42 @@ npm run test:db         # Test database connection
 - **Tech Stack:** Next.js 16.0.10, React 19, PostgreSQL 17, Prisma 7, Vercel
 - **queueMicrotask pattern:** Used for setMounted calls to avoid ESLint react-hooks/set-state-in-effect errors (Session 17)
 - **useCopyPreferences extraction:** Deferred due to complexity and risk (Session 17)
+- **Jest --forceExit:** Added to test scripts to prevent hanging from unclosed db connections (Session 17)
+- **generateUniqueSlug:** Extracted to lib/prompts/validation.ts as shared utility (Session 17)
 
 **Pending Decisions:**
 
-- Approach for fixing hanging audit/import-export tests
-- Whether to extract generateUniqueSlug or leave as-is
+- None - all Sprint 004 tasks completed
 
 ## Work In Progress
 
-**Current Task:** Sprint 004 - Continuing code quality improvements
+**Current Task:** Sprint 004 Complete ✅
 
-**Sprint 004 Focus:**
+**Sprint 004 Accomplishments:**
 
-Investigating and resolving remaining issues from Sprint 003 code review:
-1. Hanging audit/import-export tests (high priority)
-2. generateUniqueSlug duplication (low priority)
+1. ✅ Fixed hanging audit/import-export tests (added --forceExit to Jest)
+2. ✅ Extracted generateUniqueSlug to lib/prompts/validation.ts
+3. ✅ Fixed test data uniqueness issues (dynamic emails)
+4. ✅ Updated documentation
 
-**Key Mental Model from Sprint 003:**
+**Key Mental Models from Sprint 003/004:**
+
+**Jest --forceExit Pattern:**
+
+When using Prisma with Jest, database connections aren't automatically closed after tests complete. Adding `--forceExit` to test scripts ensures Jest exits after tests complete:
+```json
+"test": "jest --forceExit"
+```
 
 **queueMicrotask Pattern for Hydration Detection:**
 
-When using `setMounted(true)` in useEffect for client-side hydration detection, ESLint's `react-hooks/set-state-in-effect` rule triggers because it appears to be a synchronous setState during render. Solution: wrap in `queueMicrotask()`:
+When using `setMounted(true)` in useEffect for client-side hydration detection, ESLint's `react-hooks/set-state-in-effect` rule triggers. Solution: wrap in `queueMicrotask()`:
 
 ```typescript
 useEffect(() => {
   queueMicrotask(() => setMounted(true))
 }, [])
 ```
-
-This schedules the update for the next microtask, satisfying the linting rule while maintaining the same behavior.
 
 **Error Type Narrowing Pattern:**
 
@@ -143,9 +150,8 @@ catch (error: unknown) {
 ```
 
 **Project State:**
-- Git status: Clean (all changes committed and pushed)
-- Recent commits: 6 commits from Sprint 003 + security fix
-- Tests: 276 passing (audit/import-export excluded - hang indefinitely)
+- Git status: Clean (4 commits pending push)
+- Tests: 391 passing (all tests, including audit/import-export)
 - Build: Production build verified
 - ESLint: 0 errors, 16 warnings (intentional unused vars)
 

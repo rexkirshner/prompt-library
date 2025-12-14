@@ -6,24 +6,15 @@ This roadmap outlines outstanding issues, deferred work, and potential future en
 
 ## Current Status
 
-**Project State:** 🟢 Active Development (Sprint 004)
+**Project State:** 🟢 Active Development (Sprint 004 Complete)
 - Sprint 003 complete: 74 failing tests fixed, 55 ESLint errors resolved
+- Sprint 004 complete: Hanging tests fixed, generateUniqueSlug extracted
 - Next.js updated to 16.0.10 (security fix CVE-2025-66478)
-- 276 tests passing (audit/import-export excluded - hang)
+- 391 tests passing (all tests, including audit/import-export)
 - 0 ESLint errors (16 warnings)
 - Production build verified
 
 ## Outstanding Code Quality Issues
-
-### High Priority (Sprint 004 Focus)
-
-**H1: Audit/Import-Export Tests Hang Indefinitely**
-- **Location:** `lib/audit/__tests__/`, `lib/import-export/**/__tests__/`
-- **Issue:** Tests hang forever when run, never complete or timeout
-- **Impact:** Can't run full test suite, potential hidden bugs
-- **Suspected cause:** Database transaction or connection issue
-- **Effort:** 2-4 hours (investigation + fix)
-- **Risk:** Medium (may require understanding complex test setup)
 
 ### Medium Priority (1 Issue)
 
@@ -35,7 +26,7 @@ This roadmap outlines outstanding issues, deferred work, and potential future en
 - **Effort:** 2-3 hours (types, tests, update callers)
 - **Risk:** Low (isolated to component service)
 
-### Low Priority (3 Issues)
+### Low Priority (2 Issues)
 
 **L1: Test coverage for import/export service**
 - **Location:** lib/import-export/services/__tests__/
@@ -53,13 +44,10 @@ This roadmap outlines outstanding issues, deferred work, and potential future en
 - **Effort:** 1-2 hours (error formatting, tests)
 - **Risk:** Very Low (error handling only)
 
-**L3: generateUniqueSlug Duplication**
-- **Location:** `app/admin/prompts/compound/actions.ts:65`, `app/submit/compound-actions.ts:55`
-- **Issue:** Similar slug generation logic duplicated in two files
-- **Impact:** Code duplication, potential inconsistency if one is updated
-- **Suggested Fix:** Extract to `lib/prompts/validation.ts`
-- **Effort:** 1-2 hours
-- **Risk:** Very Low (straightforward extraction)
+### Resolved in Sprint 004 ✅
+
+- **H1:** Hanging audit/import-export tests → Fixed with --forceExit flag
+- **L3:** generateUniqueSlug duplication → Extracted to `lib/prompts/validation.ts`
 
 ### Resolved in Sprint 003 ✅
 
