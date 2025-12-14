@@ -11,7 +11,7 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/db/client'
 import { getAdminUser } from '@/lib/auth/admin'
-import { generateSlug } from '@/lib/prompts/validation'
+import { generateSlug, generateUniqueSlug } from '@/lib/prompts/validation'
 import {
   validateComponent,
   calculateMaxDepth,
@@ -60,35 +60,14 @@ export interface UpdateCompoundPromptData extends CreateCompoundPromptData {
 }
 
 /**
- * Generate unique slug for compound prompt
+ * Check if a slug exists in the database
+ * Used with generateUniqueSlug from lib/prompts/validation
  */
-async function generateUniqueSlug(title: string, excludeId?: string): Promise<string> {
-  const MAX_SLUG_ATTEMPTS = 100
-  const baseSlug = generateSlug(title)
-  let slug = baseSlug
-  let counter = 1
-
-  for (let attempt = 0; attempt < MAX_SLUG_ATTEMPTS; attempt++) {
-    const existing = await prisma.prompts.findUnique({
-      where: { slug },
-    })
-
-    if (!existing || (excludeId && existing.id === excludeId)) {
-      return slug
-    }
-
-    if (attempt >= 50) {
-      const randomSuffix = Math.random().toString(36).substring(2, 8)
-      slug = `${baseSlug}-${randomSuffix}`
-    } else {
-      slug = `${baseSlug}-${counter}`
-      counter++
-    }
-  }
-
-  throw new Error(
-    `Unable to generate unique slug after ${MAX_SLUG_ATTEMPTS} attempts for title: "${title}"`,
-  )
+async function checkSlugExists(slug: string, excludeId?: string): Promise<boolean> {
+  const existing = await prisma.prompts.findUnique({
+    where: { slug },
+  })
+  return existing !== null && (!excludeId || existing.id !== excludeId)
 }
 
 /**
@@ -183,7 +162,7 @@ export async function createCompoundPrompt(
     }
 
     // Generate slug
-    const slug = await generateUniqueSlug(data.title)
+    const slug = await generateUniqueSlug(data.title, (s) => checkSlugExists(s))
 
     // Get or create tags
     const tagRecords = await Promise.all(
@@ -375,7 +354,7 @@ export async function updateCompoundPrompt(
 
     // Generate new slug if title changed
     if (data.title !== existingPrompt.title) {
-      newSlug = await generateUniqueSlug(data.title, data.id)
+      newSlug = await generateUniqueSlug(data.title, (s) => checkSlugExists(s, data.id))
     }
 
     // Get or create tags

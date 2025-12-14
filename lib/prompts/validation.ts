@@ -66,6 +66,62 @@ export function generateSlug(title: string): string {
 }
 
 /**
+ * Generate a unique slug for a prompt by checking database for conflicts
+ *
+ * This is the canonical implementation used throughout the codebase.
+ * Handles collision resolution by appending numeric suffixes (1-50)
+ * and random suffixes (51-100) if needed.
+ *
+ * @param title - The prompt title to generate slug from
+ * @param checkExists - Function to check if slug already exists (returns true if exists)
+ * @param excludeId - Optional ID to exclude from uniqueness check (for updates)
+ * @returns A unique slug
+ * @throws Error if unable to generate unique slug after 100 attempts
+ *
+ * @example
+ * ```typescript
+ * const slug = await generateUniqueSlug(
+ *   'My Prompt Title',
+ *   async (slug) => {
+ *     const existing = await prisma.prompts.findUnique({ where: { slug } })
+ *     return existing !== null && existing.id !== excludeId
+ *   }
+ * )
+ * ```
+ */
+export async function generateUniqueSlug(
+  title: string,
+  checkExists: (slug: string) => Promise<boolean>,
+  excludeId?: string
+): Promise<string> {
+  const MAX_SLUG_ATTEMPTS = 100
+  const baseSlug = generateSlug(title)
+  let slug = baseSlug
+  let counter = 1
+
+  for (let attempt = 0; attempt < MAX_SLUG_ATTEMPTS; attempt++) {
+    const exists = await checkExists(slug)
+
+    if (!exists) {
+      return slug
+    }
+
+    // After 50 attempts, switch to random suffixes for better uniqueness
+    if (attempt >= 50) {
+      const randomSuffix = Math.random().toString(36).substring(2, 8)
+      slug = `${baseSlug}-${randomSuffix}`
+    } else {
+      slug = `${baseSlug}-${counter}`
+      counter++
+    }
+  }
+
+  throw new Error(
+    `Unable to generate unique slug after ${MAX_SLUG_ATTEMPTS} attempts for title: "${title}"`,
+  )
+}
+
+/**
  * Validate tag format (lowercase, alphanumeric with hyphens)
  */
 export function isValidTag(tag: string): boolean {

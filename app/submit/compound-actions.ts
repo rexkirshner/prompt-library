@@ -9,7 +9,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { prisma } from '@/lib/db/client'
-import { generateSlug } from '@/lib/prompts/validation'
+import { generateSlug, generateUniqueSlug } from '@/lib/prompts/validation'
 import {
   calculateMaxDepth,
   validateComponentStructure,
@@ -50,35 +50,14 @@ export interface SubmitCompoundPromptData {
 }
 
 /**
- * Generate unique slug for compound prompt
+ * Check if a slug exists in the database
+ * Used with generateUniqueSlug from lib/prompts/validation
  */
-async function generateUniqueSlug(title: string): Promise<string> {
-  const MAX_SLUG_ATTEMPTS = 100
-  const baseSlug = generateSlug(title)
-  let slug = baseSlug
-  let counter = 1
-
-  for (let attempt = 0; attempt < MAX_SLUG_ATTEMPTS; attempt++) {
-    const existing = await prisma.prompts.findUnique({
-      where: { slug },
-    })
-
-    if (!existing) {
-      return slug
-    }
-
-    if (attempt >= 50) {
-      const randomSuffix = Math.random().toString(36).substring(2, 8)
-      slug = `${baseSlug}-${randomSuffix}`
-    } else {
-      slug = `${baseSlug}-${counter}`
-      counter++
-    }
-  }
-
-  throw new Error(
-    `Unable to generate unique slug after ${MAX_SLUG_ATTEMPTS} attempts for title: "${title}"`,
-  )
+async function checkSlugExists(slug: string): Promise<boolean> {
+  const existing = await prisma.prompts.findUnique({
+    where: { slug },
+  })
+  return existing !== null
 }
 
 /**
@@ -170,7 +149,7 @@ export async function submitCompoundPrompt(
     }
 
     // Generate slug
-    const slug = await generateUniqueSlug(data.title)
+    const slug = await generateUniqueSlug(data.title, checkSlugExists)
 
     // Get or create tags
     const tagRecords = await Promise.all(
