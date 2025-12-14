@@ -26,7 +26,7 @@ export default function PrivacyPage() {
         <section className="mt-8">
           <h2 className="text-2xl font-semibold text-gray-900">Introduction</h2>
           <p className="mt-4 text-gray-700">
-            Input Atlas ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, and safeguard your information when you use our service.
+            Input Atlas (&ldquo;we,&rdquo; &ldquo;our,&rdquo; or &ldquo;us&rdquo;) is committed to protecting your privacy. This Privacy Policy explains how we collect, use, and safeguard your information when you use our service.
           </p>
         </section>
 
@@ -60,7 +60,7 @@ export default function PrivacyPage() {
           </p>
           <ul className="mt-2 list-disc space-y-1 pl-6 text-gray-700">
             <li>View counts for prompts</li>
-            <li>Copy counts when you use the "Copy" button</li>
+            <li>Copy counts when you use the &ldquo;Copy&rdquo; button</li>
             <li>Basic server logs for debugging</li>
           </ul>
         </section>
@@ -153,7 +153,7 @@ export default function PrivacyPage() {
         </section>
 
         <section className="mt-8">
-          <h2 className="text-2xl font-semibold text-gray-900">Children's Privacy</h2>
+          <h2 className="text-2xl font-semibold text-gray-900">Children&apos;s Privacy</h2>
           <p className="mt-4 text-gray-700">
             Our service is not intended for children under 13. We do not knowingly collect personal information from children under 13.
           </p>
@@ -162,7 +162,7 @@ export default function PrivacyPage() {
         <section className="mt-8">
           <h2 className="text-2xl font-semibold text-gray-900">Changes to This Policy</h2>
           <p className="mt-4 text-gray-700">
-            We may update this Privacy Policy from time to time. We will notify users of significant changes by updating the "Last updated" date.
+            We may update this Privacy Policy from time to time. We will notify users of significant changes by updating the &ldquo;Last updated&rdquo; date.
           </p>
         </section>
 

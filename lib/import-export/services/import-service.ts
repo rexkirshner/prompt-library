@@ -6,6 +6,7 @@
  */
 
 import { prisma } from '@/lib/db/client'
+import { Prisma } from '@prisma/client'
 import { slugify } from '@/lib/utils/string'
 import type { PromptData, ImportResult, ImportOptions, ImportError, ImportWarning } from '../types'
 import { JSONImporter } from '../importers/json-importer'
@@ -404,7 +405,7 @@ export class ImportService {
    * @param index - Index for error reporting
    */
   private async createCompoundComponents(
-    tx: any,
+    tx: Prisma.TransactionClient,
     compoundPromptId: string,
     components: Array<{
       position: number
@@ -413,7 +414,7 @@ export class ImportService {
       custom_text_after: string | null
     }>,
     slugToIdMap: Map<string, string>,
-    index: number
+    _index: number
   ): Promise<void> {
     // Validate all component slugs can be resolved
     for (const comp of components) {
@@ -464,13 +465,14 @@ export class ImportService {
         is_compound: prompt.is_compound,
         max_depth: prompt.max_depth,
         prompt_text: prompt.prompt_text,
-        compound_components: prompt.compound_components.map((comp: any) => ({
+        compound_components: prompt.compound_components.map((comp) => ({
           id: comp.id,
           compound_prompt_id: comp.compound_prompt_id,
           component_prompt_id: comp.component_prompt_id,
           position: comp.position,
           custom_text_before: comp.custom_text_before,
           custom_text_after: comp.custom_text_after,
+          created_at: comp.created_at,
           component_prompt: comp.component_prompt
             ? {
                 id: comp.component_prompt.id,

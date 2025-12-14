@@ -174,8 +174,9 @@ export async function submitCompoundPrompt(
           created_at: new Date(),
         })),
       )
-    } catch (error: any) {
-      return { success: false, errors: { components: error.message } }
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Unknown error'
+      return { success: false, errors: { components: message } }
     }
 
     // Validate depth for each component
@@ -200,8 +201,9 @@ export async function submitCompoundPrompt(
               }
             }
           }
-        } catch (error: any) {
-          return { success: false, errors: { components: error.message } }
+        } catch (error: unknown) {
+          const message = error instanceof Error ? error.message : 'Unknown error'
+          return { success: false, errors: { components: message } }
         }
       }
     }
@@ -293,11 +295,12 @@ export async function submitCompoundPrompt(
       message:
         'Compound prompt submitted successfully! It will be reviewed by moderators before publication.',
     }
-  } catch (error: any) {
-    logger.error('Error submitting compound prompt', error as Error)
+  } catch (error: unknown) {
+    logger.error('Error submitting compound prompt', error instanceof Error ? error : new Error(String(error)))
+    const message = error instanceof Error ? error.message : 'Failed to submit compound prompt'
     return {
       success: false,
-      errors: { form: error.message || 'Failed to submit compound prompt' },
+      errors: { form: message },
     }
   }
 }

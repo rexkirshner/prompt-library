@@ -138,9 +138,9 @@ export class JSONImporter implements IImporter {
    */
   async import(data: string, options?: ImportOptions): Promise<ImportResult> {
     const {
-      validateOnly = false,
+      validateOnly: _validateOnly = false,
       onDuplicate = 'skip',
-      dryRun = false,
+      dryRun: _dryRun = false,
     } = options || {}
 
     // Step 1: Validate JSON structure

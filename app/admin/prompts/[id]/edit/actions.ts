@@ -9,6 +9,7 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/db/client'
+import { Prisma } from '@prisma/client'
 import { getAdminUser } from '@/lib/auth/admin'
 import { generateSlug } from '@/lib/prompts/validation'
 import { isValidUrl } from '@/lib/utils/url'
@@ -189,7 +190,7 @@ export async function updatePrompt(
   data: EditPromptData,
 ): Promise<EditPromptResult> {
   // Declare variables outside try-catch for use in redirect
-  let existingPrompt: any
+  let existingPrompt: Prisma.promptsGetPayload<{ include: { prompt_tags: true } }> | null = null
   let newSlug: string = data.slug
 
   try {

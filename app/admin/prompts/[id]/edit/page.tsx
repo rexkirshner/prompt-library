@@ -5,7 +5,7 @@
  */
 
 import { Metadata } from 'next'
-import { notFound, redirect } from 'next/navigation'
+import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { requireAdmin } from '@/lib/auth/admin'
 import { prisma } from '@/lib/db/client'

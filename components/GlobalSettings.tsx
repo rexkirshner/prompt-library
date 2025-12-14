@@ -28,7 +28,8 @@ export function GlobalSettings({ userId }: GlobalSettingsProps) {
 
   // Load saved preferences on mount
   useEffect(() => {
-    setMounted(true)
+    // Use queueMicrotask to avoid synchronous setState in effect warning
+    queueMicrotask(() => setMounted(true))
 
     const loadPreferences = async () => {
       if (userId) {

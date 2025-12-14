@@ -413,7 +413,7 @@ export function EditPromptForm({ prompt }: EditPromptFormProps) {
                       setIsDeleting(false)
                       setShowDeleteConfirm(false)
                     }
-                  } catch (error) {
+                  } catch (_error) {
                     alert('Failed to delete prompt')
                     setIsDeleting(false)
                     setShowDeleteConfirm(false)

@@ -17,7 +17,6 @@
  */
 
 import type {
-  BasePrompt,
   CompoundPromptWithComponents,
   ResolutionResult,
 } from './types'

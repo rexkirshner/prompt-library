@@ -48,7 +48,7 @@ export default function SubmissionSuccessPage() {
         <div className="rounded-md bg-blue-50 p-4">
           <p className="text-sm text-blue-800">
             Your prompt has been submitted for review. Our team will review it
-            within 72 hours. You'll be able to see it in the library once it's
+            within 72 hours. You&apos;ll be able to see it in the library once it&apos;s
             approved.
           </p>
         </div>

@@ -11,7 +11,6 @@
  */
 
 import type {
-  BasePrompt,
   CompoundPromptComponent,
   CompoundPromptWithComponents,
 } from './types'

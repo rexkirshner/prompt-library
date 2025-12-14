@@ -29,7 +29,7 @@ export function InviteGenerator() {
       } else {
         setError(result.error || 'Failed to generate invite')
       }
-    } catch (err) {
+    } catch (_err) {
       setError('An unexpected error occurred')
     } finally {
       setIsGenerating(false)

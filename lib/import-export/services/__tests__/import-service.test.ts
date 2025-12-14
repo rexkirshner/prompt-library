@@ -495,7 +495,7 @@ describe('ImportService', () => {
             updated_at: new Date().toISOString(),
             approved_at: null, // But no approved_at - this will fail validation
           },
-        ] as any,
+        ] as unknown as PromptData[],
       }
 
       const result = await importService.importAll(

@@ -74,7 +74,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'weekly' as const,
       priority: 0.7,
     }))
-  } catch (error) {
+  } catch (_error) {
     // Database unavailable (likely during build) - return static pages only
     logger.warn('Database unavailable, returning static pages only')
   }

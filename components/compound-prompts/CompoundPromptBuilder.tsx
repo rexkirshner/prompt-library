@@ -63,8 +63,11 @@ export function CompoundPromptBuilder({
           promptTitle: prompt?.title,
         }
       })
-      setComponents(displayComponents)
-      hasInitialized.current = true
+      // Use queueMicrotask to avoid synchronous setState in effect warning
+      queueMicrotask(() => {
+        setComponents(displayComponents)
+        hasInitialized.current = true
+      })
     }
   }, [initialComponents, availablePrompts])
 

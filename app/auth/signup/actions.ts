@@ -14,7 +14,7 @@ import {
   validateSignUpForm,
   type SignUpFormData,
 } from '@/lib/auth/validation'
-import { validateInviteCode, redeemInviteCode } from '@/lib/invites'
+import { validateInviteCode } from '@/lib/invites'
 import { logger as baseLogger } from '@/lib/logging'
 
 const logger = baseLogger.child({ module: 'auth/signup/actions' })
@@ -92,7 +92,7 @@ export async function signUpUser(
     }
 
     // Create user and redeem invite in a transaction
-    const newUser = await prisma.$transaction(async (tx) => {
+    const _newUser = await prisma.$transaction(async (tx) => {
       // Create user
       const user = await tx.users.create({
         data: {

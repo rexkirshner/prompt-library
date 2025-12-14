@@ -48,8 +48,11 @@ export function BasePromptSelector({
   // Reset search when modal closes
   useEffect(() => {
     if (!isOpen) {
-      setSearch('')
-      setSelectedCategory('')
+      // Use queueMicrotask to avoid synchronous setState in effect warning
+      queueMicrotask(() => {
+        setSearch('')
+        setSelectedCategory('')
+      })
     }
   }, [isOpen])
 

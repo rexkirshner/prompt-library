@@ -176,7 +176,7 @@ describe('JSON Schema Validator', () => {
     })
 
     it('rejects invalid status values', () => {
-      const prompt = { ...validPrompt, status: 'INVALID' as any }
+      const prompt = { ...validPrompt, status: 'INVALID' as unknown as typeof validPrompt.status }
       const result = validatePromptData(prompt)
 
       expect(result.valid).toBe(false)
@@ -187,7 +187,7 @@ describe('JSON Schema Validator', () => {
       const validStatuses = ['PENDING', 'APPROVED', 'REJECTED']
 
       validStatuses.forEach((status) => {
-        const prompt = { ...validPrompt, status: status as any }
+        const prompt = { ...validPrompt, status: status as typeof validPrompt.status }
         const result = validatePromptData(prompt)
         expect(result.valid).toBe(true)
       })
@@ -210,7 +210,7 @@ describe('JSON Schema Validator', () => {
     })
 
     it('rejects non-boolean featured', () => {
-      const prompt = { ...validPrompt, featured: 'yes' as any }
+      const prompt = { ...validPrompt, featured: 'yes' as unknown as boolean }
       const result = validatePromptData(prompt)
 
       expect(result.valid).toBe(false)
@@ -218,7 +218,7 @@ describe('JSON Schema Validator', () => {
     })
 
     it('rejects non-array tags', () => {
-      const prompt = { ...validPrompt, tags: 'not-array' as any }
+      const prompt = { ...validPrompt, tags: 'not-array' as unknown as string[] }
       const result = validatePromptData(prompt)
 
       expect(result.valid).toBe(false)

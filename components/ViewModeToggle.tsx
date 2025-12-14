@@ -26,8 +26,11 @@ export function ViewModeToggle({
   useEffect(() => {
     const saved = localStorage.getItem('prompts-view-mode') as ViewMode | null
     if (saved && (saved === 'grid' || saved === 'list' || saved === 'mini' || saved === 'compact')) {
-      setViewMode(saved)
-      onViewModeChange(saved)
+      // Use queueMicrotask to avoid synchronous setState in effect warning
+      queueMicrotask(() => {
+        setViewMode(saved)
+        onViewModeChange(saved)
+      })
     }
   }, [onViewModeChange])
 

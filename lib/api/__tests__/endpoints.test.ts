@@ -29,6 +29,16 @@ async function parseResponse(response: Response) {
   return text ? JSON.parse(text) : null
 }
 
+// Type for prompt data from API
+interface PromptData {
+  id: string
+  slug: string
+  title: string
+  category: string
+  is_compound: boolean
+  [key: string]: unknown
+}
+
 describe('Categories Endpoint', () => {
   it('returns list of categories', async () => {
     const request = createMockRequest('/api/v1/categories')
@@ -215,7 +225,7 @@ describe('Prompts List Endpoint', () => {
     const data = await parseResponse(response)
 
     expect(response.status).toBe(200)
-    expect(data.data.every((p: any) => p.category === 'Writing')).toBe(true)
+    expect(data.data.every((p: PromptData) => p.category === 'Writing')).toBe(true)
   })
 
   it('supports alphabetical sort', async () => {
@@ -223,7 +233,7 @@ describe('Prompts List Endpoint', () => {
     const response = await getPrompts(request)
     const data = await parseResponse(response)
 
-    const titles = data.data.map((p: any) => p.title)
+    const titles = data.data.map((p: PromptData) => p.title)
     const sortedTitles = [...titles].sort()
     expect(titles).toEqual(sortedTitles)
   })
@@ -249,9 +259,9 @@ describe('Single Prompt Endpoint', () => {
 
     if (listData.data && listData.data.length > 0) {
       // Find a regular prompt
-      testPrompt = listData.data.find((p: any) => !p.is_compound) || listData.data[0]
+      testPrompt = listData.data.find((p: PromptData) => !p.is_compound) || listData.data[0]
       // Find a compound prompt if one exists
-      compoundPrompt = listData.data.find((p: any) => p.is_compound) || null
+      compoundPrompt = listData.data.find((p: PromptData) => p.is_compound) || null
     }
   })
 

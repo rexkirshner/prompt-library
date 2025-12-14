@@ -185,8 +185,9 @@ export async function createCompoundPrompt(
           created_at: new Date(),
         })),
       )
-    } catch (error: any) {
-      return { success: false, errors: { components: error.message } }
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Unknown error'
+      return { success: false, errors: { components: message } }
     }
 
     // Validate each component (circular ref & depth)
@@ -213,8 +214,9 @@ export async function createCompoundPrompt(
               }
             }
           }
-        } catch (error: any) {
-          return { success: false, errors: { components: error.message } }
+        } catch (error: unknown) {
+          const message = error instanceof Error ? error.message : 'Unknown error'
+          return { success: false, errors: { components: message } }
         }
       }
     }
@@ -389,8 +391,9 @@ export async function updateCompoundPrompt(
           created_at: new Date(),
         })),
       )
-    } catch (error: any) {
-      return { success: false, errors: { components: error.message } }
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Unknown error'
+      return { success: false, errors: { components: message } }
     }
 
     // Validate each component
@@ -402,8 +405,9 @@ export async function updateCompoundPrompt(
             component.component_prompt_id,
             getPromptWithComponents,
           )
-        } catch (error: any) {
-          return { success: false, errors: { components: error.message } }
+        } catch (error: unknown) {
+          const message = error instanceof Error ? error.message : 'Unknown error'
+          return { success: false, errors: { components: message } }
         }
       }
     }
@@ -527,12 +531,13 @@ export async function previewCompoundPrompt(
 
     const text = await previewComponents(components, getPromptWithComponents)
     return { success: true, text }
-  } catch (error: any) {
+  } catch (error: unknown) {
     logger.error(
       'Failed to preview compound prompt',
-      error as Error,
+      error instanceof Error ? error : new Error(String(error)),
       { componentCount: components.length }
     )
-    return { success: false, error: error.message || 'Failed to preview' }
+    const message = error instanceof Error ? error.message : 'Failed to preview'
+    return { success: false, error: message }
   }
 }

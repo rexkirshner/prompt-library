@@ -27,7 +27,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const stored = localStorage.getItem('theme') as Theme | null
     if (stored && ['light', 'dark', 'system'].includes(stored)) {
-      setThemeState(stored)
+      // Use queueMicrotask to avoid synchronous setState in effect warning
+      queueMicrotask(() => setThemeState(stored))
     }
   }, [])
 

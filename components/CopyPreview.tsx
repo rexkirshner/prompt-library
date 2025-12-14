@@ -30,7 +30,8 @@ export function CopyPreview({ text, promptId, userId }: CopyPreviewProps) {
 
   // Load saved preferences on mount
   useEffect(() => {
-    setMounted(true)
+    // Use queueMicrotask to avoid synchronous setState in effect warning
+    queueMicrotask(() => setMounted(true))
 
     const loadPreferences = async () => {
       if (userId) {

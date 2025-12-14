@@ -62,7 +62,8 @@ export function CopyButton({
   // For logged-in users: fetch from database
   // For anonymous users: load from localStorage
   useEffect(() => {
-    setMounted(true)
+    // Use queueMicrotask to avoid synchronous setState in effect warning
+    queueMicrotask(() => setMounted(true))
 
     const loadPreferences = async () => {
       if (userId) {

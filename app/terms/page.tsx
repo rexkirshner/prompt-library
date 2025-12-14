@@ -26,7 +26,7 @@ export default function TermsPage() {
         <section className="mt-8">
           <h2 className="text-2xl font-semibold text-gray-900">Agreement to Terms</h2>
           <p className="mt-4 text-gray-700">
-            By accessing or using Input Atlas ("Service"), you agree to be bound by these Terms of Service ("Terms"). If you disagree with any part of these terms, you may not access the Service.
+            By accessing or using Input Atlas (&ldquo;Service&rdquo;), you agree to be bound by these Terms of Service (&ldquo;Terms&rdquo;). If you disagree with any part of these terms, you may not access the Service.
           </p>
         </section>
 
@@ -140,7 +140,7 @@ export default function TermsPage() {
         <section className="mt-8">
           <h2 className="text-2xl font-semibold text-gray-900">Disclaimer of Warranties</h2>
           <p className="mt-4 text-gray-700">
-            THE SERVICE IS PROVIDED "AS IS" AND "AS AVAILABLE" WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO:
+            THE SERVICE IS PROVIDED &ldquo;AS IS&rdquo; AND &ldquo;AS AVAILABLE&rdquo; WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO:
           </p>
           <ul className="mt-2 list-disc space-y-1 pl-6 text-gray-700">
             <li>Warranties of merchantability or fitness for a particular purpose</li>
@@ -197,7 +197,7 @@ export default function TermsPage() {
         <section className="mt-8">
           <h2 className="text-2xl font-semibold text-gray-900">Changes to Terms</h2>
           <p className="mt-4 text-gray-700">
-            We reserve the right to modify these Terms at any time. We will notify users of material changes by updating the "Last updated" date. Continued use of the Service after changes constitutes acceptance of the new Terms.
+            We reserve the right to modify these Terms at any time. We will notify users of material changes by updating the &ldquo;Last updated&rdquo; date. Continued use of the Service after changes constitutes acceptance of the new Terms.
           </p>
         </section>
 

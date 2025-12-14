@@ -243,7 +243,7 @@ export default function ApiDocsPage() {
             The API is rate limited to <strong>100 requests per hour</strong> per IP address.
           </p>
           <p className="mb-4 text-gray-600 dark:text-gray-400">
-            When you exceed the limit, you'll receive a <code>429 Too Many Requests</code> response
+            When you exceed the limit, you&apos;ll receive a <code>429 Too Many Requests</code> response
             with a <code>Retry-After</code> header indicating when you can make requests again.
           </p>
           <h3 className="mb-2 font-semibold text-gray-900 dark:text-gray-100">

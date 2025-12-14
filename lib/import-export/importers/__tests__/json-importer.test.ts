@@ -6,7 +6,7 @@
 
 import { JSONImporter } from '../json-importer'
 import { prisma } from '@/lib/db/client'
-import type { PromptData } from '../../types'
+import type { PromptData, ImportError } from '../../types'
 
 // Mock the database client
 jest.mock('@/lib/db/client', () => ({
@@ -586,7 +586,7 @@ describe('JSONImporter', () => {
     })
 
     it('should filter out duplicate prompts', () => {
-      const errors: any[] = []
+      const errors: ImportError[] = []
       const duplicates = new Set<number>([0, 2])
 
       const filtered = importer.filterPromptsForImport(prompts, errors, duplicates)
@@ -606,7 +606,7 @@ describe('JSONImporter', () => {
     })
 
     it('should return all prompts if no errors or duplicates', () => {
-      const errors: any[] = []
+      const errors: ImportError[] = []
       const duplicates = new Set<number>()
 
       const filtered = importer.filterPromptsForImport(prompts, errors, duplicates)
