@@ -14,6 +14,7 @@ import {
   validatePromptSubmission,
   generateSlug,
   normalizeTag,
+  isValidTag,
   type PromptSubmissionData,
 } from '@/lib/prompts/validation'
 import { logger as baseLogger } from '@/lib/logging'
@@ -30,12 +31,25 @@ export interface SubmitPromptResult {
 /**
  * Create or find tags by name
  * Returns array of tag IDs
+ *
+ * @security Defense-in-depth: validates normalized tag pattern before DB operations
  */
 async function ensureTags(tagNames: string[]): Promise<string[]> {
   const tagIds: string[] = []
 
   for (const tagName of tagNames) {
     const normalizedName = normalizeTag(tagName)
+
+    // Defense-in-depth: validate normalized tag matches expected pattern
+    // This catches any edge cases where normalizeTag might produce unexpected output
+    if (!isValidTag(normalizedName)) {
+      logger.warn('Tag failed validation after normalization', {
+        original: tagName,
+        normalized: normalizedName,
+      })
+      continue // Skip invalid tags rather than throwing
+    }
+
     const slug = generateSlug(normalizedName)
 
     // Try to find existing tag

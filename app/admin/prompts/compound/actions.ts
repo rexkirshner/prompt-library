@@ -11,7 +11,7 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/db/client'
 import { getAdminUser } from '@/lib/auth/admin'
-import { generateSlug, generateUniqueSlug } from '@/lib/prompts/validation'
+import { generateSlug, generateUniqueSlug, normalizeTag, isValidTag } from '@/lib/prompts/validation'
 import {
   validateComponent,
   calculateMaxDepth,
@@ -164,22 +164,32 @@ export async function createCompoundPrompt(
     // Generate slug
     const slug = await generateUniqueSlug(data.title, (s) => checkSlugExists(s))
 
-    // Get or create tags
+    // Get or create tags (with defense-in-depth validation)
     const tagRecords = await Promise.all(
-      data.tags.map(async (tagName) => {
-        const normalizedName = tagName.toLowerCase()
-        const tagSlug = generateSlug(normalizedName)
-
-        return prisma.tags.upsert({
-          where: { name: normalizedName },
-          update: {},
-          create: {
-            id: crypto.randomUUID(),
-            name: normalizedName,
-            slug: tagSlug,
-          },
+      data.tags
+        .map((tagName) => normalizeTag(tagName))
+        .filter((normalizedName) => {
+          if (!isValidTag(normalizedName)) {
+            logger.warn('Tag failed validation after normalization', {
+              normalized: normalizedName,
+            })
+            return false
+          }
+          return true
         })
-      }),
+        .map(async (normalizedName) => {
+          const tagSlug = generateSlug(normalizedName)
+
+          return prisma.tags.upsert({
+            where: { name: normalizedName },
+            update: {},
+            create: {
+              id: crypto.randomUUID(),
+              name: normalizedName,
+              slug: tagSlug,
+            },
+          })
+        }),
     )
 
     // Create compound prompt in transaction
@@ -357,22 +367,32 @@ export async function updateCompoundPrompt(
       newSlug = await generateUniqueSlug(data.title, (s) => checkSlugExists(s, data.id))
     }
 
-    // Get or create tags
+    // Get or create tags (with defense-in-depth validation)
     const tagRecords = await Promise.all(
-      data.tags.map(async (tagName) => {
-        const normalizedName = tagName.toLowerCase()
-        const tagSlug = generateSlug(normalizedName)
-
-        return prisma.tags.upsert({
-          where: { name: normalizedName },
-          update: {},
-          create: {
-            id: crypto.randomUUID(),
-            name: normalizedName,
-            slug: tagSlug,
-          },
+      data.tags
+        .map((tagName) => normalizeTag(tagName))
+        .filter((normalizedName) => {
+          if (!isValidTag(normalizedName)) {
+            logger.warn('Tag failed validation after normalization', {
+              normalized: normalizedName,
+            })
+            return false
+          }
+          return true
         })
-      }),
+        .map(async (normalizedName) => {
+          const tagSlug = generateSlug(normalizedName)
+
+          return prisma.tags.upsert({
+            where: { name: normalizedName },
+            update: {},
+            create: {
+              id: crypto.randomUUID(),
+              name: normalizedName,
+              slug: tagSlug,
+            },
+          })
+        }),
     )
 
     // Update compound prompt in transaction

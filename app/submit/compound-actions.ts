@@ -9,7 +9,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { prisma } from '@/lib/db/client'
-import { generateSlug, generateUniqueSlug } from '@/lib/prompts/validation'
+import { generateSlug, generateUniqueSlug, normalizeTag, isValidTag } from '@/lib/prompts/validation'
 import {
   calculateMaxDepth,
   validateComponentStructure,
@@ -151,22 +151,32 @@ export async function submitCompoundPrompt(
     // Generate slug
     const slug = await generateUniqueSlug(data.title, checkSlugExists)
 
-    // Get or create tags
+    // Get or create tags (with defense-in-depth validation)
     const tagRecords = await Promise.all(
-      data.tags.map(async (tagName) => {
-        const normalizedName = tagName.toLowerCase()
-        const tagSlug = generateSlug(normalizedName)
-
-        return prisma.tags.upsert({
-          where: { name: normalizedName },
-          update: {},
-          create: {
-            id: crypto.randomUUID(),
-            name: normalizedName,
-            slug: tagSlug,
-          },
+      data.tags
+        .map((tagName) => normalizeTag(tagName))
+        .filter((normalizedName) => {
+          if (!isValidTag(normalizedName)) {
+            logger.warn('Tag failed validation after normalization', {
+              normalized: normalizedName,
+            })
+            return false
+          }
+          return true
         })
-      }),
+        .map(async (normalizedName) => {
+          const tagSlug = generateSlug(normalizedName)
+
+          return prisma.tags.upsert({
+            where: { name: normalizedName },
+            update: {},
+            create: {
+              id: crypto.randomUUID(),
+              name: normalizedName,
+              slug: tagSlug,
+            },
+          })
+        }),
     )
 
     // Create compound prompt in transaction
