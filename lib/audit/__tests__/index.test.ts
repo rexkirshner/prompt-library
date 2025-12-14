@@ -14,13 +14,17 @@ import { randomUUID } from 'crypto'
 describe('Audit Logging', () => {
   const testUserId1 = randomUUID()
   const testUserId2 = randomUUID()
+  // Use unique emails to avoid conflicts with previous test runs
+  const uniqueSuffix = Date.now()
+  const testEmail1 = `audit-test-1-${uniqueSuffix}@example.com`
+  const testEmail2 = `audit-test-2-${uniqueSuffix}@example.com`
 
   beforeAll(async () => {
-    // Create test users
+    // Create test users with unique emails
     await prisma.users.create({
       data: {
         id: testUserId1,
-        email: 'audit-test-1@example.com',
+        email: testEmail1,
         password: 'hashed',
         name: 'Audit Test User 1',
       },
@@ -29,7 +33,7 @@ describe('Audit Logging', () => {
     await prisma.users.create({
       data: {
         id: testUserId2,
-        email: 'audit-test-2@example.com',
+        email: testEmail2,
         password: 'hashed',
         name: 'Audit Test User 2',
       },

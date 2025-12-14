@@ -204,13 +204,13 @@ describe('ExportService', () => {
       const exportedPrompt = result.data?.prompts.find((p) => p.slug.startsWith('export-test-prompt'))
 
       expect(exportedPrompt).toBeDefined()
-      // Should have either email or name
+      // Should have either email (starts with 'export-test-') or name
       expect(
-        exportedPrompt?.submitted_by === 'export-test@example.com' ||
+        exportedPrompt?.submitted_by?.startsWith('export-test-') ||
           exportedPrompt?.submitted_by === 'Export Test User'
       ).toBe(true)
       expect(
-        exportedPrompt?.approved_by === 'export-test@example.com' ||
+        exportedPrompt?.approved_by?.startsWith('export-test-') ||
           exportedPrompt?.approved_by === 'Export Test User'
       ).toBe(true)
     })
