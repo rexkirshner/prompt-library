@@ -1,21 +1,29 @@
 # Input Atlas Roadmap
 
-**Last Updated:** 2025-11-27 (Session 16 - Maintenance Mode)
+**Last Updated:** 2025-12-14 (Session 17 - Sprint 004)
 
 This roadmap outlines outstanding issues, deferred work, and potential future enhancements for the Input Atlas project.
 
 ## Current Status
 
-**Project State:** 🟡 Maintenance Mode
-- All critical and high-priority issues resolved
-- Type system clean and well-documented
-- 75 tests passing
+**Project State:** 🟢 Active Development (Sprint 004)
+- Sprint 003 complete: 74 failing tests fixed, 55 ESLint errors resolved
+- Next.js updated to 16.0.10 (security fix CVE-2025-66478)
+- 276 tests passing (audit/import-export excluded - hang)
+- 0 ESLint errors (16 warnings)
 - Production build verified
-- Comprehensive documentation complete
 
 ## Outstanding Code Quality Issues
 
-From [Session 14 Code Review](artifacts/code-reviews/session-14-review.md):
+### High Priority (Sprint 004 Focus)
+
+**H1: Audit/Import-Export Tests Hang Indefinitely**
+- **Location:** `lib/audit/__tests__/`, `lib/import-export/**/__tests__/`
+- **Issue:** Tests hang forever when run, never complete or timeout
+- **Impact:** Can't run full test suite, potential hidden bugs
+- **Suspected cause:** Database transaction or connection issue
+- **Effort:** 2-4 hours (investigation + fix)
+- **Risk:** Medium (may require understanding complex test setup)
 
 ### Medium Priority (1 Issue)
 
@@ -27,7 +35,7 @@ From [Session 14 Code Review](artifacts/code-reviews/session-14-review.md):
 - **Effort:** 2-3 hours (types, tests, update callers)
 - **Risk:** Low (isolated to component service)
 
-### Low Priority (2 Issues)
+### Low Priority (3 Issues)
 
 **L1: Test coverage for import/export service**
 - **Location:** lib/import-export/services/__tests__/
@@ -44,6 +52,20 @@ From [Session 14 Code Review](artifacts/code-reviews/session-14-review.md):
 - **Suggested Fix:** Include full dependency path in error message
 - **Effort:** 1-2 hours (error formatting, tests)
 - **Risk:** Very Low (error handling only)
+
+**L3: generateUniqueSlug Duplication**
+- **Location:** `app/admin/prompts/compound/actions.ts:65`, `app/submit/compound-actions.ts:55`
+- **Issue:** Similar slug generation logic duplicated in two files
+- **Impact:** Code duplication, potential inconsistency if one is updated
+- **Suggested Fix:** Extract to `lib/prompts/validation.ts`
+- **Effort:** 1-2 hours
+- **Risk:** Very Low (straightforward extraction)
+
+### Resolved in Sprint 003 ✅
+
+- **C1:** 74 failing tests → All tests passing (dotenv override fix)
+- **H1:** 55 ESLint errors → 0 errors (queueMicrotask pattern, type narrowing)
+- **H2:** getPromptWithComponents duplication → Extracted to `lib/compound-prompts/fetcher.ts`
 
 ## Deferred Features
 
