@@ -36,3 +36,6 @@ export {
   previewComponents,
   getPromptDependencies,
 } from './resolution'
+
+// Export fetcher functions
+export { getPromptWithComponents } from './fetcher'

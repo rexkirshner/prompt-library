@@ -13,8 +13,8 @@ import { generateSlug } from '@/lib/prompts/validation'
 import {
   calculateMaxDepth,
   validateComponentStructure,
-} from '@/lib/compound-prompts/validation'
-import type { CompoundPromptWithComponents } from '@/lib/compound-prompts/types'
+  getPromptWithComponents,
+} from '@/lib/compound-prompts'
 import { logger as baseLogger } from '@/lib/logging'
 
 const logger = baseLogger.child({ module: 'submit/compound-actions' })
@@ -47,45 +47,6 @@ export interface SubmitCompoundPromptData {
   authorName: string
   authorUrl: string
   tags: string[]
-}
-
-/**
- * Helper to fetch prompt with components for validation
- */
-async function getPromptWithComponents(
-  id: string
-): Promise<CompoundPromptWithComponents | null> {
-  const prompt = await prisma.prompts.findUnique({
-    where: { id },
-    include: {
-      compound_components: {
-        include: {
-          component_prompt: true,
-        },
-        orderBy: { position: 'asc' },
-      },
-    },
-  })
-
-  if (!prompt) return null
-
-  return {
-    id: prompt.id,
-    prompt_text: prompt.prompt_text,
-    is_compound: prompt.is_compound,
-    max_depth: prompt.max_depth,
-    compound_components: prompt.compound_components.map((comp) => ({
-      ...comp,
-      component_prompt: comp.component_prompt
-        ? {
-            id: comp.component_prompt.id,
-            prompt_text: comp.component_prompt.prompt_text,
-            is_compound: comp.component_prompt.is_compound,
-            max_depth: comp.component_prompt.max_depth,
-          }
-        : null,
-    })),
-  }
 }
 
 /**
