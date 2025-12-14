@@ -3,6 +3,8 @@
  *
  * Server-side actions for user authentication using NextAuth.
  * Handles sign-in with credentials provider.
+ *
+ * @security Rate limited to 5 attempts per 15 minutes per IP address
  */
 
 'use server'
@@ -13,6 +15,11 @@ import {
   validateSignInForm,
   type SignInFormData,
 } from '@/lib/auth/validation'
+import {
+  checkSignInRateLimit,
+  recordSignInAttempt,
+  formatRetryTime,
+} from '@/lib/auth/rate-limit'
 
 export interface SignInResult {
   success: boolean
@@ -31,6 +38,20 @@ export async function signInUser(
   formData: SignInFormData,
   redirectTo: string = '/prompts',
 ): Promise<SignInResult> {
+  // Check rate limit before processing
+  const rateLimit = await checkSignInRateLimit()
+  if (!rateLimit.allowed) {
+    return {
+      success: false,
+      errors: {
+        form: `Too many sign-in attempts. Please try again in ${formatRetryTime(rateLimit.retryAfterSeconds)}.`,
+      },
+    }
+  }
+
+  // Record this attempt before validation
+  await recordSignInAttempt()
+
   // Validate form data
   const validation = validateSignInForm(formData)
   if (!validation.success) {

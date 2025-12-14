@@ -3,6 +3,8 @@
  *
  * Server-side actions for user registration.
  * Handles validation, password hashing, invite code validation, and user creation.
+ *
+ * @security Rate limited to 3 attempts per hour per IP address
  */
 
 'use server'
@@ -16,6 +18,11 @@ import {
 } from '@/lib/auth/validation'
 import { validateInviteCode } from '@/lib/invites'
 import { logger as baseLogger } from '@/lib/logging'
+import {
+  checkSignUpRateLimit,
+  recordSignUpAttempt,
+  formatRetryTime,
+} from '@/lib/auth/rate-limit'
 
 const logger = baseLogger.child({ module: 'auth/signup/actions' })
 
@@ -36,6 +43,20 @@ export async function signUpUser(
   formData: SignUpFormData,
   inviteCode: string,
 ): Promise<SignUpResult> {
+  // Check rate limit before processing
+  const rateLimit = await checkSignUpRateLimit()
+  if (!rateLimit.allowed) {
+    return {
+      success: false,
+      errors: {
+        form: `Too many sign-up attempts. Please try again in ${formatRetryTime(rateLimit.retryAfterSeconds)}.`,
+      },
+    }
+  }
+
+  // Record this attempt before validation
+  await recordSignUpAttempt()
+
   // Validate form data
   const validation = validateSignUpForm(formData)
   if (!validation.success) {
