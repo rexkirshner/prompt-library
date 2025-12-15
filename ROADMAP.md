@@ -18,7 +18,7 @@ This roadmap outlines outstanding issues, deferred work, and potential future en
 - 0 ESLint errors (16 warnings)
 - Production build verified
 - Code review grade: A (upgraded from A-)
-- 18 of 20 code review issues resolved
+- 19 of 20 code review issues resolved
 
 ## Outstanding Code Quality Issues
 
@@ -45,19 +45,13 @@ This roadmap outlines outstanding issues, deferred work, and potential future en
 - **Location:** `app/api-docs/page.tsx`, `app/api-docs/ApiDocsContent.tsx`
 - **Resolution:** Extracted to client component using window.location.origin
 
-### Low Priority (2 Issues)
+### Low Priority (1 Issue)
 
 **L2: Missing JSDoc on several functions**
 - **Location:** Various utility functions
 - **Issue:** Some functions lack documentation
 - **Suggested Fix:** Add JSDoc to public APIs and complex functions
 - **Effort:** 1-2 hours
-
-**L6: Docker Compose missing app service**
-- **Location:** `docker-compose.yml`
-- **Issue:** Only database service defined, no app service
-- **Suggested Fix:** Add app service with proper environment configuration
-- **Effort:** 1 hour
 
 ### Deferred
 
@@ -72,6 +66,7 @@ This roadmap outlines outstanding issues, deferred work, and potential future en
 - **L3:** Inconsistent date handling → Added `@updatedAt` to prompts schema, removed manual date setting
 - **L4:** TagInput debounce → Added useRef flag to prevent double-adds on Enter/blur
 - **L5:** Bundle size monitoring → Added `@next/bundle-analyzer` with `npm run analyze` script
+- **L6:** Docker app service → Added Dockerfile, .dockerignore, standalone output, docker-compose app service
 
 ### Resolved in Sprint 007 ✅
 

@@ -6,7 +6,9 @@ const withBundleAnalyzer = bundleAnalyzer({
 })
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // Enable standalone output for Docker deployments
+  // This creates a minimal server.js that can run without node_modules
+  output: 'standalone',
 }
 
 export default withBundleAnalyzer(nextConfig)
