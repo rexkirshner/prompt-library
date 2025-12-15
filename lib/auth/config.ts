@@ -114,9 +114,18 @@ export const authConfig: NextAuthConfig = {
 
   // Session configuration
   // Note: Credentials provider requires JWT strategy (not database)
+  //
+  // Session Behavior:
+  // - JWT tokens are stored in HTTP-only cookies (secure, not accessible via JS)
+  // - Tokens are valid for 30 days from last activity
+  // - NextAuth automatically refreshes the token on each request (sliding window)
+  // - After 30 days of inactivity, users must re-authenticate
+  // - Token contains user id and isAdmin flag (set in jwt callback above)
+  // - No refresh token needed - JWT is self-contained and auto-refreshed
   session: {
     strategy: 'jwt',
-    maxAge: 30 * 24 * 60 * 60, // 30 days
+    maxAge: 30 * 24 * 60 * 60, // 30 days (sliding window - resets on activity)
+    updateAge: 24 * 60 * 60, // Update session every 24 hours to refresh token
   },
 
   // Enable debug messages in development
