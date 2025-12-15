@@ -75,6 +75,7 @@ export function PromptFilters({ categories, allTags }: PromptFiltersProps) {
           placeholder="Search prompts..."
           value={searchValue}
           onChange={(e) => setSearchValue(e.target.value)}
+          aria-label="Search prompts"
           className="w-full rounded-md border border-gray-300 bg-white px-4 py-2 pl-10 text-sm text-gray-900 placeholder:text-gray-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder:text-gray-400"
           maxLength={200}
         />
@@ -104,6 +105,7 @@ export function PromptFilters({ categories, allTags }: PromptFiltersProps) {
         <select
           value={currentCategory}
           onChange={(e) => updateFilter('category', e.target.value || null)}
+          aria-label="Filter by category"
           className="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
         >
           <option value="">All Categories</option>
@@ -115,14 +117,16 @@ export function PromptFilters({ categories, allTags }: PromptFiltersProps) {
         </select>
 
         {/* Tag filter chips */}
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="text-sm text-gray-600 dark:text-gray-400">Tags:</span>
+        <div className="flex flex-wrap items-center gap-2" role="group" aria-label="Filter by tags">
+          <span className="text-sm text-gray-600 dark:text-gray-400" id="tag-filter-label">Tags:</span>
           {allTags.slice(0, 10).map((tag) => {
             const isActive = currentTags.includes(tag.slug)
             return (
               <button
                 key={tag.slug}
                 onClick={() => toggleTag(tag.slug)}
+                aria-pressed={isActive}
+                aria-label={`Filter by ${tag.name}${isActive ? ' (active)' : ''}`}
                 className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
                   isActive
                     ? 'bg-blue-600 text-white hover:bg-blue-700'
