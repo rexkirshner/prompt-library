@@ -213,7 +213,9 @@ export function isSuccess<TData>(
  * }
  * ```
  */
-export function isFormError(result: ActionResult): result is FormErrorResult {
+export function isFormError<TData = void>(
+  result: ActionResult<TData>
+): result is FormErrorResult {
   return result.success === false && 'errors' in result
 }
 
@@ -231,7 +233,9 @@ export function isFormError(result: ActionResult): result is FormErrorResult {
  * }
  * ```
  */
-export function isSimpleError(result: ActionResult): result is SimpleErrorResult {
+export function isSimpleError<TData = void>(
+  result: ActionResult<TData>
+): result is SimpleErrorResult {
   return result.success === false && 'error' in result
 }
 

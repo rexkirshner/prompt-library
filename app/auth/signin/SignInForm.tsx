@@ -9,7 +9,8 @@
 
 import { useActionState } from 'react'
 import { useFormStatus } from 'react-dom'
-import { handleSignIn, type SignInResult } from './actions'
+import { handleSignIn } from './actions'
+import { type FormActionResult, isFormError } from '@/lib/actions'
 
 /**
  * Submit button with loading state
@@ -36,10 +37,13 @@ interface SignInFormProps {
  * Sign-in form with validation and error handling
  */
 export function SignInForm({ redirectTo }: SignInFormProps) {
-  const [state, formAction] = useActionState<SignInResult | null, FormData>(
+  const [state, formAction] = useActionState<FormActionResult | null, FormData>(
     handleSignIn,
     null,
   )
+
+  // Extract errors with type narrowing
+  const errors = state && isFormError(state) ? state.errors : null
 
   return (
     <form action={formAction} className="space-y-6">
@@ -49,9 +53,9 @@ export function SignInForm({ redirectTo }: SignInFormProps) {
       )}
 
       {/* Form-level error */}
-      {state?.errors?.form && (
+      {errors?.form && (
         <div className="rounded-md bg-red-50 dark:bg-red-900 p-4">
-          <p className="text-sm text-red-800 dark:text-red-200">{state.errors.form}</p>
+          <p className="text-sm text-red-800 dark:text-red-200">{errors.form}</p>
         </div>
       )}
 
@@ -71,13 +75,13 @@ export function SignInForm({ redirectTo }: SignInFormProps) {
             autoComplete="email"
             required
             className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6"
-            aria-invalid={state?.errors?.email ? 'true' : 'false'}
-            aria-describedby={state?.errors?.email ? 'email-error' : undefined}
+            aria-invalid={errors?.email ? 'true' : 'false'}
+            aria-describedby={errors?.email ? 'email-error' : undefined}
           />
         </div>
-        {state?.errors?.email && (
+        {errors?.email && (
           <p id="email-error" className="mt-2 text-sm text-red-600 dark:text-red-400">
-            {state.errors.email}
+            {errors.email}
           </p>
         )}
       </div>
@@ -109,15 +113,13 @@ export function SignInForm({ redirectTo }: SignInFormProps) {
             autoComplete="current-password"
             required
             className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 dark:focus:ring-blue-500 sm:text-sm sm:leading-6"
-            aria-invalid={state?.errors?.password ? 'true' : 'false'}
-            aria-describedby={
-              state?.errors?.password ? 'password-error' : undefined
-            }
+            aria-invalid={errors?.password ? 'true' : 'false'}
+            aria-describedby={errors?.password ? 'password-error' : undefined}
           />
         </div>
-        {state?.errors?.password && (
+        {errors?.password && (
           <p id="password-error" className="mt-2 text-sm text-red-600 dark:text-red-400">
-            {state.errors.password}
+            {errors.password}
           </p>
         )}
       </div>

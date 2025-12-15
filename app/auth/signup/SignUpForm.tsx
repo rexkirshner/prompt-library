@@ -9,7 +9,8 @@
 
 import { useActionState } from 'react'
 import { useFormStatus } from 'react-dom'
-import { handleSignUp, type SignUpResult } from './actions'
+import { handleSignUp } from './actions'
+import { type FormActionResult, isFormError, isSuccess } from '@/lib/actions'
 
 /**
  * Submit button with loading state
@@ -32,26 +33,30 @@ function SubmitButton() {
  * Sign-up form with validation and error handling
  */
 export function SignUpForm({ inviteCode }: { inviteCode: string }) {
-  const [state, formAction] = useActionState<SignUpResult | null, FormData>(
+  const [state, formAction] = useActionState<FormActionResult | null, FormData>(
     handleSignUp,
     null,
   )
+
+  // Extract errors and success message with type narrowing
+  const errors = state && isFormError(state) ? state.errors : null
+  const successMessage = state && isSuccess(state) ? state.message : null
 
   return (
     <form action={formAction} className="space-y-6">
       {/* Hidden invite code field */}
       <input type="hidden" name="inviteCode" value={inviteCode} />
       {/* Form-level error */}
-      {state?.errors?.form && (
+      {errors?.form && (
         <div className="rounded-md bg-red-50 p-4">
-          <p className="text-sm text-red-800">{state.errors.form}</p>
+          <p className="text-sm text-red-800">{errors.form}</p>
         </div>
       )}
 
       {/* Success message */}
-      {state?.success && (
+      {successMessage && (
         <div className="rounded-md bg-green-50 p-4">
-          <p className="text-sm text-green-800">{state.message}</p>
+          <p className="text-sm text-green-800">{successMessage}</p>
         </div>
       )}
 
@@ -71,13 +76,13 @@ export function SignUpForm({ inviteCode }: { inviteCode: string }) {
             autoComplete="name"
             required
             className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
-            aria-invalid={state?.errors?.name ? 'true' : 'false'}
-            aria-describedby={state?.errors?.name ? 'name-error' : undefined}
+            aria-invalid={errors?.name ? 'true' : 'false'}
+            aria-describedby={errors?.name ? 'name-error' : undefined}
           />
         </div>
-        {state?.errors?.name && (
+        {errors?.name && (
           <p id="name-error" className="mt-2 text-sm text-red-600">
-            {state.errors.name}
+            {errors.name}
           </p>
         )}
       </div>
@@ -98,13 +103,13 @@ export function SignUpForm({ inviteCode }: { inviteCode: string }) {
             autoComplete="email"
             required
             className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
-            aria-invalid={state?.errors?.email ? 'true' : 'false'}
-            aria-describedby={state?.errors?.email ? 'email-error' : undefined}
+            aria-invalid={errors?.email ? 'true' : 'false'}
+            aria-describedby={errors?.email ? 'email-error' : undefined}
           />
         </div>
-        {state?.errors?.email && (
+        {errors?.email && (
           <p id="email-error" className="mt-2 text-sm text-red-600">
-            {state.errors.email}
+            {errors.email}
           </p>
         )}
       </div>
@@ -125,18 +130,16 @@ export function SignUpForm({ inviteCode }: { inviteCode: string }) {
             autoComplete="new-password"
             required
             className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
-            aria-invalid={state?.errors?.password ? 'true' : 'false'}
-            aria-describedby={
-              state?.errors?.password ? 'password-error' : 'password-help'
-            }
+            aria-invalid={errors?.password ? 'true' : 'false'}
+            aria-describedby={errors?.password ? 'password-error' : 'password-help'}
           />
         </div>
         <p id="password-help" className="mt-2 text-sm text-gray-500">
           Minimum 8 characters with uppercase, lowercase, and number
         </p>
-        {state?.errors?.password && (
+        {errors?.password && (
           <p id="password-error" className="mt-2 text-sm text-red-600">
-            {state.errors.password}
+            {errors.password}
           </p>
         )}
       </div>
@@ -157,17 +160,13 @@ export function SignUpForm({ inviteCode }: { inviteCode: string }) {
             autoComplete="new-password"
             required
             className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
-            aria-invalid={state?.errors?.confirmPassword ? 'true' : 'false'}
-            aria-describedby={
-              state?.errors?.confirmPassword
-                ? 'confirm-password-error'
-                : undefined
-            }
+            aria-invalid={errors?.confirmPassword ? 'true' : 'false'}
+            aria-describedby={errors?.confirmPassword ? 'confirm-password-error' : undefined}
           />
         </div>
-        {state?.errors?.confirmPassword && (
+        {errors?.confirmPassword && (
           <p id="confirm-password-error" className="mt-2 text-sm text-red-600">
-            {state.errors.confirmPassword}
+            {errors.confirmPassword}
           </p>
         )}
       </div>

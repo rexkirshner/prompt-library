@@ -20,12 +20,12 @@ import {
   recordSignInAttempt,
   formatRetryTime,
 } from '@/lib/auth/rate-limit'
+import { type FormActionResult, success, formError } from '@/lib/actions'
 
-export interface SignInResult {
-  success: boolean
-  errors?: Record<string, string>
-  message?: string
-}
+/**
+ * @deprecated Use FormActionResult from @/lib/actions instead
+ */
+export type SignInResult = FormActionResult
 
 /**
  * Sign in user with email and password
@@ -37,16 +37,13 @@ export interface SignInResult {
 export async function signInUser(
   formData: SignInFormData,
   redirectTo: string = '/prompts',
-): Promise<SignInResult> {
+): Promise<FormActionResult> {
   // Check rate limit before processing
   const rateLimit = await checkSignInRateLimit()
   if (!rateLimit.allowed) {
-    return {
-      success: false,
-      errors: {
-        form: `Too many sign-in attempts. Please try again in ${formatRetryTime(rateLimit.retryAfterSeconds)}.`,
-      },
-    }
+    return formError({
+      form: `Too many sign-in attempts. Please try again in ${formatRetryTime(rateLimit.retryAfterSeconds)}.`,
+    })
   }
 
   // Record this attempt before validation
@@ -55,10 +52,7 @@ export async function signInUser(
   // Validate form data
   const validation = validateSignInForm(formData)
   if (!validation.success) {
-    return {
-      success: false,
-      errors: validation.errors,
-    }
+    return formError(validation.errors)
   }
 
   const { email, password } = formData
@@ -73,35 +67,24 @@ export async function signInUser(
     })
 
     // If signIn doesn't throw, it redirects, so we won't reach here
-    return {
-      success: true,
-    }
+    return success()
   } catch (error) {
     // NextAuth throws errors for authentication failures
     if (error instanceof AuthError) {
       // Handle different auth error types
       switch (error.type) {
         case 'CredentialsSignin':
-          return {
-            success: false,
-            errors: {
-              form: 'Invalid email or password. Please try again.',
-            },
-          }
+          return formError({
+            form: 'Invalid email or password. Please try again.',
+          })
         case 'CallbackRouteError':
-          return {
-            success: false,
-            errors: {
-              form: 'Authentication error. Please try again.',
-            },
-          }
+          return formError({
+            form: 'Authentication error. Please try again.',
+          })
         default:
-          return {
-            success: false,
-            errors: {
-              form: 'An unexpected error occurred. Please try again.',
-            },
-          }
+          return formError({
+            form: 'An unexpected error occurred. Please try again.',
+          })
       }
     }
 
@@ -116,7 +99,7 @@ export async function signInUser(
 export async function handleSignIn(
   prevState: unknown,
   formData: FormData,
-): Promise<SignInResult> {
+): Promise<FormActionResult> {
   const data: SignInFormData = {
     email: formData.get('email') as string,
     password: formData.get('password') as string,

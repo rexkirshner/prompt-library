@@ -23,14 +23,14 @@ import {
   recordSignUpAttempt,
   formatRetryTime,
 } from '@/lib/auth/rate-limit'
+import { type FormActionResult, success, formError } from '@/lib/actions'
 
 const logger = baseLogger.child({ module: 'auth/signup/actions' })
 
-export interface SignUpResult {
-  success: boolean
-  errors?: Record<string, string>
-  message?: string
-}
+/**
+ * @deprecated Use FormActionResult from @/lib/actions instead
+ */
+export type SignUpResult = FormActionResult
 
 /**
  * Create a new user account
@@ -42,16 +42,13 @@ export interface SignUpResult {
 export async function signUpUser(
   formData: SignUpFormData,
   inviteCode: string,
-): Promise<SignUpResult> {
+): Promise<FormActionResult> {
   // Check rate limit before processing
   const rateLimit = await checkSignUpRateLimit()
   if (!rateLimit.allowed) {
-    return {
-      success: false,
-      errors: {
-        form: `Too many sign-up attempts. Please try again in ${formatRetryTime(rateLimit.retryAfterSeconds)}.`,
-      },
-    }
+    return formError({
+      form: `Too many sign-up attempts. Please try again in ${formatRetryTime(rateLimit.retryAfterSeconds)}.`,
+    })
   }
 
   // Record this attempt before validation
@@ -60,10 +57,7 @@ export async function signUpUser(
   // Validate form data
   const validation = validateSignUpForm(formData)
   if (!validation.success) {
-    return {
-      success: false,
-      errors: validation.errors,
-    }
+    return formError(validation.errors)
   }
 
   const { name, email, password } = formData
@@ -72,12 +66,9 @@ export async function signUpUser(
     // Validate invite code
     const inviteValidation = await validateInviteCode(inviteCode)
     if (!inviteValidation.valid) {
-      return {
-        success: false,
-        errors: {
-          form: `Invalid invite code: ${inviteValidation.error}`,
-        },
-      }
+      return formError({
+        form: `Invalid invite code: ${inviteValidation.error}`,
+      })
     }
 
     // Check if user already exists
@@ -86,12 +77,9 @@ export async function signUpUser(
     })
 
     if (existingUser) {
-      return {
-        success: false,
-        errors: {
-          email: 'An account with this email already exists',
-        },
-      }
+      return formError({
+        email: 'An account with this email already exists',
+      })
     }
 
     // Hash password
@@ -104,12 +92,9 @@ export async function signUpUser(
     })
 
     if (!invite) {
-      return {
-        success: false,
-        errors: {
-          form: 'Invite code not found',
-        },
-      }
+      return formError({
+        form: 'Invite code not found',
+      })
     }
 
     // Create user and redeem invite in a transaction
@@ -139,21 +124,12 @@ export async function signUpUser(
       return user
     })
 
-    return {
-      success: true,
-      message: 'Account created successfully! Please sign in.',
-    }
+    return success(undefined, 'Account created successfully! Please sign in.')
   } catch (error) {
-    logger.error(
-      'Sign-up error',
-      error as Error
-    )
-    return {
-      success: false,
-      errors: {
-        form: 'An unexpected error occurred. Please try again.',
-      },
-    }
+    logger.error('Sign-up error', error as Error)
+    return formError({
+      form: 'An unexpected error occurred. Please try again.',
+    })
   }
 }
 
@@ -161,17 +137,17 @@ export async function signUpUser(
  * Server action for form submission
  * Redirects to sign-in on success
  */
-export async function handleSignUp(prevState: unknown, formData: FormData) {
+export async function handleSignUp(
+  prevState: unknown,
+  formData: FormData,
+): Promise<FormActionResult> {
   const inviteCode = formData.get('inviteCode') as string
 
   // Require invite code
   if (!inviteCode) {
-    return {
-      success: false,
-      errors: {
-        form: 'Invite code is required to sign up',
-      },
-    }
+    return formError({
+      form: 'Invite code is required to sign up',
+    })
   }
 
   const data: SignUpFormData = {
