@@ -25,7 +25,8 @@
     "db:studio": "dotenv -e .env.local -- prisma studio",
     "db:seed": "dotenv -e .env.local -- tsx scripts/seed-prompts.ts",
     "admin:make": "dotenv -e .env.local -- tsx scripts/make-admin.ts",
-    "admin:create-first": "dotenv -e .env.local -- tsx scripts/create-first-admin.ts"
+    "admin:create-first": "dotenv -e .env.local -- tsx scripts/create-first-admin.ts",
+    "analyze": "ANALYZE=true next build"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.1",
@@ -44,6 +45,7 @@
     "zod": "^4.1.13"
   },
   "devDependencies": {
+    "@next/bundle-analyzer": "^16.0.10",
     "@tailwindcss/postcss": "^4",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
