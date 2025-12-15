@@ -1313,119 +1313,182 @@ const depth = await calculateMaxDepth(prompt.id, getPromptWithComponents)
 
 ## Session 17 - 2025-12-14
 
-**Duration:** 2h | **Focus:** Sprint 003 Completion, Security Fix, Sprint 004 Start | **Status:** ⏳ In Progress
+**Duration:** 4h | **Focus:** Sprint 004 & 005 - Security & Code Quality | **Status:** ✅ Complete
 
 ### TL;DR
 
-Completed Sprint 003 code quality improvements (74 failing tests fixed, 55 ESLint errors resolved). Fixed critical Next.js security vulnerability (CVE-2025-66478). Updated documentation to reflect completed work. Started Sprint 004 to investigate remaining issues.
+Completed Sprint 003 code quality improvements, fixed critical Next.js security vulnerability (CVE-2025-66478), then completed Sprint 004 (test fixes, utility extraction) and Sprint 005 (rate limiting, input validation, accessibility, query optimization). Resolved 12 of 20 code review issues. Grade upgraded from B+ to A-.
 
 ### Problem Solved
 
 **Issue 1:** Vercel build failed due to vulnerable Next.js version (16.0.3).
-
 **Fix:** Updated Next.js from 16.0.3 to 16.0.10 to patch CVE-2025-66478.
 
-**Issue 2:** Documentation was outdated after Sprint 003 completion.
+**Issue 2:** Audit and import-export tests hanging indefinitely.
+**Fix:** Added `--forceExit` to Jest to force exit after tests complete (unclosed Prisma connections).
 
-**Fix:** Updated STATUS.md, SESSIONS.md, and ROADMAP.md to reflect:
-- Sprint 003 completion (74 failing tests fixed, 55 ESLint errors fixed)
-- getPromptWithComponents extraction to shared utility
-- Next.js security update
-- Current Sprint 004 priorities
+**Issue 3:** Code duplication in slug generation.
+**Fix:** Extracted `generateUniqueSlug` to `lib/prompts/validation.ts` with callback pattern.
+
+**Issue 4:** Auth endpoints vulnerable to brute force (H5).
+**Fix:** Created `lib/auth/rate-limit.ts` with IP-based rate limiting (5/15min signin, 3/hr signup).
+
+**Issue 5:** Tags not explicitly validated before DB operations (M4).
+**Fix:** Added `isValidTag` check after `normalizeTag` for defense-in-depth.
+
+**Issue 6:** Missing ARIA labels on filter components (M5).
+**Fix:** Added `aria-pressed`, `aria-label`, and `role="group"` to PromptFilters.
+
+**Issue 7:** Browse page fetching all prompt fields (M8).
+**Fix:** Replaced `include` with `select` to fetch only needed fields.
 
 ### Decisions
 
-- **useCopyPreferences Hook:** Deferred extraction due to complex interdependencies between CopyButton, CopyPreview, and GlobalSettings. Risk of introducing bugs outweighs benefit.
-- **queueMicrotask Pattern:** Adopted for setMounted calls in useEffect to satisfy ESLint react-hooks/set-state-in-effect rule while maintaining hydration detection behavior.
+- **useCopyPreferences Hook:** Deferred extraction due to complex interdependencies. Risk outweighs benefit.
+- **queueMicrotask Pattern:** Adopted for setMounted calls to satisfy ESLint react-hooks/set-state-in-effect rule.
+- **Jest --forceExit:** Added to test scripts to prevent hanging from unclosed Prisma connections.
+- **generateUniqueSlug callback pattern:** Allows same function for create and update scenarios.
+- **Auth Rate Limiting:** IP-based with in-memory storage, 5/15min for signin, 3/hr for signup.
+- **Defense-in-depth validation:** Added isValidTag check after normalizeTag before DB operations.
+- **Query optimization:** Use Prisma select over include for browse page to reduce bandwidth.
 
 ### Files
 
-**MOD:** `package.json` - Updated Next.js to 16.0.10
-**MOD:** `package-lock.json` - Updated dependencies
-**MOD:** `context/STATUS.md` - Updated with Sprint 003 completion, Sprint 004 start
-**MOD:** `context/SESSIONS.md` - Added Session 17 entry (this entry)
-**MOD:** `ROADMAP.md` - Updated with current status
+**NEW:** `lib/auth/rate-limit.ts` - Rate limiting for auth endpoints
+**NEW:** `lib/auth/__tests__/rate-limit.test.ts` - 11 tests for rate limiting
+
+**MOD:** `package.json` - Updated Next.js to 16.0.10, added --forceExit to test scripts
+**MOD:** `lib/prompts/validation.ts` - Added generateUniqueSlug utility
+**MOD:** `app/auth/signin/actions.ts` - Added rate limiting
+**MOD:** `app/auth/signup/actions.ts` - Added rate limiting
+**MOD:** `app/submit/actions.ts` - Added defense-in-depth tag validation
+**MOD:** `app/admin/prompts/compound/actions.ts` - Added defense-in-depth tag validation
+**MOD:** `app/submit/compound-actions.ts` - Added defense-in-depth tag validation
+**MOD:** `components/PromptFilters.tsx` - Added ARIA labels
+**MOD:** `app/prompts/page.tsx` - Optimized query with select
 
 ### Mental Models
 
-**Sprint 003 Key Patterns:**
+**Sprint 004 Key Patterns:**
 
-1. **dotenv Override Pattern:**
-   ```typescript
-   config({ path: resolve(process.cwd(), '.env.local'), override: true })
+1. **Jest --forceExit Pattern:**
+   ```json
+   "test": "jest --forceExit"
    ```
-   Ensures `.env.local` takes precedence over `.env` in test environment.
+   When Prisma connections don't close automatically, forces Jest to exit after tests.
 
-2. **queueMicrotask Pattern:**
+2. **Callback-based slug checking:**
    ```typescript
-   useEffect(() => {
-     queueMicrotask(() => setMounted(true))
-   }, [])
+   async function generateUniqueSlug(
+     title: string,
+     checkExists: (slug: string) => Promise<boolean>
+   ): Promise<string>
    ```
-   Schedules state update for next microtask, satisfying ESLint while maintaining behavior.
+   Allows same function for create (check all) and update (exclude current).
 
-3. **Error Type Narrowing:**
+**Sprint 005 Key Patterns:**
+
+3. **IP-based Rate Limiting:**
    ```typescript
-   catch (error: unknown) {
-     const message = error instanceof Error ? error.message : 'Unknown error'
+   const rateLimit = await checkSignInRateLimit()
+   if (!rateLimit.allowed) {
+     return { success: false, errors: { form: `Too many attempts...` } }
    }
+   await recordSignInAttempt()
    ```
-   Replaces `any` with `unknown` and proper type narrowing.
+
+4. **Defense-in-depth Validation:**
+   ```typescript
+   data.tags
+     .map((tagName) => normalizeTag(tagName))
+     .filter((normalizedName) => {
+       if (!isValidTag(normalizedName)) {
+         logger.warn('Tag failed validation after normalization', { normalized: normalizedName })
+         return false
+       }
+       return true
+     })
+   ```
+
+5. **ARIA Accessibility Pattern:**
+   ```typescript
+   <button
+     aria-pressed={isActive}
+     aria-label={`Filter by ${tag.name}${isActive ? ' (active)' : ''}`}
+   >
+   ```
+
+6. **Prisma Select Optimization:**
+   ```typescript
+   prisma.prompts.findMany({
+     select: { id: true, slug: true, title: true, ... },  // Only needed fields
+   })
+   ```
 
 **Key insights:**
-- Test failures often trace to environment configuration issues, not code bugs
-- ESLint rules for React hooks can require creative solutions for valid patterns
-- Shared utility extraction reduces duplication and creates single source of truth
+- Test hangs often caused by unclosed connections, not infinite loops
+- Rate limiting needs both check and record functions for proper tracking
+- Defense-in-depth adds minimal overhead but prevents edge cases
+- ARIA attributes make filter state clear to screen readers
+- Prisma select reduces bandwidth significantly over include
 
 ### Work In Progress
 
-**Task:** Sprint 004 - Investigate hanging audit/import-export tests
-**Location:** `lib/audit/__tests__/`, `lib/import-export/**/__tests__/`
-**Current approach:** Tests hang indefinitely when run - likely database transaction or connection issue
-**Why this approach:** These tests worked previously; issue may be related to dotenv or database configuration changes
-**Next specific action:** Run tests with verbose logging to identify hang point
+**Task:** None - Sprint 005 complete ✅
 
 ### TodoWrite State
 
 **Completed:**
 - ✅ Updated Next.js to 16.0.10 (security fix)
-- ✅ Pushed security fix to GitHub
-- ✅ Updated STATUS.md with Sprint 003 completion
-- ✅ Added Session 17 entry to SESSIONS.md
+- ✅ Fixed hanging tests with --forceExit
+- ✅ Extracted generateUniqueSlug to shared utility
+- ✅ Fixed test data uniqueness issues
+- ✅ H5: Added rate limiting to auth endpoints
+- ✅ M4: Added defense-in-depth input validation for tags
+- ✅ M5: Added ARIA labels to interactive filter components
+- ✅ M8: Optimized browse page database queries with select
 
 **In Progress:**
-- ⏳ Update ROADMAP.md with current status
-- ⏳ Investigate audit/import-export test hangs
-
-**Pending:**
-- Extract generateUniqueSlug to shared utility (low priority)
+- None
 
 ### Next Session
 
-**Priority:** Investigate and fix hanging tests
-**Blockers:** Tests hang indefinitely - need to determine root cause
-**Questions:**
-- Is it a database connection issue?
-- Is it related to the dotenv override change?
-- Is there a transaction that never resolves?
+**Priority:** Address remaining code review items (M2, M3, M6, M7)
+**Blockers:** None - all critical and high-priority issues resolved
+
+**Remaining Code Review Items:**
+- M2: Fire-and-forget database operations without error boundary
+- M3: Inconsistent error handling in server actions
+- M6: Session configuration may cause auth issues
+- M7: API documentation page has hardcoded base URL
+- L1-L6: Low priority improvements
 
 ### Git Operations
 
 **MANDATORY - Auto-logged**
 
-- **Commits:** 1 commit (security fix)
-- **Pushed:** YES - Pushed security fix to resolve Vercel build failure
-- **Approval:** Previous session's "commit and push" directive
+- **Commits:** 10 commits (pending push)
+- **Pushed:** NO - Awaiting explicit user approval
+- **Approval:** Not pushed
 
 **Commit Details:**
-1. `3f15756` - Update Next.js to 16.0.10 (security fix CVE-2025-66478)
+1. `a91f084` - Update documentation for Session 17 / Sprint 004
+2. `d1a5fde` - Fix hanging tests by adding --forceExit and unique test data
+3. `40768a9` - Extract generateUniqueSlug to shared utility
+4. `12d48cf` - Update documentation for Sprint 004 completion
+5. `279c63b` - Update code review document with Sprint 003/004 resolutions
+6. `d9b81b1` - Add rate limiting to auth endpoints (H5 security fix)
+7. `a681ebc` - Add defense-in-depth input validation for tags (M4)
+8. `8cfb3d3` - Add ARIA labels to interactive filter components (M5)
+9. `28d8251` - Optimize browse page database query with select (M8)
+10. `2a3ecc4` - Update code review document with Sprint 005 completions
 
 ### Tests & Build
 
-- **Tests:** 276 passing (audit/import-export excluded - hang indefinitely)
+- **Tests:** 402 passing (100% pass rate)
 - **Build:** TypeScript compilation passed ✅
-- **ESLint:** 0 errors, 16 warnings
-- **Deployment:** Automatic via Vercel
+- **ESLint:** 0 errors, 16 warnings (intentional unused vars)
+- **Coverage:** Not measured
 
 ---
 

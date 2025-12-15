@@ -1,48 +1,105 @@
 # Input Atlas Roadmap
 
-**Last Updated:** 2025-12-14 (Session 17 - Sprint 004)
+**Last Updated:** 2025-12-14 (Session 17 - Sprint 005)
 
 This roadmap outlines outstanding issues, deferred work, and potential future enhancements for the Input Atlas project.
 
 ## Current Status
 
-**Project State:** 🟢 Active Development (Sprint 004 Complete)
+**Project State:** 🟢 Active Development (Sprint 005 Complete)
 - Sprint 003 complete: 74 failing tests fixed, 55 ESLint errors resolved
 - Sprint 004 complete: Hanging tests fixed, generateUniqueSlug extracted
+- Sprint 005 complete: Rate limiting, input validation, accessibility, query optimization
 - Next.js updated to 16.0.10 (security fix CVE-2025-66478)
-- 391 tests passing (all tests, including audit/import-export)
+- 402 tests passing (includes 11 new rate limiting tests)
 - 0 ESLint errors (16 warnings)
 - Production build verified
+- Code review grade: A- (upgraded from B+)
+- 12 of 20 code review issues resolved
 
 ## Outstanding Code Quality Issues
 
-### Medium Priority (1 Issue)
+### From Session 15 Code Review
 
-**M1: Type safety for compound component relationships**
-- **Location:** lib/compound-prompts/services/component-service.ts
-- **Issue:** Component relationship validation returns boolean, loses type information
-- **Impact:** Harder to debug validation failures, no IDE autocomplete for errors
-- **Suggested Fix:** Return typed result objects with error details
-- **Effort:** 2-3 hours (types, tests, update callers)
-- **Risk:** Low (isolated to component service)
+**M2: Fire-and-forget database operations without error boundary**
+- **Location:** `app/prompts/[slug]/page.tsx:171-181` (view count increment)
+- **Issue:** Using `.catch()` for fire-and-forget but errors silently logged, no monitoring
+- **Impact:** Silent failures, no alerting for database issues
+- **Suggested Fix:** Add structured logging with severity levels, consider error aggregation
+- **Effort:** 1 hour
 
-### Low Priority (2 Issues)
+**M3: Inconsistent error handling in server actions**
+- **Location:** Multiple server action files
+- **Issue:** Some actions return `{ success: false, errors: { form: '...' } }`, others throw
+- **Impact:** Inconsistent client-side error handling
+- **Suggested Fix:** Standardize error response format across all server actions
+- **Effort:** 2-3 hours
 
-**L1: Test coverage for import/export service**
-- **Location:** lib/import-export/services/__tests__/
-- **Issue:** Missing tests for edge cases (concurrent imports, very large files, malformed JSON recovery)
-- **Impact:** Could miss edge case bugs
-- **Suggested Fix:** Add comprehensive edge case tests
-- **Effort:** 3-4 hours (test scenarios, fixtures, assertions)
-- **Risk:** Very Low (test additions only)
+**M6: Session configuration may cause auth issues**
+- **Location:** `lib/auth/config.ts:117-120`
+- **Issue:** JWT session maxAge is 30 days, but no refresh token logic visible
+- **Impact:** Users may experience unexpected logouts
+- **Suggested Fix:** Document session behavior, consider adding session refresh logic
+- **Effort:** Research + 2-3 hours implementation
 
-**L2: Edge case handling for circular dependencies**
-- **Location:** lib/compound-prompts/services/resolution-service.ts
-- **Issue:** Circular dependency detection works but error messages could be clearer
-- **Impact:** User confusion when cycles detected
-- **Suggested Fix:** Include full dependency path in error message
-- **Effort:** 1-2 hours (error formatting, tests)
-- **Risk:** Very Low (error handling only)
+**M7: API documentation page has hardcoded base URL**
+- **Location:** `app/api-docs/page.tsx`
+- **Issue:** API docs likely reference localhost or hardcoded production URL
+- **Impact:** Confusing for developers in different environments
+- **Suggested Fix:** Use environment variable or relative URLs
+- **Effort:** 30 minutes
+
+### Low Priority (6 Issues)
+
+**L1: Console statements in test output**
+- **Location:** Test runs show `console.log` from dotenv
+- **Issue:** Noisy test output
+- **Suggested Fix:** Suppress console in test environment
+- **Effort:** 15 minutes
+
+**L2: Missing JSDoc on several functions**
+- **Location:** Various utility functions
+- **Issue:** Some functions lack documentation
+- **Suggested Fix:** Add JSDoc to public APIs and complex functions
+- **Effort:** 1-2 hours
+
+**L3: Inconsistent date handling**
+- **Location:** `app/submit/actions.ts:156`
+- **Issue:** Some timestamps use `new Date()`, others rely on Prisma defaults
+- **Suggested Fix:** Consistently use Prisma `@updatedAt` directive
+- **Effort:** 1 hour
+
+**L4: TagInput component could use debounce**
+- **Location:** `components/TagInput.tsx:118-124`
+- **Issue:** `onBlur` immediately tries to add tag, no debounce
+- **Suggested Fix:** Add small debounce to prevent double-adds
+- **Effort:** 30 minutes
+
+**L5: No bundle size monitoring**
+- **Location:** N/A
+- **Issue:** No bundle analyzer configured
+- **Suggested Fix:** Add `@next/bundle-analyzer` to track bundle size
+- **Effort:** 30 minutes
+
+**L6: Docker Compose missing app service**
+- **Location:** `docker-compose.yml`
+- **Issue:** Only database service defined, no app service
+- **Suggested Fix:** Add app service with proper environment configuration
+- **Effort:** 1 hour
+
+### Deferred
+
+**H4: useCopyPreferences hook extraction**
+- **Status:** Deferred (too risky)
+- **Reason:** Complex interdependencies between CopyButton, CopyPreview, GlobalSettings
+- **When to revisit:** If copy logic needs significant changes
+
+### Resolved in Sprint 005 ✅
+
+- **H5:** Auth rate limiting → Created `lib/auth/rate-limit.ts` with IP-based limiting
+- **M4:** Input sanitization → Added `isValidTag` check after `normalizeTag`
+- **M5:** Missing ARIA labels → Added `aria-pressed`, `aria-label`, `role="group"`
+- **M8:** Query optimization → Changed browse page from `include` to `select`
 
 ### Resolved in Sprint 004 ✅
 
@@ -170,12 +227,15 @@ Features identified but not yet implemented:
 
 ### Completed ✅
 
-- Session 15: Fixed auth rate limiting (C1)
 - Session 15: Fixed mass assignment vulnerability (C2)
 - Session 15: Added password complexity requirements (C3)
 - Session 15: Fixed session token exposure (C4)
 - Session 15: Added XSS protection (C5)
 - Session 15: Fixed SQL injection vulnerability (C6)
+- Session 17 / Sprint 005: Added auth rate limiting (H5)
+  - Sign-in: 5 attempts per 15 minutes per IP
+  - Sign-up: 3 attempts per hour per IP
+  - In-memory storage with automatic cleanup
 
 ### Future Considerations
 
