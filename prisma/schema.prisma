@@ -85,7 +85,7 @@ model prompts {
   is_compound                               Boolean                      @default(false)
   max_depth                                 Int?
   created_at                                DateTime                     @default(now())
-  updated_at                                DateTime
+  updated_at                                DateTime                     @updatedAt
   approved_at                               DateTime?
   approved_by_user_id                       String?
   deleted_at                                DateTime?

@@ -166,8 +166,7 @@ export async function submitPrompt(
         featured: false,
         view_count: 0,
         copy_count: 0,
-        // created_at uses database default (@default(now()))
-        updated_at: new Date(), // No @updatedAt directive, must set manually
+        // created_at uses @default(now()), updated_at uses @updatedAt
       },
     })
 

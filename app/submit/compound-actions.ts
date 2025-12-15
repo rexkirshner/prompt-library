@@ -195,8 +195,7 @@ export async function submitCompoundPrompt(
           example_output: null,
           is_compound: true,
           status: 'PENDING', // Public submissions are pending
-          created_at: new Date(),
-          updated_at: new Date(),
+          // created_at uses @default(now()), updated_at uses @updatedAt
         },
       })
 

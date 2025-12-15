@@ -6,18 +6,19 @@ This roadmap outlines outstanding issues, deferred work, and potential future en
 
 ## Current Status
 
-**Project State:** 🟢 Active Development (Sprint 007 Complete)
+**Project State:** 🟢 Active Development (Sprint 008 Complete)
 - Sprint 003 complete: 74 failing tests fixed, 55 ESLint errors resolved
 - Sprint 004 complete: Hanging tests fixed, generateUniqueSlug extracted
 - Sprint 005 complete: Rate limiting, input validation, accessibility, query optimization
 - Sprint 006 complete: API docs URL fix, fire-and-forget logging, session documentation
 - Sprint 007 complete: Standardized server action error handling (M3)
+- Sprint 008 complete: Low priority code quality fixes (L1, L3, L4, L5)
 - Next.js updated to 16.0.10 (security fix CVE-2025-66478)
-- 440 tests passing (includes 38 new action result tests)
+- 440 tests passing
 - 0 ESLint errors (16 warnings)
 - Production build verified
 - Code review grade: A (upgraded from A-)
-- 16 of 20 code review issues resolved
+- 18 of 20 code review issues resolved
 
 ## Outstanding Code Quality Issues
 
@@ -44,37 +45,13 @@ This roadmap outlines outstanding issues, deferred work, and potential future en
 - **Location:** `app/api-docs/page.tsx`, `app/api-docs/ApiDocsContent.tsx`
 - **Resolution:** Extracted to client component using window.location.origin
 
-### Low Priority (6 Issues)
-
-**L1: Console statements in test output**
-- **Location:** Test runs show `console.log` from dotenv
-- **Issue:** Noisy test output
-- **Suggested Fix:** Suppress console in test environment
-- **Effort:** 15 minutes
+### Low Priority (2 Issues)
 
 **L2: Missing JSDoc on several functions**
 - **Location:** Various utility functions
 - **Issue:** Some functions lack documentation
 - **Suggested Fix:** Add JSDoc to public APIs and complex functions
 - **Effort:** 1-2 hours
-
-**L3: Inconsistent date handling**
-- **Location:** `app/submit/actions.ts:156`
-- **Issue:** Some timestamps use `new Date()`, others rely on Prisma defaults
-- **Suggested Fix:** Consistently use Prisma `@updatedAt` directive
-- **Effort:** 1 hour
-
-**L4: TagInput component could use debounce**
-- **Location:** `components/TagInput.tsx:118-124`
-- **Issue:** `onBlur` immediately tries to add tag, no debounce
-- **Suggested Fix:** Add small debounce to prevent double-adds
-- **Effort:** 30 minutes
-
-**L5: No bundle size monitoring**
-- **Location:** N/A
-- **Issue:** No bundle analyzer configured
-- **Suggested Fix:** Add `@next/bundle-analyzer` to track bundle size
-- **Effort:** 30 minutes
 
 **L6: Docker Compose missing app service**
 - **Location:** `docker-compose.yml`
@@ -88,6 +65,13 @@ This roadmap outlines outstanding issues, deferred work, and potential future en
 - **Status:** Deferred (too risky)
 - **Reason:** Complex interdependencies between CopyButton, CopyPreview, GlobalSettings
 - **When to revisit:** If copy logic needs significant changes
+
+### Resolved in Sprint 008 ✅
+
+- **L1:** Console statements in test output → Added `quiet: true` to dotenv config in jest.setup.ts
+- **L3:** Inconsistent date handling → Added `@updatedAt` to prompts schema, removed manual date setting
+- **L4:** TagInput debounce → Added useRef flag to prevent double-adds on Enter/blur
+- **L5:** Bundle size monitoring → Added `@next/bundle-analyzer` with `npm run analyze` script
 
 ### Resolved in Sprint 007 ✅
 

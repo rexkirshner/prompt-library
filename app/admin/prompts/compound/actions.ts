@@ -209,8 +209,7 @@ export async function createCompoundPrompt(
           is_compound: true,
           status: 'PENDING',
           submitted_by_user_id: admin.id,
-          created_at: new Date(),
-          updated_at: new Date(),
+          // created_at uses @default(now()), updated_at uses @updatedAt
         },
       })
 
@@ -406,7 +405,7 @@ export async function updateCompoundPrompt(
           description: data.description || null,
           category: data.category,
           author_name: data.authorName,
-          updated_at: new Date(),
+          // updated_at automatically set by @updatedAt
         },
       })
 
