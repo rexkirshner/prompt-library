@@ -1,32 +1,30 @@
 # Input Atlas Roadmap
 
-**Last Updated:** 2025-12-14 (Session 17 - Sprint 005)
+**Last Updated:** 2025-12-14 (Session 17 - Sprint 006)
 
 This roadmap outlines outstanding issues, deferred work, and potential future enhancements for the Input Atlas project.
 
 ## Current Status
 
-**Project State:** 🟢 Active Development (Sprint 005 Complete)
+**Project State:** 🟢 Active Development (Sprint 006 Complete)
 - Sprint 003 complete: 74 failing tests fixed, 55 ESLint errors resolved
 - Sprint 004 complete: Hanging tests fixed, generateUniqueSlug extracted
 - Sprint 005 complete: Rate limiting, input validation, accessibility, query optimization
+- Sprint 006 complete: API docs URL fix, fire-and-forget logging, session documentation
 - Next.js updated to 16.0.10 (security fix CVE-2025-66478)
 - 402 tests passing (includes 11 new rate limiting tests)
 - 0 ESLint errors (16 warnings)
 - Production build verified
-- Code review grade: A- (upgraded from B+)
-- 12 of 20 code review issues resolved
+- Code review grade: A (upgraded from A-)
+- 15 of 20 code review issues resolved
 
 ## Outstanding Code Quality Issues
 
 ### From Session 15 Code Review
 
-**M2: Fire-and-forget database operations without error boundary**
-- **Location:** `app/prompts/[slug]/page.tsx:171-181` (view count increment)
-- **Issue:** Using `.catch()` for fire-and-forget but errors silently logged, no monitoring
-- **Impact:** Silent failures, no alerting for database issues
-- **Suggested Fix:** Add structured logging with severity levels, consider error aggregation
-- **Effort:** 1 hour
+**M2: Fire-and-forget database operations without error boundary** ✅ RESOLVED (Sprint 006)
+- **Location:** `app/prompts/[slug]/page.tsx:171-184` (view count increment)
+- **Resolution:** Changed to warn level logging with operation category for aggregation
 
 **M3: Inconsistent error handling in server actions**
 - **Location:** Multiple server action files
@@ -35,19 +33,13 @@ This roadmap outlines outstanding issues, deferred work, and potential future en
 - **Suggested Fix:** Standardize error response format across all server actions
 - **Effort:** 2-3 hours
 
-**M6: Session configuration may cause auth issues**
-- **Location:** `lib/auth/config.ts:117-120`
-- **Issue:** JWT session maxAge is 30 days, but no refresh token logic visible
-- **Impact:** Users may experience unexpected logouts
-- **Suggested Fix:** Document session behavior, consider adding session refresh logic
-- **Effort:** Research + 2-3 hours implementation
+**M6: Session configuration may cause auth issues** ✅ RESOLVED (Sprint 006)
+- **Location:** `lib/auth/config.ts:115-129`
+- **Resolution:** Added comprehensive documentation and updateAge for token refresh
 
-**M7: API documentation page has hardcoded base URL**
-- **Location:** `app/api-docs/page.tsx`
-- **Issue:** API docs likely reference localhost or hardcoded production URL
-- **Impact:** Confusing for developers in different environments
-- **Suggested Fix:** Use environment variable or relative URLs
-- **Effort:** 30 minutes
+**M7: API documentation page has hardcoded base URL** ✅ RESOLVED (Sprint 006)
+- **Location:** `app/api-docs/page.tsx`, `app/api-docs/ApiDocsContent.tsx`
+- **Resolution:** Extracted to client component using window.location.origin
 
 ### Low Priority (6 Issues)
 
@@ -93,6 +85,12 @@ This roadmap outlines outstanding issues, deferred work, and potential future en
 - **Status:** Deferred (too risky)
 - **Reason:** Complex interdependencies between CopyButton, CopyPreview, GlobalSettings
 - **When to revisit:** If copy logic needs significant changes
+
+### Resolved in Sprint 006 ✅
+
+- **M2:** Fire-and-forget error handling → Changed to warn level with operation category
+- **M6:** Session configuration → Added documentation and updateAge for token refresh
+- **M7:** API docs hardcoded URL → Extracted to client component with dynamic hostname
 
 ### Resolved in Sprint 005 ✅
 
