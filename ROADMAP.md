@@ -6,17 +6,18 @@ This roadmap outlines outstanding issues, deferred work, and potential future en
 
 ## Current Status
 
-**Project State:** 🟢 Active Development (Sprint 006 Complete)
+**Project State:** 🟢 Active Development (Sprint 007 Complete)
 - Sprint 003 complete: 74 failing tests fixed, 55 ESLint errors resolved
 - Sprint 004 complete: Hanging tests fixed, generateUniqueSlug extracted
 - Sprint 005 complete: Rate limiting, input validation, accessibility, query optimization
 - Sprint 006 complete: API docs URL fix, fire-and-forget logging, session documentation
+- Sprint 007 complete: Standardized server action error handling (M3)
 - Next.js updated to 16.0.10 (security fix CVE-2025-66478)
-- 402 tests passing (includes 11 new rate limiting tests)
+- 440 tests passing (includes 38 new action result tests)
 - 0 ESLint errors (16 warnings)
 - Production build verified
 - Code review grade: A (upgraded from A-)
-- 15 of 20 code review issues resolved
+- 16 of 20 code review issues resolved
 
 ## Outstanding Code Quality Issues
 
@@ -26,12 +27,14 @@ This roadmap outlines outstanding issues, deferred work, and potential future en
 - **Location:** `app/prompts/[slug]/page.tsx:171-184` (view count increment)
 - **Resolution:** Changed to warn level logging with operation category for aggregation
 
-**M3: Inconsistent error handling in server actions**
+**M3: Inconsistent error handling in server actions** ✅ RESOLVED (Sprint 007)
 - **Location:** Multiple server action files
-- **Issue:** Some actions return `{ success: false, errors: { form: '...' } }`, others throw
-- **Impact:** Inconsistent client-side error handling
-- **Suggested Fix:** Standardize error response format across all server actions
-- **Effort:** 2-3 hours
+- **Resolution:** Created `lib/actions/` module with standardized types:
+  - `FormActionResult<T>` and `SimpleActionResult<T>` discriminated unions
+  - Helper functions: `success()`, `formError()`, `simpleError()`
+  - Type guards: `isSuccess()`, `isFormError()`, `isSimpleError()`
+  - Migrated auth and profile forms to use new pattern
+  - 38 comprehensive tests
 
 **M6: Session configuration may cause auth issues** ✅ RESOLVED (Sprint 006)
 - **Location:** `lib/auth/config.ts:115-129`
@@ -85,6 +88,10 @@ This roadmap outlines outstanding issues, deferred work, and potential future en
 - **Status:** Deferred (too risky)
 - **Reason:** Complex interdependencies between CopyButton, CopyPreview, GlobalSettings
 - **When to revisit:** If copy logic needs significant changes
+
+### Resolved in Sprint 007 ✅
+
+- **M3:** Server action error handling → Created `lib/actions/` module with standardized types and utilities
 
 ### Resolved in Sprint 006 ✅
 
