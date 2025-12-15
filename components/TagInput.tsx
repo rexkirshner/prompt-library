@@ -7,7 +7,7 @@
 
 'use client'
 
-import { useState, KeyboardEvent } from 'react'
+import { useState, useRef, KeyboardEvent } from 'react'
 import { normalizeTag, isValidTag } from '@/lib/prompts/validation'
 
 interface TagInputProps {
@@ -27,6 +27,8 @@ export function TagInput({
 }: TagInputProps) {
   const [input, setInput] = useState('')
   const [inputError, setInputError] = useState('')
+  // Track if we just added a tag to prevent double-adds from onBlur
+  const justAddedRef = useRef(false)
 
   const addTag = (tagInput: string) => {
     const normalized = normalizeTag(tagInput)
@@ -70,7 +72,13 @@ export function TagInput({
     if (e.key === 'Enter') {
       e.preventDefault()
       if (input.trim()) {
+        // Set flag to prevent onBlur from double-adding
+        justAddedRef.current = true
         addTag(input.trim())
+        // Reset flag after a short delay
+        setTimeout(() => {
+          justAddedRef.current = false
+        }, 100)
       }
     } else if (e.key === 'Backspace' && input === '' && tags.length > 0) {
       // Remove last tag if input is empty and backspace is pressed
@@ -118,6 +126,10 @@ export function TagInput({
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
           onBlur={() => {
+            // Skip if we just added via Enter key (prevents double-adds)
+            if (justAddedRef.current) {
+              return
+            }
             if (input.trim()) {
               addTag(input.trim())
             }
