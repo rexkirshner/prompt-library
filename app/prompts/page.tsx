@@ -130,12 +130,28 @@ export default async function PromptsPage({ searchParams }: PromptsPageProps) {
     prisma.prompts.count({ where }),
 
     // Main prompts query with pagination (search-specific, not cached)
+    // Optimized: select only fields needed for browse page display
     prisma.prompts.findMany({
       where,
-      include: {
+      select: {
+        id: true,
+        slug: true,
+        title: true,
+        prompt_text: true, // Needed for non-compound prompts
+        description: true,
+        category: true,
+        author_name: true,
+        copy_count: true,
+        is_compound: true, // Needed to determine resolution path
         prompt_tags: {
-          include: {
-            tags: true,
+          select: {
+            tags: {
+              select: {
+                id: true,
+                name: true,
+                slug: true,
+              },
+            },
           },
         },
       },
