@@ -36,6 +36,16 @@ const PASSWORD_REQUIREMENTS = {
 
 /**
  * Validate email format using regex
+ *
+ * @param email - The email address to validate
+ * @returns true if email format is valid, false otherwise
+ *
+ * @example
+ * ```typescript
+ * isValidEmail('user@example.com') // true
+ * isValidEmail('invalid-email') // false
+ * isValidEmail('') // false
+ * ```
  */
 export function isValidEmail(email: string): boolean {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -44,6 +54,18 @@ export function isValidEmail(email: string): boolean {
 
 /**
  * Validate password against security requirements
+ *
+ * @param password - The password to validate
+ * @returns Object with valid boolean and array of error messages
+ *
+ * @example
+ * ```typescript
+ * validatePassword('weak')
+ * // { valid: false, errors: ['Password must be at least 8 characters'] }
+ *
+ * validatePassword('StrongPass1')
+ * // { valid: true, errors: [] }
+ * ```
  */
 export function validatePassword(password: string): {
   valid: boolean
@@ -84,6 +106,20 @@ export function validatePassword(password: string): {
 
 /**
  * Validate sign-up form data
+ *
+ * @param data - Sign-up form data including name, email, password, confirmPassword
+ * @returns ValidationResult with success boolean and field errors
+ *
+ * @example
+ * ```typescript
+ * const result = validateSignUpForm({
+ *   name: 'John Doe',
+ *   email: 'john@example.com',
+ *   password: 'SecurePass1',
+ *   confirmPassword: 'SecurePass1'
+ * })
+ * // { success: true, errors: {} }
+ * ```
  */
 export function validateSignUpForm(data: SignUpFormData): ValidationResult {
   const errors: Record<string, string> = {}
@@ -129,6 +165,18 @@ export function validateSignUpForm(data: SignUpFormData): ValidationResult {
 
 /**
  * Validate sign-in form data
+ *
+ * @param data - Sign-in form data including email and password
+ * @returns ValidationResult with success boolean and field errors
+ *
+ * @example
+ * ```typescript
+ * const result = validateSignInForm({
+ *   email: 'user@example.com',
+ *   password: 'mypassword'
+ * })
+ * // { success: true, errors: {} }
+ * ```
  */
 export function validateSignInForm(data: SignInFormData): ValidationResult {
   const errors: Record<string, string> = {}
