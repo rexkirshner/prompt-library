@@ -168,15 +168,18 @@ export default async function PromptPage({ params }: PromptPageProps) {
   }
 
   // Increment view count (fire and forget, don't await)
+  // Use warn level since view count is non-critical
   prisma.prompts
     .update({
       where: { id: prompt.id },
       data: { view_count: { increment: 1 } },
     })
     .catch((err) =>
-      logger.error('Failed to increment view count', err as Error, {
+      logger.warn('Failed to increment view count', {
+        operation: 'view-count-increment',
         promptId: prompt.id,
         slug: prompt.slug,
+        error: (err as Error).message,
       })
     )
 
