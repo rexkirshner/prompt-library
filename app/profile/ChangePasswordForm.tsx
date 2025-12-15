@@ -8,7 +8,8 @@
 
 import { useState, useActionState } from 'react'
 import { useFormStatus } from 'react-dom'
-import { changePassword, type ChangePasswordResult } from './actions'
+import { changePassword } from './actions'
+import { type FormActionResult, isFormError, isSuccess } from '@/lib/actions'
 
 /**
  * Submit button with loading state
@@ -34,9 +35,9 @@ export function ChangePasswordForm() {
   const [showSuccess, setShowSuccess] = useState(false)
 
   const handleSubmit = async (
-    prevState: ChangePasswordResult | null,
+    _prevState: FormActionResult | null,
     formData: FormData,
-  ): Promise<ChangePasswordResult> => {
+  ): Promise<FormActionResult> => {
     setShowSuccess(false)
 
     const currentPassword = formData.get('currentPassword') as string
@@ -45,7 +46,7 @@ export function ChangePasswordForm() {
 
     const result = await changePassword(currentPassword, newPassword, confirmPassword)
 
-    if (result.success) {
+    if (isSuccess(result)) {
       setShowSuccess(true)
       // Reset form on success
       const form = document.querySelector('form') as HTMLFormElement
@@ -55,10 +56,13 @@ export function ChangePasswordForm() {
     return result
   }
 
-  const [state, formAction] = useActionState<ChangePasswordResult | null, FormData>(
+  const [state, formAction] = useActionState<FormActionResult | null, FormData>(
     handleSubmit,
     null,
   )
+
+  // Extract errors with type narrowing
+  const errors = state && isFormError(state) ? state.errors : null
 
   return (
     <div className="space-y-6">
@@ -72,9 +76,9 @@ export function ChangePasswordForm() {
       )}
 
       {/* Form-level error */}
-      {state?.errors?.form && (
+      {errors?.form && (
         <div className="rounded-md bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-4">
-          <p className="text-sm text-red-800 dark:text-red-300">{state.errors.form}</p>
+          <p className="text-sm text-red-800 dark:text-red-300">{errors.form}</p>
         </div>
       )}
 
@@ -95,15 +99,13 @@ export function ChangePasswordForm() {
               required
               autoComplete="current-password"
               className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
-              aria-invalid={state?.errors?.currentPassword ? 'true' : 'false'}
-              aria-describedby={
-                state?.errors?.currentPassword ? 'current-password-error' : undefined
-              }
+              aria-invalid={errors?.currentPassword ? 'true' : 'false'}
+              aria-describedby={errors?.currentPassword ? 'current-password-error' : undefined}
             />
           </div>
-          {state?.errors?.currentPassword && (
+          {errors?.currentPassword && (
             <p id="current-password-error" className="mt-2 text-sm text-red-600 dark:text-red-400">
-              {state.errors.currentPassword}
+              {errors.currentPassword}
             </p>
           )}
         </div>
@@ -124,16 +126,16 @@ export function ChangePasswordForm() {
               required
               autoComplete="new-password"
               className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
-              aria-invalid={state?.errors?.newPassword ? 'true' : 'false'}
-              aria-describedby={state?.errors?.newPassword ? 'new-password-error' : 'new-password-help'}
+              aria-invalid={errors?.newPassword ? 'true' : 'false'}
+              aria-describedby={errors?.newPassword ? 'new-password-error' : 'new-password-help'}
             />
           </div>
           <p id="new-password-help" className="mt-2 text-sm text-gray-500 dark:text-gray-400">
             Must be at least 8 characters with uppercase, lowercase, and a number
           </p>
-          {state?.errors?.newPassword && (
+          {errors?.newPassword && (
             <p id="new-password-error" className="mt-2 text-sm text-red-600 dark:text-red-400">
-              {state.errors.newPassword}
+              {errors.newPassword}
             </p>
           )}
         </div>
@@ -154,13 +156,13 @@ export function ChangePasswordForm() {
               required
               autoComplete="new-password"
               className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
-              aria-invalid={state?.errors?.confirmPassword ? 'true' : 'false'}
-              aria-describedby={state?.errors?.confirmPassword ? 'confirm-password-error' : undefined}
+              aria-invalid={errors?.confirmPassword ? 'true' : 'false'}
+              aria-describedby={errors?.confirmPassword ? 'confirm-password-error' : undefined}
             />
           </div>
-          {state?.errors?.confirmPassword && (
+          {errors?.confirmPassword && (
             <p id="confirm-password-error" className="mt-2 text-sm text-red-600 dark:text-red-400">
-              {state.errors.confirmPassword}
+              {errors.confirmPassword}
             </p>
           )}
         </div>

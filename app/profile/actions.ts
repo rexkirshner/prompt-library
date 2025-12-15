@@ -13,19 +13,14 @@ import { validatePassword } from '@/lib/auth/validation'
 import { passwordChangeRateLimiter } from '@/lib/utils/rate-limit'
 import { logUserAction, USER_ACTIONS } from '@/lib/audit'
 import { logger as baseLogger } from '@/lib/logging'
+import { type FormActionResult, success, formError } from '@/lib/actions'
 
 const logger = baseLogger.child({ module: 'profile/actions' })
 
-export interface ChangePasswordResult {
-  success: boolean
-  errors?: {
-    currentPassword?: string
-    newPassword?: string
-    confirmPassword?: string
-    form?: string
-  }
-  message?: string
-}
+/**
+ * @deprecated Use FormActionResult from @/lib/actions instead
+ */
+export type ChangePasswordResult = FormActionResult
 
 /**
  * Change user password with validation and rate limiting
@@ -76,28 +71,25 @@ export async function changePassword(
   currentPassword: string,
   newPassword: string,
   confirmPassword: string,
-): Promise<ChangePasswordResult> {
+): Promise<FormActionResult> {
   try {
     // Get current user
     const user = await getCurrentUser()
     if (!user) {
-      return { success: false, errors: { form: 'Not authenticated' } }
+      return formError({ form: 'Not authenticated' })
     }
 
     // Check rate limit to prevent brute force attacks
     if (!passwordChangeRateLimiter.checkLimit(user.id)) {
       const resetTime = passwordChangeRateLimiter.getTimeUntilReset(user.id)
       const minutes = Math.ceil(resetTime / 60000)
-      return {
-        success: false,
-        errors: {
-          form: `Too many password change attempts. Please try again in ${minutes} minute${minutes !== 1 ? 's' : ''}.`,
-        },
-      }
+      return formError({
+        form: `Too many password change attempts. Please try again in ${minutes} minute${minutes !== 1 ? 's' : ''}.`,
+      })
     }
 
     // Validate inputs
-    const errors: ChangePasswordResult['errors'] = {}
+    const errors: Record<string, string> = {}
 
     if (!currentPassword) {
       errors.currentPassword = 'Current password is required'
@@ -119,7 +111,7 @@ export async function changePassword(
     }
 
     if (Object.keys(errors).length > 0) {
-      return { success: false, errors }
+      return formError(errors)
     }
 
     // Get user's current password hash from database
@@ -129,7 +121,7 @@ export async function changePassword(
     })
 
     if (!dbUser || !dbUser.password) {
-      return { success: false, errors: { form: 'User not found' } }
+      return formError({ form: 'User not found' })
     }
 
     // Verify current password
@@ -137,20 +129,14 @@ export async function changePassword(
     if (!isCurrentPasswordValid) {
       // Record failed attempt to prevent brute force attacks
       passwordChangeRateLimiter.recordAttempt(user.id)
-      return {
-        success: false,
-        errors: { currentPassword: 'Current password is incorrect' },
-      }
+      return formError({ currentPassword: 'Current password is incorrect' })
     }
 
     // Check that new password is different from current password
     // Use hash comparison to avoid keeping plaintext password in memory
     const newPasswordMatchesCurrent = await verifyPassword(newPassword, dbUser.password)
     if (newPasswordMatchesCurrent) {
-      return {
-        success: false,
-        errors: { newPassword: 'New password must be different from current password' },
-      }
+      return formError({ newPassword: 'New password must be different from current password' })
     }
 
     // Hash new password
@@ -171,22 +157,12 @@ export async function changePassword(
       },
     }).catch((error) => {
       // Log error but don't propagate to user
-      logger.error(
-        'Failed to log password change audit',
-        error as Error,
-        { userId: user.id }
-      )
+      logger.error('Failed to log password change audit', error as Error, { userId: user.id })
     })
 
-    return {
-      success: true,
-      message: 'Password changed successfully',
-    }
+    return success(undefined, 'Password changed successfully')
   } catch (error) {
-    logger.error(
-      'Failed to change password',
-      error as Error
-    )
-    return { success: false, errors: { form: 'Failed to change password' } }
+    logger.error('Failed to change password', error as Error)
+    return formError({ form: 'Failed to change password' })
   }
 }
