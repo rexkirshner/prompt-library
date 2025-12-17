@@ -11,6 +11,7 @@
 
 import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/db/client'
+import { auth } from '@/lib/auth'
 import { buildSearchWhere, parseTagFilter } from '@/lib/prompts/search'
 import { resolvePrompt } from '@/lib/compound-prompts/resolution'
 import type { CompoundPromptWithComponents } from '@/lib/compound-prompts/types'
@@ -111,6 +112,10 @@ export async function OPTIONS() {
  */
 export async function GET(request: NextRequest) {
   try {
+    // Check if user is authenticated (for conditional field visibility)
+    const session = await auth()
+    const isAuthenticated = !!session?.user
+
     // Check rate limit
     if (!checkApiRateLimit(request)) {
       const retryAfter = getRetryAfter(request)
@@ -210,8 +215,10 @@ export async function GET(request: NextRequest) {
       })
     )
 
-    // Serialize to public format
-    const publicPrompts = serializePromptList(promptsWithResolvedText)
+    // Serialize to public format (author/AI info only for authenticated users)
+    const publicPrompts = serializePromptList(promptsWithResolvedText, {
+      isAuthenticated,
+    })
 
     // Calculate pagination metadata
     const totalPages = Math.ceil(totalCount / limit)

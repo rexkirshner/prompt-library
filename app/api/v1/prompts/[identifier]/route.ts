@@ -11,6 +11,7 @@
 
 import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/db/client'
+import { auth } from '@/lib/auth'
 import { resolvePrompt } from '@/lib/compound-prompts/resolution'
 import type { CompoundPromptWithComponents } from '@/lib/compound-prompts/types'
 import { serializePrompt } from '@/lib/api/serializers'
@@ -115,6 +116,10 @@ export async function OPTIONS() {
  */
 export async function GET(request: NextRequest, context: RouteContext) {
   try {
+    // Check if user is authenticated (for conditional field visibility)
+    const session = await auth()
+    const isAuthenticated = !!session?.user
+
     // Check rate limit
     if (!checkApiRateLimit(request)) {
       const retryAfter = getRetryAfter(request)
@@ -171,8 +176,10 @@ export async function GET(request: NextRequest, context: RouteContext) {
       resolvedText = prompt.prompt_text || ''
     }
 
-    // Serialize to public format
-    const publicPrompt = serializePrompt(prompt, resolvedText)
+    // Serialize to public format (author/AI info only for authenticated users)
+    const publicPrompt = serializePrompt(prompt, resolvedText, {
+      isAuthenticated,
+    })
 
     // Record successful request
     recordApiRequest(request)

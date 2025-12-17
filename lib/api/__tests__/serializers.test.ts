@@ -40,8 +40,8 @@ describe('serializePrompt', () => {
     ],
   }
 
-  it('includes all public fields', () => {
-    const result = serializePrompt(mockPrompt, 'resolved text')
+  it('includes all public fields for authenticated users', () => {
+    const result = serializePrompt(mockPrompt, 'resolved text', { isAuthenticated: true })
 
     expect(result).toHaveProperty('id', mockPrompt.id)
     expect(result).toHaveProperty('slug', mockPrompt.slug)
@@ -55,6 +55,20 @@ describe('serializePrompt', () => {
     expect(result).toHaveProperty('is_compound', mockPrompt.is_compound)
     expect(result).toHaveProperty('featured', mockPrompt.featured)
     expect(result).toHaveProperty('ai_generated', mockPrompt.ai_generated)
+  })
+
+  it('excludes author and ai_generated for unauthenticated users', () => {
+    const result = serializePrompt(mockPrompt, 'resolved text')
+
+    // Should include core fields
+    expect(result).toHaveProperty('id', mockPrompt.id)
+    expect(result).toHaveProperty('title', mockPrompt.title)
+    expect(result).toHaveProperty('category', mockPrompt.category)
+
+    // Should NOT include protected fields
+    expect(result.author_name).toBeUndefined()
+    expect(result.author_url).toBeUndefined()
+    expect(result.ai_generated).toBeUndefined()
   })
 
   it('converts dates to ISO strings', () => {
@@ -89,9 +103,9 @@ describe('serializePrompt', () => {
     expect(result.prompt_text).toBeNull()
   })
 
-  it('handles null author_url', () => {
+  it('handles null author_url for authenticated users', () => {
     const promptWithNullUrl = { ...mockPrompt, author_url: null }
-    const result = serializePrompt(promptWithNullUrl, 'resolved text')
+    const result = serializePrompt(promptWithNullUrl, 'resolved text', { isAuthenticated: true })
 
     expect(result.author_url).toBeNull()
   })
@@ -119,9 +133,9 @@ describe('serializePrompt', () => {
     expect(result.resolved_text).toBe('resolved compound text')
   })
 
-  it('handles ai_generated flag', () => {
+  it('handles ai_generated flag for authenticated users', () => {
     const aiPrompt = { ...mockPrompt, ai_generated: true }
-    const result = serializePrompt(aiPrompt, 'resolved text')
+    const result = serializePrompt(aiPrompt, 'resolved text', { isAuthenticated: true })
 
     expect(result.ai_generated).toBe(true)
   })

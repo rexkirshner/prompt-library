@@ -9,6 +9,7 @@
 
 /**
  * Public-facing prompt object returned by API
+ * Note: author_name, author_url, and ai_generated are only included for authenticated users
  */
 export interface PublicPrompt {
   id: string
@@ -18,14 +19,22 @@ export interface PublicPrompt {
   prompt_text: string | null
   resolved_text: string
   category: string
-  author_name: string
-  author_url: string | null
+  author_name?: string // Only for authenticated users
+  author_url?: string | null // Only for authenticated users
   tags: { slug: string; name: string }[]
   is_compound: boolean
   featured: boolean
-  ai_generated: boolean
+  ai_generated?: boolean // Only for authenticated users
   created_at: string
   updated_at: string
+}
+
+/**
+ * Options for serialization
+ */
+export interface SerializeOptions {
+  /** Whether the request is from an authenticated user */
+  isAuthenticated?: boolean
 }
 
 /**
@@ -62,17 +71,21 @@ interface DatabasePrompt {
  *
  * @param prompt - Database prompt with relations
  * @param resolvedText - Pre-resolved text for compound prompts
+ * @param options - Serialization options (e.g., isAuthenticated)
  * @returns Public prompt object
  *
  * @example
- * const publicPrompt = serializePrompt(dbPrompt, resolvedText)
- * // Returns: { id, slug, title, ..., resolved_text }
+ * const publicPrompt = serializePrompt(dbPrompt, resolvedText, { isAuthenticated: true })
+ * // Returns: { id, slug, title, ..., resolved_text, author_name, ai_generated }
  */
 export function serializePrompt(
   prompt: DatabasePrompt,
-  resolvedText: string
+  resolvedText: string,
+  options: SerializeOptions = {}
 ): PublicPrompt {
-  return {
+  const { isAuthenticated = false } = options
+
+  const result: PublicPrompt = {
     id: prompt.id,
     slug: prompt.slug,
     title: prompt.title,
@@ -80,36 +93,44 @@ export function serializePrompt(
     prompt_text: prompt.prompt_text,
     resolved_text: resolvedText,
     category: prompt.category,
-    author_name: prompt.author_name,
-    author_url: prompt.author_url,
     tags: prompt.prompt_tags.map(({ tags }) => ({
       slug: tags.slug,
       name: tags.name,
     })),
     is_compound: prompt.is_compound,
     featured: prompt.featured,
-    ai_generated: prompt.ai_generated,
     created_at: prompt.created_at.toISOString(),
     updated_at: prompt.updated_at.toISOString(),
   }
+
+  // Only include author and AI info for authenticated users
+  if (isAuthenticated) {
+    result.author_name = prompt.author_name
+    result.author_url = prompt.author_url
+    result.ai_generated = prompt.ai_generated
+  }
+
+  return result
 }
 
 /**
  * Serialize an array of prompts
  *
  * @param prompts - Array of tuples: [DatabasePrompt, resolvedText]
+ * @param options - Serialization options (e.g., isAuthenticated)
  * @returns Array of public prompt objects
  *
  * @example
  * const publicPrompts = serializePromptList([
  *   [prompt1, resolvedText1],
  *   [prompt2, resolvedText2],
- * ])
+ * ], { isAuthenticated: true })
  */
 export function serializePromptList(
-  prompts: Array<[DatabasePrompt, string]>
+  prompts: Array<[DatabasePrompt, string]>,
+  options: SerializeOptions = {}
 ): PublicPrompt[] {
   return prompts.map(([prompt, resolvedText]) =>
-    serializePrompt(prompt, resolvedText)
+    serializePrompt(prompt, resolvedText, options)
   )
 }
