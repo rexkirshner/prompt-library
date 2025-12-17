@@ -23,6 +23,7 @@ export interface PublicPrompt {
   tags: { slug: string; name: string }[]
   is_compound: boolean
   featured: boolean
+  ai_generated: boolean
   created_at: string
   updated_at: string
 }
@@ -42,6 +43,7 @@ interface DatabasePrompt {
   author_url: string | null
   is_compound: boolean
   featured: boolean
+  ai_generated: boolean
   created_at: Date
   updated_at: Date
   prompt_tags: {
@@ -86,6 +88,7 @@ export function serializePrompt(
     })),
     is_compound: prompt.is_compound,
     featured: prompt.featured,
+    ai_generated: prompt.ai_generated,
     created_at: prompt.created_at.toISOString(),
     updated_at: prompt.updated_at.toISOString(),
   }

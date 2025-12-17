@@ -21,6 +21,7 @@ describe('serializePrompt', () => {
     author_url: 'https://example.com',
     is_compound: false,
     featured: true,
+    ai_generated: false,
     created_at: mockDate,
     updated_at: mockDate,
     prompt_tags: [
@@ -53,6 +54,7 @@ describe('serializePrompt', () => {
     expect(result).toHaveProperty('author_url', mockPrompt.author_url)
     expect(result).toHaveProperty('is_compound', mockPrompt.is_compound)
     expect(result).toHaveProperty('featured', mockPrompt.featured)
+    expect(result).toHaveProperty('ai_generated', mockPrompt.ai_generated)
   })
 
   it('converts dates to ISO strings', () => {
@@ -116,6 +118,13 @@ describe('serializePrompt', () => {
     expect(result.prompt_text).toBeNull()
     expect(result.resolved_text).toBe('resolved compound text')
   })
+
+  it('handles ai_generated flag', () => {
+    const aiPrompt = { ...mockPrompt, ai_generated: true }
+    const result = serializePrompt(aiPrompt, 'resolved text')
+
+    expect(result.ai_generated).toBe(true)
+  })
 })
 
 describe('serializePromptList', () => {
@@ -132,6 +141,7 @@ describe('serializePromptList', () => {
     author_url: null,
     is_compound: false,
     featured: false,
+    ai_generated: false,
     created_at: mockDate,
     updated_at: mockDate,
     prompt_tags: [{ tags: { slug: 'tag1', name: 'Tag 1' } }],
@@ -148,6 +158,7 @@ describe('serializePromptList', () => {
     author_url: 'https://example.com',
     is_compound: true,
     featured: true,
+    ai_generated: true,
     created_at: mockDate,
     updated_at: mockDate,
     prompt_tags: [],

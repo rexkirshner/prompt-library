@@ -80,6 +80,7 @@ model prompts {
   status                                    PromptStatus                 @default(PENDING)
   rejection_reason                          String?
   featured                                  Boolean                      @default(false)
+  ai_generated                              Boolean                      @default(false)
   view_count                                Int                          @default(0)
   copy_count                                Int                          @default(0)
   is_compound                               Boolean                      @default(false)
