@@ -234,7 +234,7 @@ export function GlobalSettings({ userId }: GlobalSettingsProps) {
                   <label className="flex items-center gap-2">
                     <input
                       type="checkbox"
-                      checked={removePastePlaceholders}
+                      checked={removePastePlaceholders ?? false}
                       onChange={(e) => setRemovePastePlaceholders(e.target.checked)}
                       className="h-4 w-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500"
                     />
