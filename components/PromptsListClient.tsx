@@ -143,9 +143,9 @@ export function PromptsListClient({ prompts, userId, sortPreference }: PromptsLi
                   </div>
                 )}
 
-                {/* Author and Stats */}
+                {/* Author and Stats (author only for logged-in users) */}
                 <div className="mb-4 flex items-center justify-between text-xs text-gray-500 dark:text-gray-500">
-                  <p>by {prompt.author_name}</p>
+                  {userId && <p>by {prompt.author_name}</p>}
                   {userId && (
                     <p className="flex items-center gap-1">
                       <svg
@@ -245,10 +245,12 @@ export function PromptsListClient({ prompts, userId, sortPreference }: PromptsLi
                       </div>
                     )}
 
-                    {/* Author */}
-                    <p className="text-xs text-gray-500 dark:text-gray-500">
-                      by {prompt.author_name}
-                    </p>
+                    {/* Author (logged-in users only) */}
+                    {userId && (
+                      <p className="text-xs text-gray-500 dark:text-gray-500">
+                        by {prompt.author_name}
+                      </p>
+                    )}
 
                     {/* Copy Count */}
                     {userId && (

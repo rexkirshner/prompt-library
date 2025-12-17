@@ -258,31 +258,29 @@ export default async function PromptPage({ params }: PromptPageProps) {
           {prompt.title}
         </h1>
 
-        {/* Metadata */}
-        <div className="mt-4 flex flex-wrap items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
-          <span>by {prompt.author_name}</span>
-          {prompt.author_url && (
-            <>
-              <span>•</span>
-              <a
-                href={prompt.author_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
-              >
-                Visit website →
-              </a>
-            </>
-          )}
-          {currentUser && (
-            <>
-              <span>•</span>
-              <span>{prompt.view_count} views</span>
-              <span>•</span>
-              <span>{prompt.copy_count} copied</span>
-            </>
-          )}
-        </div>
+        {/* Metadata (only for logged-in users) */}
+        {currentUser && (
+          <div className="mt-4 flex flex-wrap items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
+            <span>by {prompt.author_name}</span>
+            {prompt.author_url && (
+              <>
+                <span>•</span>
+                <a
+                  href={prompt.author_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+                >
+                  Visit website →
+                </a>
+              </>
+            )}
+            <span>•</span>
+            <span>{prompt.view_count} views</span>
+            <span>•</span>
+            <span>{prompt.copy_count} copied</span>
+          </div>
+        )}
       </div>
 
       {/* Description */}
