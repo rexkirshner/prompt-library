@@ -28,3 +28,6 @@ export type {
   ValidatedBulkImportPrompt,
   ValidatedBulkImportPayload,
 } from './schema'
+
+// Service
+export { processBulkImport } from './service'
