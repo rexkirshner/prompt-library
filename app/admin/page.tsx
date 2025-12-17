@@ -148,6 +148,16 @@ export default async function AdminDashboardPage() {
           </Link>
 
           <Link
+            href="/admin/bulk-import"
+            className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 shadow-sm hover:shadow-md"
+          >
+            <h3 className="font-semibold text-gray-900 dark:text-gray-100">Bulk Import</h3>
+            <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+              Import many prompts at once
+            </p>
+          </Link>
+
+          <Link
             href="/prompts"
             className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 shadow-sm hover:shadow-md"
           >
