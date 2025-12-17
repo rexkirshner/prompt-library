@@ -26,6 +26,7 @@ export function CopyPreview({ text, promptId, userId }: CopyPreviewProps) {
   const [suffix, setSuffix] = useState('')
   const [useUltrathink, setUseUltrathink] = useState(false)
   const [githubReminder, setGithubReminder] = useState(false)
+  const [removePastePlaceholders, setRemovePastePlaceholders] = useState(false)
   const [mounted, setMounted] = useState(false)
 
   // Load saved preferences on mount
@@ -46,6 +47,7 @@ export function CopyPreview({ text, promptId, userId }: CopyPreviewProps) {
             setAddSuffix(promptPrefs.copyAddSuffix)
             setUseUltrathink(promptPrefs.copyUseUltrathink)
             setGithubReminder(promptPrefs.copyGithubReminder)
+            setRemovePastePlaceholders(promptPrefs.copyRemovePastePlaceholders)
           } else {
             // No per-prompt preferences, try global settings
             const globalPrefs = await getCopyPreferences()
@@ -56,6 +58,7 @@ export function CopyPreview({ text, promptId, userId }: CopyPreviewProps) {
               setAddSuffix(globalPrefs.copyAddSuffix)
               setUseUltrathink(globalPrefs.copyUseUltrathink)
               setGithubReminder(globalPrefs.copyGithubReminder)
+              setRemovePastePlaceholders(globalPrefs.copyRemovePastePlaceholders)
             } else {
               // Fall back to localStorage
               loadFromLocalStorage()
@@ -112,6 +115,10 @@ export function CopyPreview({ text, promptId, userId }: CopyPreviewProps) {
         `prompt-${promptId}-copy-github-reminder`,
         'prompt-copy-github-reminder'
       )
+      const savedRemovePastePlaceholders = getBoolWithFallback(
+        `prompt-${promptId}-copy-remove-paste-placeholders`,
+        'prompt-copy-remove-paste-placeholders'
+      )
 
       if (savedPrefix !== null) setPrefix(savedPrefix)
       if (savedSuffix !== null) setSuffix(savedSuffix)
@@ -119,6 +126,7 @@ export function CopyPreview({ text, promptId, userId }: CopyPreviewProps) {
       setAddSuffix(savedAddSuffix)
       setUseUltrathink(savedUseUltrathink)
       setGithubReminder(savedGithubReminder)
+      setRemovePastePlaceholders(savedRemovePastePlaceholders)
     }
 
     loadPreferences()
@@ -145,6 +153,15 @@ export function CopyPreview({ text, promptId, userId }: CopyPreviewProps) {
   // Build preview text
   const buildPreviewText = () => {
     let finalText = text
+
+    // Remove paste placeholders first (before adding prefix/suffix)
+    if (removePastePlaceholders) {
+      // Match [PASTE ...], [Paste ...], [paste ...] patterns
+      finalText = finalText.replace(/\[(?:PASTE|Paste|paste)[^\]]*\]/g, '')
+      // Clean up extra whitespace that might be left
+      finalText = finalText.replace(/\n{3,}/g, '\n\n').trim()
+    }
+
     if (addPrefix && prefix.trim()) {
       finalText = prefix.trim() + '\n\n' + finalText
     }
@@ -172,7 +189,7 @@ export function CopyPreview({ text, promptId, userId }: CopyPreviewProps) {
           {previewText}
         </pre>
       </div>
-      {(addPrefix || addSuffix || useUltrathink || githubReminder) && (
+      {(addPrefix || addSuffix || useUltrathink || githubReminder || removePastePlaceholders) && (
         <p className="mt-2 text-xs text-gray-600 dark:text-gray-400">
           Preview includes your copy settings. Use the Options button above to change them.
         </p>

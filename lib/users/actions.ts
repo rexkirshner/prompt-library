@@ -19,6 +19,7 @@ export interface CopyPreferences {
   copyAddSuffix: boolean
   copyUseUltrathink: boolean
   copyGithubReminder: boolean
+  copyRemovePastePlaceholders: boolean
 }
 
 /**
@@ -41,6 +42,7 @@ export async function getCopyPreferences(): Promise<CopyPreferences | null> {
         copy_add_suffix: true,
         copy_use_ultrathink: true,
         copy_github_reminder: true,
+        copy_remove_paste_placeholders: true,
       },
     })
 
@@ -55,6 +57,7 @@ export async function getCopyPreferences(): Promise<CopyPreferences | null> {
       copyAddSuffix: user.copy_add_suffix,
       copyUseUltrathink: user.copy_use_ultrathink,
       copyGithubReminder: user.copy_github_reminder,
+      copyRemovePastePlaceholders: user.copy_remove_paste_placeholders,
     }
   } catch (error) {
     logger.error(
@@ -88,6 +91,7 @@ export async function saveCopyPreferences(
         copy_add_suffix: preferences.copyAddSuffix,
         copy_use_ultrathink: preferences.copyUseUltrathink,
         copy_github_reminder: preferences.copyGithubReminder,
+        copy_remove_paste_placeholders: preferences.copyRemovePastePlaceholders,
       },
     })
 

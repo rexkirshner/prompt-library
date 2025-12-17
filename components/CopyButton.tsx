@@ -39,6 +39,7 @@ export function CopyButton({
   const [suffix, setSuffix] = useState('')
   const [useUltrathink, setUseUltrathink] = useState(false)
   const [githubReminder, setGithubReminder] = useState(false)
+  const [removePastePlaceholders, setRemovePastePlaceholders] = useState(false)
   const [mounted, setMounted] = useState(false)
   const optionsRef = useRef<HTMLDivElement>(null)
 
@@ -78,6 +79,7 @@ export function CopyButton({
             setAddSuffix(promptPrefs.copyAddSuffix)
             setUseUltrathink(promptPrefs.copyUseUltrathink)
             setGithubReminder(promptPrefs.copyGithubReminder)
+            setRemovePastePlaceholders(promptPrefs.copyRemovePastePlaceholders)
           } else {
             // No per-prompt preferences, try global settings
             const globalPrefs = await getCopyPreferences()
@@ -88,6 +90,7 @@ export function CopyButton({
               setAddSuffix(globalPrefs.copyAddSuffix)
               setUseUltrathink(globalPrefs.copyUseUltrathink)
               setGithubReminder(globalPrefs.copyGithubReminder)
+              setRemovePastePlaceholders(globalPrefs.copyRemovePastePlaceholders)
             } else {
               // Fall back to localStorage
               loadFromLocalStorage()
@@ -144,6 +147,10 @@ export function CopyButton({
         `prompt-${promptId}-copy-github-reminder`,
         'prompt-copy-github-reminder'
       )
+      const savedRemovePastePlaceholders = getBoolWithFallback(
+        `prompt-${promptId}-copy-remove-paste-placeholders`,
+        'prompt-copy-remove-paste-placeholders'
+      )
 
       if (savedPrefix !== null) setPrefix(savedPrefix)
       if (savedSuffix !== null) setSuffix(savedSuffix)
@@ -151,6 +158,7 @@ export function CopyButton({
       setAddSuffix(savedAddSuffix)
       setUseUltrathink(savedUseUltrathink)
       setGithubReminder(savedGithubReminder)
+      setRemovePastePlaceholders(savedRemovePastePlaceholders)
     }
 
     loadPreferences()
@@ -170,6 +178,7 @@ export function CopyButton({
         copyAddSuffix: addSuffix,
         copyUseUltrathink: useUltrathink,
         copyGithubReminder: githubReminder,
+        copyRemovePastePlaceholders: removePastePlaceholders,
       }
 
       // Always save to localStorage for instant updates using prompt-specific keys
@@ -179,6 +188,7 @@ export function CopyButton({
       localStorage.setItem(`prompt-${promptId}-copy-add-suffix`, String(addSuffix))
       localStorage.setItem(`prompt-${promptId}-copy-use-ultrathink`, String(useUltrathink))
       localStorage.setItem(`prompt-${promptId}-copy-github-reminder`, String(githubReminder))
+      localStorage.setItem(`prompt-${promptId}-copy-remove-paste-placeholders`, String(removePastePlaceholders))
 
       // Emit event to notify other components (like CopyPreview)
       window.dispatchEvent(new Event('copySettingsChanged'))
@@ -196,12 +206,21 @@ export function CopyButton({
     }
 
     savePreferences()
-  }, [prefix, suffix, addPrefix, addSuffix, useUltrathink, githubReminder, mounted, userId, promptId])
+  }, [prefix, suffix, addPrefix, addSuffix, useUltrathink, githubReminder, removePastePlaceholders, mounted, userId, promptId])
 
   const handleCopy = async () => {
     try {
       // Build final text with prefix/suffix and additional options
       let finalText = text
+
+      // Remove paste placeholders first (before adding prefix/suffix)
+      if (removePastePlaceholders) {
+        // Match [PASTE ...], [Paste ...], [paste ...] patterns
+        finalText = finalText.replace(/\[(?:PASTE|Paste|paste)[^\]]*\]/g, '')
+        // Clean up extra whitespace that might be left
+        finalText = finalText.replace(/\n{3,}/g, '\n\n').trim()
+      }
+
       if (addPrefix && prefix.trim()) {
         finalText = prefix.trim() + '\n\n' + finalText
       }
@@ -329,6 +348,21 @@ export function CopyButton({
               />
               <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 GitHub reminder
+              </span>
+            </label>
+          </div>
+
+          {/* Remove paste placeholders option */}
+          <div>
+            <label className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={removePastePlaceholders}
+                onChange={(e) => setRemovePastePlaceholders(e.target.checked)}
+                className="h-4 w-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500"
+              />
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                Remove [PASTE *]
               </span>
             </label>
           </div>

@@ -151,6 +151,7 @@ model users {
   copy_add_suffix                                       Boolean         @default(false)
   copy_use_ultrathink                                   Boolean         @default(false)
   copy_github_reminder                                  Boolean         @default(false)
+  copy_remove_paste_placeholders                        Boolean         @default(false)
   sort_preference                                       String          @default("newest")
   admin_actions                                         admin_actions[]
   user_actions                                          user_actions[]
@@ -246,12 +247,13 @@ model user_prompt_preferences {
   copy_suffix          String?
   copy_add_prefix      Boolean  @default(false)
   copy_add_suffix      Boolean  @default(false)
-  copy_use_ultrathink  Boolean  @default(false)
-  copy_github_reminder Boolean  @default(false)
-  created_at           DateTime @default(now())
-  updated_at           DateTime @updatedAt
-  user                 users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  prompt               prompts  @relation(fields: [prompt_id], references: [id], onDelete: Cascade)
+  copy_use_ultrathink              Boolean  @default(false)
+  copy_github_reminder             Boolean  @default(false)
+  copy_remove_paste_placeholders   Boolean  @default(false)
+  created_at                       DateTime @default(now())
+  updated_at                       DateTime @updatedAt
+  user                             users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  prompt                           prompts  @relation(fields: [prompt_id], references: [id], onDelete: Cascade)
 
   @@unique([user_id, prompt_id])
   @@index([user_id])

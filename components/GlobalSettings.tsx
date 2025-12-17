@@ -23,6 +23,7 @@ export function GlobalSettings({ userId }: GlobalSettingsProps) {
   const [suffix, setSuffix] = useState('')
   const [useUltrathink, setUseUltrathink] = useState(false)
   const [githubReminder, setGithubReminder] = useState(false)
+  const [removePastePlaceholders, setRemovePastePlaceholders] = useState(false)
   const [mounted, setMounted] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
 
@@ -43,6 +44,7 @@ export function GlobalSettings({ userId }: GlobalSettingsProps) {
             setAddSuffix(prefs.copyAddSuffix)
             setUseUltrathink(prefs.copyUseUltrathink)
             setGithubReminder(prefs.copyGithubReminder)
+            setRemovePastePlaceholders(prefs.copyRemovePastePlaceholders)
           }
         } catch (error) {
           clientLogger.error('Failed to load preferences from database', error as Error)
@@ -62,6 +64,7 @@ export function GlobalSettings({ userId }: GlobalSettingsProps) {
       const savedAddSuffix = localStorage.getItem('prompt-copy-add-suffix') === 'true'
       const savedUseUltrathink = localStorage.getItem('prompt-copy-use-ultrathink') === 'true'
       const savedGithubReminder = localStorage.getItem('prompt-copy-github-reminder') === 'true'
+      const savedRemovePastePlaceholders = localStorage.getItem('prompt-copy-remove-paste-placeholders') === 'true'
 
       if (savedPrefix !== null) setPrefix(savedPrefix)
       if (savedSuffix !== null) setSuffix(savedSuffix)
@@ -69,6 +72,7 @@ export function GlobalSettings({ userId }: GlobalSettingsProps) {
       setAddSuffix(savedAddSuffix)
       setUseUltrathink(savedUseUltrathink)
       setGithubReminder(savedGithubReminder)
+      setRemovePastePlaceholders(savedRemovePastePlaceholders)
     }
 
     loadPreferences()
@@ -86,6 +90,7 @@ export function GlobalSettings({ userId }: GlobalSettingsProps) {
       copyAddSuffix: addSuffix,
       copyUseUltrathink: useUltrathink,
       copyGithubReminder: githubReminder,
+      copyRemovePastePlaceholders: removePastePlaceholders,
     }
 
     // Always save to localStorage for instant updates
@@ -95,6 +100,7 @@ export function GlobalSettings({ userId }: GlobalSettingsProps) {
     localStorage.setItem('prompt-copy-add-suffix', String(addSuffix))
     localStorage.setItem('prompt-copy-use-ultrathink', String(useUltrathink))
     localStorage.setItem('prompt-copy-github-reminder', String(githubReminder))
+    localStorage.setItem('prompt-copy-remove-paste-placeholders', String(removePastePlaceholders))
 
     // If user is logged in, also save to database
     if (userId) {
@@ -219,6 +225,21 @@ export function GlobalSettings({ userId }: GlobalSettingsProps) {
                     />
                     <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                       GitHub reminder
+                    </span>
+                  </label>
+                </div>
+
+                {/* Remove paste placeholders option */}
+                <div>
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={removePastePlaceholders}
+                      onChange={(e) => setRemovePastePlaceholders(e.target.checked)}
+                      className="h-4 w-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500"
+                    />
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Remove [PASTE *]
                     </span>
                   </label>
                 </div>

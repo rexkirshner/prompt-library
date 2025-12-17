@@ -20,6 +20,7 @@ export interface PromptCopyPreferences {
   copyAddSuffix: boolean
   copyUseUltrathink: boolean
   copyGithubReminder: boolean
+  copyRemovePastePlaceholders: boolean
 }
 
 /**
@@ -55,6 +56,7 @@ export async function getPromptCopyPreferences(
       copyAddSuffix: prefs.copy_add_suffix,
       copyUseUltrathink: prefs.copy_use_ultrathink,
       copyGithubReminder: prefs.copy_github_reminder,
+      copyRemovePastePlaceholders: prefs.copy_remove_paste_placeholders,
     }
   } catch (error) {
     logger.error('Failed to get prompt copy preferences', error as Error, {
@@ -93,6 +95,7 @@ export async function savePromptCopyPreferences(
         copy_add_suffix: preferences.copyAddSuffix,
         copy_use_ultrathink: preferences.copyUseUltrathink,
         copy_github_reminder: preferences.copyGithubReminder,
+        copy_remove_paste_placeholders: preferences.copyRemovePastePlaceholders,
         updated_at: new Date(),
       },
       create: {
@@ -104,6 +107,7 @@ export async function savePromptCopyPreferences(
         copy_add_suffix: preferences.copyAddSuffix,
         copy_use_ultrathink: preferences.copyUseUltrathink,
         copy_github_reminder: preferences.copyGithubReminder,
+        copy_remove_paste_placeholders: preferences.copyRemovePastePlaceholders,
       },
     })
 
