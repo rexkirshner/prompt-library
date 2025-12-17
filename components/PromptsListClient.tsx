@@ -43,6 +43,12 @@ interface PromptsListClientProps {
 
 export function PromptsListClient({ prompts, userId, sortPreference }: PromptsListClientProps) {
   const [viewMode, setViewMode] = useState<ViewMode>('grid')
+  const [hideAiGenerated, setHideAiGenerated] = useState(false)
+
+  // Filter prompts based on AI toggle
+  const filteredPrompts = hideAiGenerated
+    ? prompts.filter((p) => !p.ai_generated)
+    : prompts
 
   if (prompts.length === 0) {
     return null
@@ -50,9 +56,29 @@ export function PromptsListClient({ prompts, userId, sortPreference }: PromptsLi
 
   return (
     <>
-      {/* Sort and View Mode Toggle */}
-      <div className="mb-6 flex items-center justify-between">
-        <SortDropdown userId={userId} initialSortPreference={sortPreference} />
+      {/* Sort, AI Filter, and View Mode Toggle */}
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <SortDropdown userId={userId} initialSortPreference={sortPreference} />
+          {/* AI Filter Toggle - only for logged-in users */}
+          {userId && (
+            <button
+              onClick={() => setHideAiGenerated(!hideAiGenerated)}
+              className={`inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
+                hideAiGenerated
+                  ? 'bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-400 dark:hover:bg-gray-600'
+              }`}
+              aria-pressed={hideAiGenerated}
+              aria-label={hideAiGenerated ? 'Show AI-generated prompts' : 'Hide AI-generated prompts'}
+            >
+              <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2L9.19 8.63L2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2z" />
+              </svg>
+              {hideAiGenerated ? 'AI Hidden' : 'Hide AI'}
+            </button>
+          )}
+        </div>
         <ViewModeToggle
           defaultMode="grid"
           onViewModeChange={setViewMode}
@@ -62,7 +88,7 @@ export function PromptsListClient({ prompts, userId, sortPreference }: PromptsLi
       {/* Grid View */}
       {viewMode === 'grid' && (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {prompts.map((prompt) => (
+          {filteredPrompts.map((prompt) => (
             <div
               key={prompt.id}
               className="group relative rounded-lg border border-gray-200 bg-white p-6 transition-shadow hover:shadow-lg dark:border-gray-700 dark:bg-gray-800"
@@ -158,7 +184,7 @@ export function PromptsListClient({ prompts, userId, sortPreference }: PromptsLi
       {/* List View */}
       {viewMode === 'list' && (
         <div className="space-y-4">
-          {prompts.map((prompt) => (
+          {filteredPrompts.map((prompt) => (
             <div
               key={prompt.id}
               className="group rounded-lg border border-gray-200 bg-white p-6 transition-shadow hover:shadow-lg dark:border-gray-700 dark:bg-gray-800"
@@ -282,7 +308,7 @@ export function PromptsListClient({ prompts, userId, sortPreference }: PromptsLi
       {/* Mini List View */}
       {viewMode === 'mini' && (
         <div className="space-y-2">
-          {prompts.map((prompt) => (
+          {filteredPrompts.map((prompt) => (
             <div
               key={prompt.id}
               className="group flex items-center justify-between rounded-lg border border-gray-200 bg-white px-4 py-3 transition-shadow hover:shadow-md dark:border-gray-700 dark:bg-gray-800"
@@ -337,7 +363,7 @@ export function PromptsListClient({ prompts, userId, sortPreference }: PromptsLi
       {/* Compact Grid View */}
       {viewMode === 'compact' && (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {prompts.map((prompt) => (
+          {filteredPrompts.map((prompt) => (
             <div
               key={prompt.id}
               className="group relative flex flex-col rounded-lg border border-gray-200 bg-white p-4 transition-shadow hover:shadow-md dark:border-gray-700 dark:bg-gray-800"
