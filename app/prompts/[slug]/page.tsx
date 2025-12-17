@@ -238,10 +238,20 @@ export default async function PromptPage({ params }: PromptPageProps) {
 
       {/* Header */}
       <div className="mb-8">
-        {/* Category */}
-        <span className="inline-block rounded-md bg-gray-100 dark:bg-gray-800 px-3 py-1 text-sm font-medium text-gray-700 dark:text-gray-300">
-          {prompt.category}
-        </span>
+        {/* Category and AI indicator */}
+        <div className="flex items-center gap-2">
+          <span className="inline-block rounded-md bg-gray-100 dark:bg-gray-800 px-3 py-1 text-sm font-medium text-gray-700 dark:text-gray-300">
+            {prompt.category}
+          </span>
+          {currentUser && prompt.ai_generated && (
+            <span className="inline-flex items-center gap-1 rounded-md bg-purple-100 px-2 py-1 text-sm font-medium text-purple-700 dark:bg-purple-900 dark:text-purple-300">
+              <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2L9.19 8.63L2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2z" />
+              </svg>
+              AI Generated
+            </span>
+          )}
+        </div>
 
         {/* Title */}
         <h1 className="mt-4 text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-100">

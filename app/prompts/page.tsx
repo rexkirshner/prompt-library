@@ -143,6 +143,7 @@ export default async function PromptsPage({ searchParams }: PromptsPageProps) {
         author_name: true,
         copy_count: true,
         is_compound: true, // Needed to determine resolution path
+        ai_generated: true, // Needed for AI badge (logged-in users only)
         prompt_tags: {
           select: {
             tags: {

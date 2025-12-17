@@ -29,6 +29,7 @@ interface Prompt {
   author_name: string
   copy_count: number
   resolved_text: string // Resolved text for compound prompts
+  ai_generated?: boolean // Whether prompt was AI-generated
   prompt_tags: {
     tags: Tag
   }[]
@@ -70,11 +71,19 @@ export function PromptsListClient({ prompts, userId, sortPreference }: PromptsLi
                 href={`/prompts/${prompt.slug}`}
                 className="block"
               >
-                {/* Category badge */}
-                <div className="mb-3">
+                {/* Category badge and AI indicator */}
+                <div className="mb-3 flex items-center gap-2">
                   <span className="inline-block rounded-md bg-gray-100 px-2 py-1 text-xs font-medium text-gray-700 dark:bg-gray-700 dark:text-gray-300">
                     {prompt.category}
                   </span>
+                  {userId && prompt.ai_generated && (
+                    <span className="inline-flex items-center gap-1 rounded-md bg-purple-100 px-2 py-1 text-xs font-medium text-purple-700 dark:bg-purple-900 dark:text-purple-300">
+                      <svg className="h-3 w-3" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2L9.19 8.63L2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2z" />
+                      </svg>
+                      AI
+                    </span>
+                  )}
                 </div>
 
                 {/* Title */}
@@ -165,6 +174,16 @@ export function PromptsListClient({ prompts, userId, sortPreference }: PromptsLi
                     <span className="inline-block rounded-md bg-gray-100 px-2 py-1 text-xs font-medium text-gray-700 dark:bg-gray-700 dark:text-gray-300">
                       {prompt.category}
                     </span>
+
+                    {/* AI indicator (logged-in users only) */}
+                    {userId && prompt.ai_generated && (
+                      <span className="inline-flex items-center gap-1 rounded-md bg-purple-100 px-2 py-1 text-xs font-medium text-purple-700 dark:bg-purple-900 dark:text-purple-300">
+                        <svg className="h-3 w-3" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M12 2L9.19 8.63L2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2z" />
+                        </svg>
+                        AI
+                      </span>
+                    )}
 
                     {/* Title */}
                     <h2 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 dark:text-gray-100 dark:group-hover:text-blue-400">
@@ -268,11 +287,19 @@ export function PromptsListClient({ prompts, userId, sortPreference }: PromptsLi
               key={prompt.id}
               className="group flex items-center justify-between rounded-lg border border-gray-200 bg-white px-4 py-3 transition-shadow hover:shadow-md dark:border-gray-700 dark:bg-gray-800"
             >
-              {/* Title (clickable link) */}
-              <Link href={`/prompts/${prompt.slug}`} className="flex-1 truncate">
-                <h3 className="font-medium text-gray-900 group-hover:text-blue-600 dark:text-gray-100 dark:group-hover:text-blue-400">
+              {/* Title and AI indicator (clickable link) */}
+              <Link href={`/prompts/${prompt.slug}`} className="flex flex-1 items-center gap-2 truncate">
+                <h3 className="truncate font-medium text-gray-900 group-hover:text-blue-600 dark:text-gray-100 dark:group-hover:text-blue-400">
                   {prompt.title}
                 </h3>
+                {userId && prompt.ai_generated && (
+                  <span className="inline-flex flex-shrink-0 items-center gap-1 rounded-md bg-purple-100 px-1.5 py-0.5 text-xs font-medium text-purple-700 dark:bg-purple-900 dark:text-purple-300">
+                    <svg className="h-2.5 w-2.5" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 2L9.19 8.63L2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2z" />
+                    </svg>
+                    AI
+                  </span>
+                )}
               </Link>
 
               {/* Action buttons */}
@@ -315,11 +342,19 @@ export function PromptsListClient({ prompts, userId, sortPreference }: PromptsLi
               key={prompt.id}
               className="group relative flex flex-col rounded-lg border border-gray-200 bg-white p-4 transition-shadow hover:shadow-md dark:border-gray-700 dark:bg-gray-800"
             >
-              {/* Title (clickable link) */}
+              {/* Title and AI indicator */}
               <Link href={`/prompts/${prompt.slug}`} className="mb-3 flex-1">
                 <h3 className="line-clamp-2 font-medium text-gray-900 group-hover:text-blue-600 dark:text-gray-100 dark:group-hover:text-blue-400">
                   {prompt.title}
                 </h3>
+                {userId && prompt.ai_generated && (
+                  <span className="mt-1 inline-flex items-center gap-1 rounded-md bg-purple-100 px-1.5 py-0.5 text-xs font-medium text-purple-700 dark:bg-purple-900 dark:text-purple-300">
+                    <svg className="h-2.5 w-2.5" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 2L9.19 8.63L2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2z" />
+                    </svg>
+                    AI
+                  </span>
+                )}
               </Link>
 
               {/* Action buttons */}
