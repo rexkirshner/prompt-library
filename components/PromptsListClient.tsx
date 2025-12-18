@@ -9,6 +9,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { ViewMode, ViewModeToggle } from './ViewModeToggle'
 import { CopyButton } from './CopyButton'
 import { SortDropdown } from './SortDropdown'
@@ -39,16 +40,29 @@ interface PromptsListClientProps {
   prompts: Prompt[]
   userId?: string
   sortPreference?: string
+  hideAiGenerated?: boolean
 }
 
-export function PromptsListClient({ prompts, userId, sortPreference }: PromptsListClientProps) {
+export function PromptsListClient({ prompts, userId, sortPreference, hideAiGenerated = false }: PromptsListClientProps) {
   const [viewMode, setViewMode] = useState<ViewMode>('grid')
-  const [hideAiGenerated, setHideAiGenerated] = useState(false)
+  const router = useRouter()
+  const searchParams = useSearchParams()
 
-  // Filter prompts based on AI toggle
-  const filteredPrompts = hideAiGenerated
-    ? prompts.filter((p) => !p.ai_generated)
-    : prompts
+  // Toggle AI filter via URL
+  const toggleAiFilter = () => {
+    const params = new URLSearchParams(searchParams.toString())
+    if (hideAiGenerated) {
+      params.delete('hideAi')
+    } else {
+      params.set('hideAi', 'true')
+    }
+    // Reset to page 1 when toggling filter
+    params.delete('page')
+    router.push(`/prompts?${params.toString()}`)
+  }
+
+  // No client-side filtering needed - server already filtered
+  const filteredPrompts = prompts
 
   if (prompts.length === 0) {
     return null
@@ -63,7 +77,7 @@ export function PromptsListClient({ prompts, userId, sortPreference }: PromptsLi
           {/* AI Filter Toggle - only for logged-in users */}
           {userId && (
             <button
-              onClick={() => setHideAiGenerated(!hideAiGenerated)}
+              onClick={toggleAiFilter}
               className={`inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
                 hideAiGenerated
                   ? 'bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300'

@@ -35,6 +35,7 @@ interface PromptsPageProps {
     tags?: string
     page?: string
     sort?: string
+    hideAi?: string
   }>
 }
 
@@ -96,10 +97,12 @@ export default async function PromptsPage({ searchParams }: PromptsPageProps) {
   }
 
   // Build search filters from URL params
+  const hideAi = params.hideAi === 'true'
   const filters = {
     query: params.q,
     category: params.category,
     tags: parseTagFilter(params.tags),
+    hideAi,
   }
 
   // Parse page number and sort parameter
@@ -256,6 +259,7 @@ export default async function PromptsPage({ searchParams }: PromptsPageProps) {
           prompts={promptsWithResolvedText}
           userId={session?.user?.id}
           sortPreference={userSortPreference}
+          hideAiGenerated={hideAi}
         />
       )}
 

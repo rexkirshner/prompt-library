@@ -11,6 +11,7 @@ export interface SearchFilters {
   query?: string
   category?: string
   tags?: string[]
+  hideAi?: boolean
 }
 
 /**
@@ -68,6 +69,11 @@ export function buildSearchWhere(
         },
       },
     }
+  }
+
+  // Hide AI-generated prompts if requested
+  if (filters.hideAi) {
+    where.ai_generated = false
   }
 
   return where
