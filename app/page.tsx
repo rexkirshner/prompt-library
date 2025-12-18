@@ -4,6 +4,12 @@ import {
   getRecentPrompts,
   getApprovedPromptCount,
 } from '@/lib/db/cached-queries'
+import { JsonLd } from '@/components/JsonLd'
+import {
+  generateWebSiteSchema,
+  generateOrganizationSchema,
+  getBaseUrl,
+} from '@/lib/seo/json-ld'
 
 // Force dynamic rendering - page fetches latest prompts
 export const dynamic = 'force-dynamic'
@@ -17,9 +23,29 @@ export default async function Home() {
     getApprovedPromptCount(),
   ])
 
+  const baseUrl = getBaseUrl()
+
+  // Generate structured data for SEO
+  const websiteSchema = generateWebSiteSchema({
+    name: 'Input Atlas',
+    description:
+      'A curated collection of high-quality AI prompts for the community. Browse, discover, and share prompts for ChatGPT, Claude, and other AI assistants.',
+    url: baseUrl,
+  })
+
+  const organizationSchema = generateOrganizationSchema({
+    name: 'Input Atlas',
+    url: baseUrl,
+  })
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
-      {/* Hero Section */}
+    <>
+      {/* Structured data for SEO */}
+      <JsonLd data={websiteSchema} />
+      <JsonLd data={organizationSchema} />
+
+      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
+        {/* Hero Section */}
       <div className="border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
         <div className="mx-auto max-w-7xl px-4 py-16 text-center">
           <h1 className="mb-4 text-5xl font-bold tracking-tight text-gray-900 dark:text-gray-100">
@@ -150,5 +176,6 @@ export default async function Home() {
         </section>
       </main>
     </div>
+    </>
   )
 }
