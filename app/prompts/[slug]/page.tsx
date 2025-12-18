@@ -109,12 +109,16 @@ export async function generateMetadata({
   }
 
   const tags = prompt.prompt_tags.map((pt) => pt.tags.name)
+  const baseUrl = getBaseUrl()
 
   return {
     title: prompt.title,
     description: descriptionText,
     keywords: ['AI prompt', prompt.category, ...tags],
     authors: [{ name: prompt.author_name }],
+    alternates: {
+      canonical: `${baseUrl}/prompts/${prompt.slug}`,
+    },
     openGraph: {
       title: prompt.title,
       description: descriptionText,

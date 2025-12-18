@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import type { Metadata } from 'next'
 import {
   getFeaturedPrompts,
   getRecentPrompts,
@@ -13,6 +14,13 @@ import {
 
 // Force dynamic rendering - page fetches latest prompts
 export const dynamic = 'force-dynamic'
+
+// Homepage metadata with canonical URL
+export const metadata: Metadata = {
+  alternates: {
+    canonical: getBaseUrl(),
+  },
+}
 
 export default async function Home() {
   // Fetch all home page data in parallel using cached queries

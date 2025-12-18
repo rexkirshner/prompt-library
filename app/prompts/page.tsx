@@ -23,8 +23,11 @@ import { generateCollectionPageSchema, getBaseUrl } from '@/lib/seo/json-ld'
 const logger = baseLogger.child({ module: 'prompts' })
 
 export const metadata: Metadata = {
-  title: 'Browse Prompts - Input Atlas',
+  title: 'Browse Prompts',
   description: 'Discover and explore AI prompts shared by the community',
+  alternates: {
+    canonical: `${getBaseUrl()}/prompts`,
+  },
 }
 
 // Force dynamic rendering - page requires database access
