@@ -169,3 +169,61 @@ export async function saveSortPreference(sortPreference: string): Promise<boolea
     return false
   }
 }
+
+/**
+ * Get user's hide AI preference from database
+ */
+export async function getHideAiPreference(): Promise<boolean> {
+  const session = await auth()
+
+  if (!session?.user?.id) {
+    return false
+  }
+
+  try {
+    const user = await prisma.users.findUnique({
+      where: { id: session.user.id },
+      select: {
+        hide_ai_generated: true,
+      },
+    })
+
+    return user?.hide_ai_generated ?? false
+  } catch (error) {
+    logger.error(
+      'Failed to get hide AI preference',
+      error as Error,
+      { userId: session.user.id }
+    )
+    return false
+  }
+}
+
+/**
+ * Save user's hide AI preference to database
+ */
+export async function saveHideAiPreference(hideAi: boolean): Promise<boolean> {
+  const session = await auth()
+
+  if (!session?.user?.id) {
+    return false
+  }
+
+  try {
+    await prisma.users.update({
+      where: { id: session.user.id },
+      data: {
+        hide_ai_generated: hideAi,
+      },
+    })
+
+    return true
+  } catch (error) {
+    logger.error(
+      'Failed to save hide AI preference',
+      error as Error,
+      { userId: session.user.id }
+    )
+    return false
+  }
+}

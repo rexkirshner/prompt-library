@@ -153,6 +153,7 @@ model users {
   copy_github_reminder                                  Boolean         @default(false)
   copy_remove_paste_placeholders                        Boolean         @default(false)
   sort_preference                                       String          @default("newest")
+  hide_ai_generated                                     Boolean         @default(false)
   admin_actions                                         admin_actions[]
   user_actions                                          user_actions[]
   prompt_edits_prompt_edits_reviewed_by_user_idTousers  prompt_edits[]  @relation("prompt_edits_reviewed_by_user_idTousers")

@@ -7,12 +7,13 @@
 
 'use client'
 
-import { useState } from 'react'
+import { useState, useTransition } from 'react'
 import Link from 'next/link'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { ViewMode, ViewModeToggle } from './ViewModeToggle'
 import { CopyButton } from './CopyButton'
 import { SortDropdown } from './SortDropdown'
+import { saveHideAiPreference } from '@/lib/users/actions'
 
 interface Tag {
   id: string
@@ -40,25 +41,23 @@ interface PromptsListClientProps {
   prompts: Prompt[]
   userId?: string
   sortPreference?: string
-  hideAiGenerated?: boolean
+  hideAiPreference?: boolean
 }
 
-export function PromptsListClient({ prompts, userId, sortPreference, hideAiGenerated = false }: PromptsListClientProps) {
+export function PromptsListClient({ prompts, userId, sortPreference, hideAiPreference = false }: PromptsListClientProps) {
   const [viewMode, setViewMode] = useState<ViewMode>('grid')
+  const [isPending, startTransition] = useTransition()
   const router = useRouter()
-  const searchParams = useSearchParams()
 
-  // Toggle AI filter via URL
-  const toggleAiFilter = () => {
-    const params = new URLSearchParams(searchParams.toString())
-    if (hideAiGenerated) {
-      params.delete('hideAi')
-    } else {
-      params.set('hideAi', 'true')
+  // Toggle AI filter by saving preference and refreshing
+  const toggleAiFilter = async () => {
+    const newValue = !hideAiPreference
+    const success = await saveHideAiPreference(newValue)
+    if (success) {
+      startTransition(() => {
+        router.refresh()
+      })
     }
-    // Reset to page 1 when toggling filter
-    params.delete('page')
-    router.push(`/prompts?${params.toString()}`)
   }
 
   // No client-side filtering needed - server already filtered
@@ -78,18 +77,19 @@ export function PromptsListClient({ prompts, userId, sortPreference, hideAiGener
           {userId && (
             <button
               onClick={toggleAiFilter}
+              disabled={isPending}
               className={`inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
-                hideAiGenerated
+                hideAiPreference
                   ? 'bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300'
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-400 dark:hover:bg-gray-600'
-              }`}
-              aria-pressed={hideAiGenerated}
-              aria-label={hideAiGenerated ? 'Show AI-generated prompts' : 'Hide AI-generated prompts'}
+              } ${isPending ? 'opacity-50 cursor-not-allowed' : ''}`}
+              aria-pressed={hideAiPreference}
+              aria-label={hideAiPreference ? 'Show AI-generated prompts' : 'Hide AI-generated prompts'}
             >
               <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 2L9.19 8.63L2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2z" />
               </svg>
-              {hideAiGenerated ? 'AI Hidden' : 'Hide AI'}
+              {isPending ? 'Updating...' : hideAiPreference ? 'AI Hidden' : 'Hide AI'}
             </button>
           )}
         </div>

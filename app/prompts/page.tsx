@@ -35,7 +35,6 @@ interface PromptsPageProps {
     tags?: string
     page?: string
     sort?: string
-    hideAi?: string
   }>
 }
 
@@ -86,23 +85,24 @@ export default async function PromptsPage({ searchParams }: PromptsPageProps) {
   // Get current session (required for user preference lookup)
   const session = await auth()
 
-  // Fetch user's sort preference from database (quick query, needed for sort order)
+  // Fetch user's preferences from database (quick query, needed for sort order and filters)
   let userSortPreference: string | undefined
+  let userHideAiPreference = false
   if (session?.user?.id) {
     const user = await prisma.users.findUnique({
       where: { id: session.user.id },
-      select: { sort_preference: true },
+      select: { sort_preference: true, hide_ai_generated: true },
     })
     userSortPreference = user?.sort_preference || undefined
+    userHideAiPreference = user?.hide_ai_generated ?? false
   }
 
-  // Build search filters from URL params
-  const hideAi = params.hideAi === 'true'
+  // Build search filters from URL params and user preferences
   const filters = {
     query: params.q,
     category: params.category,
     tags: parseTagFilter(params.tags),
-    hideAi,
+    hideAi: userHideAiPreference,
   }
 
   // Parse page number and sort parameter
@@ -259,7 +259,7 @@ export default async function PromptsPage({ searchParams }: PromptsPageProps) {
           prompts={promptsWithResolvedText}
           userId={session?.user?.id}
           sortPreference={userSortPreference}
-          hideAiGenerated={hideAi}
+          hideAiPreference={userHideAiPreference}
         />
       )}
 
