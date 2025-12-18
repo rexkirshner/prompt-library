@@ -1573,3 +1573,80 @@ Completed Sprint 003 code quality improvements, fixed critical Next.js security 
 **Blockers:** None - awaiting user push approval
 
 ---
+
+## Session 15 - 2025-12-18
+
+**Duration:** 2h | **Focus:** AI filter preference-based storage | **Status:** ✅ Complete
+
+### TL;DR
+
+- Fixed AI filter toggle to use database-stored user preference instead of URL params
+- User rejected URL-based implementation; refactored to match sort preference pattern
+- Added database migration, server actions, and client-side save/refresh logic
+- Pushed to main - migration will run on Vercel deploy
+
+### Problem Solved
+
+**Issue:** AI filter toggle ("Hide AI") was using URL params (`?hideAi=true`), but user wanted it to work like other preferences - stored in database and remembered across sessions.
+
+**Constraints:**
+- Must follow existing sort preference pattern for consistency
+- Server-side filtering required for accurate pagination counts
+- Only available for logged-in users
+- Should show "Updating..." state during save
+
+**Approach:** Added `hide_ai_generated` boolean column to users table, created get/save server actions, updated page.tsx to fetch preference from DB and filter server-side, updated PromptsListClient to save preference and refresh page on toggle.
+
+**Why this approach:** Matches the existing `sort_preference` pattern exactly. User explicitly requested "it should be an option just like all the prompt options or the sort option that the system remembers what you've selected." Following established patterns reduces cognitive load and ensures consistent UX.
+
+### Decisions
+
+- **Preference storage over URL params:** User explicitly rejected URL-based approach. Database storage provides persistence and matches other user preference patterns. → See DECISIONS.md
+
+### Files
+
+**NEW:** `prisma/migrations/20251218154522_add_hide_ai_generated_preference/migration.sql` - Adds hide_ai_generated boolean column to users table
+
+**MOD:** `prisma/schema.prisma:156` - Added `hide_ai_generated Boolean @default(false)` to users model
+
+**MOD:** `lib/users/actions.ts:176-229` - Added `getHideAiPreference()` and `saveHideAiPreference()` server actions
+
+**MOD:** `app/prompts/page.tsx:88-105` - Updated to fetch hide_ai_generated from user record alongside sort_preference, use stored preference for server-side filtering
+
+**MOD:** `components/PromptsListClient.tsx:10-61` - Changed from URL navigation to save preference + router.refresh(), added useTransition for pending state
+
+### Mental Models
+
+**Current understanding:** User preferences in this codebase follow a consistent pattern:
+1. Server component fetches preference from DB
+2. Passes preference value to client component as prop
+3. Client component calls server action to save, then `router.refresh()` to re-render with new data
+4. Server-side filtering ensures pagination is accurate
+
+**Key insights:**
+- `router.refresh()` triggers a server-side re-render without full page reload
+- `useTransition` wraps the refresh to track pending state
+- Prisma `select` must regenerate client after schema changes (`npx prisma generate`)
+
+**Gotchas discovered:**
+- After adding columns to schema, must run `npx prisma generate` before build will pass
+- TypeScript won't recognize new columns until Prisma client is regenerated
+
+### Work In Progress
+
+**Task:** None - feature complete and pushed
+
+### TodoWrite State
+
+**Completed:**
+- ✅ Add hide_ai_generated column to users table
+- ✅ Add get/save functions for hide AI preference
+- ✅ Update page.tsx to use stored preference
+- ✅ Update PromptsListClient to save preference
+
+### Next Session
+
+**Priority:** Deploy to production (Vercel auto-deploys from main), verify migration runs
+**Blockers:** None
+
+---
