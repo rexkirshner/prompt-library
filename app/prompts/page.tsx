@@ -17,6 +17,8 @@ import { PromptsListClient } from '@/components/PromptsListClient'
 import { resolvePrompt } from '@/lib/compound-prompts/resolution'
 import type { CompoundPromptWithComponents } from '@/lib/compound-prompts/types'
 import { logger as baseLogger } from '@/lib/logging'
+import { JsonLd } from '@/components/JsonLd'
+import { generateCollectionPageSchema, getBaseUrl } from '@/lib/seo/json-ld'
 
 const logger = baseLogger.child({ module: 'prompts' })
 
@@ -200,9 +202,23 @@ export default async function PromptsPage({ searchParams }: PromptsPageProps) {
     })
   )
 
+  // Generate structured data for SEO
+  const baseUrl = getBaseUrl()
+  const collectionSchema = generateCollectionPageSchema({
+    name: 'AI Prompts Collection',
+    description:
+      'Browse and discover community-curated AI prompts for ChatGPT, Claude, and other AI assistants',
+    url: `${baseUrl}/prompts`,
+    numberOfItems: totalCount,
+  })
+
   return (
-    <div className="mx-auto max-w-7xl px-4 py-12">
-      {/* Header */}
+    <>
+      {/* Structured data for SEO */}
+      <JsonLd data={collectionSchema} />
+
+      <div className="mx-auto max-w-7xl px-4 py-12">
+        {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-100">Browse Prompts</h1>
         <p className="mt-2 text-gray-600 dark:text-gray-400">
@@ -273,5 +289,6 @@ export default async function PromptsPage({ searchParams }: PromptsPageProps) {
         />
       )}
     </div>
+    </>
   )
 }
