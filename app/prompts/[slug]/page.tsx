@@ -16,6 +16,8 @@ import { CopyPreview } from '@/components/CopyPreview'
 import { resolvePrompt } from '@/lib/compound-prompts/resolution'
 import type { CompoundPromptWithComponents } from '@/lib/compound-prompts/types'
 import { logger as baseLogger } from '@/lib/logging'
+import { JsonLd } from '@/components/JsonLd'
+import { generateArticleSchema, getBaseUrl } from '@/lib/seo/json-ld'
 
 const logger = baseLogger.child({ module: 'prompts/[slug]' })
 
@@ -199,9 +201,28 @@ export default async function PromptPage({ params }: PromptPageProps) {
     displayText = prompt.prompt_text || ''
   }
 
+  // Generate structured data for SEO
+  const baseUrl = getBaseUrl()
+  const tags = prompt.prompt_tags.map((pt) => pt.tags.name)
+  const descriptionText = prompt.description || displayText.substring(0, 160)
+
+  const articleSchema = generateArticleSchema({
+    title: prompt.title,
+    description: descriptionText,
+    author: prompt.author_name,
+    datePublished: prompt.created_at,
+    dateModified: prompt.updated_at,
+    url: `${baseUrl}/prompts/${prompt.slug}`,
+    keywords: [prompt.category, ...tags],
+  })
+
   return (
-    <div className="mx-auto max-w-4xl px-4 py-12">
-      {/* Back link and admin controls */}
+    <>
+      {/* Structured data for SEO */}
+      <JsonLd data={articleSchema} />
+
+      <div className="mx-auto max-w-4xl px-4 py-12">
+        {/* Back link and admin controls */}
       <div className="mb-6 flex items-center justify-between">
         <Link
           href="/prompts"
@@ -401,5 +422,6 @@ export default async function PromptPage({ params }: PromptPageProps) {
         </Link>
       </div>
     </div>
+    </>
   )
 }
