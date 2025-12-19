@@ -11,6 +11,8 @@ import {
   generateArticleSchema,
   generateCollectionPageSchema,
   generateBreadcrumbSchema,
+  generateFAQSchema,
+  generateSoftwareApplicationSchema,
 } from '../json-ld'
 
 describe('JSON-LD Schema Generators', () => {
@@ -275,6 +277,201 @@ describe('JSON-LD Schema Generators', () => {
       const schema = generateBreadcrumbSchema([])
 
       expect(schema.itemListElement).toHaveLength(0)
+    })
+  })
+
+  describe('generateFAQSchema', () => {
+    it('generates valid FAQPage schema', () => {
+      const items = [
+        {
+          question: 'What is this?',
+          answer: 'This is a test.',
+        },
+        {
+          question: 'How does it work?',
+          answer: 'It works by testing.',
+        },
+      ]
+
+      const schema = generateFAQSchema(items)
+
+      expect(schema['@context']).toBe('https://schema.org')
+      expect(schema['@type']).toBe('FAQPage')
+      expect(schema.mainEntity).toHaveLength(2)
+    })
+
+    it('formats questions correctly', () => {
+      const items = [
+        {
+          question: 'Test question?',
+          answer: 'Test answer.',
+        },
+      ]
+
+      const schema = generateFAQSchema(items)
+
+      expect(schema.mainEntity[0]['@type']).toBe('Question')
+      expect(schema.mainEntity[0].name).toBe('Test question?')
+    })
+
+    it('formats answers correctly', () => {
+      const items = [
+        {
+          question: 'Test question?',
+          answer: 'Test answer.',
+        },
+      ]
+
+      const schema = generateFAQSchema(items)
+
+      expect(schema.mainEntity[0].acceptedAnswer).toEqual({
+        '@type': 'Answer',
+        text: 'Test answer.',
+      })
+    })
+
+    it('handles empty FAQ array', () => {
+      const schema = generateFAQSchema([])
+
+      expect(schema.mainEntity).toHaveLength(0)
+    })
+
+    it('handles multiple FAQ items', () => {
+      const items = [
+        { question: 'Q1?', answer: 'A1' },
+        { question: 'Q2?', answer: 'A2' },
+        { question: 'Q3?', answer: 'A3' },
+      ]
+
+      const schema = generateFAQSchema(items)
+
+      expect(schema.mainEntity).toHaveLength(3)
+      expect(schema.mainEntity[0].name).toBe('Q1?')
+      expect(schema.mainEntity[1].name).toBe('Q2?')
+      expect(schema.mainEntity[2].name).toBe('Q3?')
+    })
+  })
+
+  describe('generateSoftwareApplicationSchema', () => {
+    it('generates valid SoftwareApplication schema', () => {
+      const schema = generateSoftwareApplicationSchema({
+        name: 'Test App',
+        description: 'A test application',
+        url: 'https://test.com',
+        applicationCategory: 'DeveloperApplication',
+      })
+
+      expect(schema['@context']).toBe('https://schema.org')
+      expect(schema['@type']).toBe('SoftwareApplication')
+      expect(schema.name).toBe('Test App')
+      expect(schema.description).toBe('A test application')
+      expect(schema.url).toBe('https://test.com')
+      expect(schema.applicationCategory).toBe('DeveloperApplication')
+    })
+
+    it('defaults to Web Browser as operating system', () => {
+      const schema = generateSoftwareApplicationSchema({
+        name: 'Test App',
+        description: 'A test application',
+        url: 'https://test.com',
+        applicationCategory: 'DeveloperApplication',
+      })
+
+      expect(schema.operatingSystem).toBe('Web Browser')
+    })
+
+    it('accepts custom operating system', () => {
+      const schema = generateSoftwareApplicationSchema({
+        name: 'Test App',
+        description: 'A test application',
+        url: 'https://test.com',
+        applicationCategory: 'DeveloperApplication',
+        operatingSystem: 'Windows, macOS, Linux',
+      })
+
+      expect(schema.operatingSystem).toBe('Windows, macOS, Linux')
+    })
+
+    it('includes offers when provided', () => {
+      const schema = generateSoftwareApplicationSchema({
+        name: 'Test App',
+        description: 'A test application',
+        url: 'https://test.com',
+        applicationCategory: 'DeveloperApplication',
+        offers: {
+          price: '0',
+          priceCurrency: 'USD',
+        },
+      })
+
+      expect(schema.offers).toEqual({
+        '@type': 'Offer',
+        price: '0',
+        priceCurrency: 'USD',
+      })
+    })
+
+    it('omits offers when not provided', () => {
+      const schema = generateSoftwareApplicationSchema({
+        name: 'Test App',
+        description: 'A test application',
+        url: 'https://test.com',
+        applicationCategory: 'DeveloperApplication',
+      })
+
+      expect(schema.offers).toBeUndefined()
+    })
+
+    it('includes aggregateRating when provided', () => {
+      const schema = generateSoftwareApplicationSchema({
+        name: 'Test App',
+        description: 'A test application',
+        url: 'https://test.com',
+        applicationCategory: 'DeveloperApplication',
+        aggregateRating: {
+          ratingValue: '4.5',
+          ratingCount: '100',
+        },
+      })
+
+      expect(schema.aggregateRating).toEqual({
+        '@type': 'AggregateRating',
+        ratingValue: '4.5',
+        ratingCount: '100',
+      })
+    })
+
+    it('omits aggregateRating when not provided', () => {
+      const schema = generateSoftwareApplicationSchema({
+        name: 'Test App',
+        description: 'A test application',
+        url: 'https://test.com',
+        applicationCategory: 'DeveloperApplication',
+      })
+
+      expect(schema.aggregateRating).toBeUndefined()
+    })
+
+    it('includes all optional properties when provided', () => {
+      const schema = generateSoftwareApplicationSchema({
+        name: 'Test App',
+        description: 'A test application',
+        url: 'https://test.com',
+        applicationCategory: 'DeveloperApplication',
+        operatingSystem: 'All platforms',
+        offers: {
+          price: '9.99',
+          priceCurrency: 'EUR',
+        },
+        aggregateRating: {
+          ratingValue: '5.0',
+          ratingCount: '250',
+        },
+      })
+
+      expect(schema.operatingSystem).toBe('All platforms')
+      expect(schema.offers).toBeDefined()
+      expect(schema.aggregateRating).toBeDefined()
     })
   })
 

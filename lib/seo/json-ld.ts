@@ -207,6 +207,114 @@ export function generateBreadcrumbSchema(
 }
 
 /**
+ * FAQ item for FAQ schema
+ */
+export interface FAQItem {
+  /** The question text */
+  question: string
+  /** The answer text */
+  answer: string
+}
+
+/**
+ * FAQPage schema for pages with Q&A content
+ * Enables FAQ rich snippets in search results
+ *
+ * @param items - Array of question-answer pairs
+ * @returns JSON-LD object for FAQPage schema
+ *
+ * @example
+ * ```tsx
+ * const schema = generateFAQSchema([
+ *   {
+ *     question: 'What license are prompts released under?',
+ *     answer: 'All prompts are released under CC0 1.0 Universal Public Domain Dedication.',
+ *   },
+ *   {
+ *     question: 'Can I use prompts commercially?',
+ *     answer: 'Yes, all prompts are in the public domain and can be used for any purpose.',
+ *   },
+ * ])
+ * ```
+ */
+export function generateFAQSchema(items: FAQItem[]) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: items.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer,
+      },
+    })),
+  }
+}
+
+/**
+ * SoftwareApplication schema for web applications
+ * Helps search engines understand the application and show app-specific rich results
+ *
+ * @param options - Application metadata
+ * @returns JSON-LD object for SoftwareApplication schema
+ *
+ * @example
+ * ```tsx
+ * const schema = generateSoftwareApplicationSchema({
+ *   name: 'Input Atlas',
+ *   description: 'A curated collection of AI prompts',
+ *   url: 'https://inputatlas.com',
+ *   applicationCategory: 'DeveloperApplication',
+ *   operatingSystem: 'Web Browser',
+ *   offers: {
+ *     price: '0',
+ *     priceCurrency: 'USD',
+ *   },
+ * })
+ * ```
+ */
+export function generateSoftwareApplicationSchema(options: {
+  name: string
+  description: string
+  url: string
+  applicationCategory: string
+  operatingSystem?: string
+  offers?: {
+    price: string
+    priceCurrency: string
+  }
+  aggregateRating?: {
+    ratingValue: string
+    ratingCount: string
+  }
+}) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: options.name,
+    description: options.description,
+    url: options.url,
+    applicationCategory: options.applicationCategory,
+    operatingSystem: options.operatingSystem || 'Web Browser',
+    ...(options.offers && {
+      offers: {
+        '@type': 'Offer',
+        price: options.offers.price,
+        priceCurrency: options.offers.priceCurrency,
+      },
+    }),
+    ...(options.aggregateRating && {
+      aggregateRating: {
+        '@type': 'AggregateRating',
+        ratingValue: options.aggregateRating.ratingValue,
+        ratingCount: options.aggregateRating.ratingCount,
+      },
+    }),
+  }
+}
+
+/**
  * Get base URL for the application
  * Re-exported for convenience when building URLs for schemas
  */
