@@ -248,7 +248,7 @@ export default async function PromptsPage({ searchParams }: PromptsPageProps) {
       {/* Stats bar */}
       <div className="mb-8 flex items-center justify-between border-b border-gray-200 dark:border-gray-700 pb-4">
         <p className="text-sm text-gray-600 dark:text-gray-400">
-          {promptsWithResolvedText.length} {promptsWithResolvedText.length === 1 ? 'prompt' : 'prompts'}{' '}
+          {totalCount} {totalCount === 1 ? 'prompt' : 'prompts'}{' '}
           {filters.query || filters.category || filters.tags.length > 0
             ? 'found'
             : 'available'}
