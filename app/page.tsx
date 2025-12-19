@@ -9,6 +9,7 @@ import { JsonLd } from '@/components/JsonLd'
 import {
   generateWebSiteSchema,
   generateOrganizationSchema,
+  generateSoftwareApplicationSchema,
   getBaseUrl,
 } from '@/lib/seo/json-ld'
 
@@ -46,11 +47,24 @@ export default async function Home() {
     url: baseUrl,
   })
 
+  const softwareApplicationSchema = generateSoftwareApplicationSchema({
+    name: 'Input Atlas',
+    description:
+      'A curated collection of high-quality AI prompts for ChatGPT, Claude, and other AI assistants. Browse, discover, and share prompts for free. All content is CC0 public domain.',
+    url: baseUrl,
+    applicationCategory: 'DeveloperApplication',
+    offers: {
+      price: '0',
+      priceCurrency: 'USD',
+    },
+  })
+
   return (
     <>
       {/* Structured data for SEO */}
       <JsonLd data={websiteSchema} />
       <JsonLd data={organizationSchema} />
+      <JsonLd data={softwareApplicationSchema} />
 
       <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
         {/* Hero Section */}
