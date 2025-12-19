@@ -8,7 +8,6 @@ description: Compare and update context files with latest templates
 **Purpose:** Compare your context documentation with latest templates and selectively update
 
 **Use this when:**
-
 - New template improvements available
 - Want to adopt latest best practices
 - Template structure changed in system update
@@ -61,7 +60,7 @@ else
     "DECISIONS.template.md"
     "SESSIONS.template.md"
     "CODE_MAP.template.md"
-    "claude.md.template"
+    "CLAUDE.md.template"
     "cursor.md.template"
     "aider.md.template"
     "codex.md.template"
@@ -107,11 +106,30 @@ declare -A FILE_MAPPINGS=(
   ["DECISIONS.template.md"]="context/DECISIONS.md"
   ["SESSIONS.template.md"]="context/SESSIONS.md"
   ["CODE_MAP.template.md"]="context/CODE_MAP.md"
-  ["claude.md.template"]="context/claude.md"
+  ["CLAUDE.md.template"]="CLAUDE.md"
 )
 
 UPDATES_AVAILABLE=0
 FILES_TO_UPDATE=()
+
+# Special check for CLAUDE.md migration (v3.6.0+)
+if [ -f "context/claude.md" ] && [ ! -f "CLAUDE.md" ]; then
+  echo ""
+  echo "⚠️  MIGRATION NEEDED: Found old location context/claude.md"
+  echo "   CLAUDE.md should be at project root for auto-loading by Claude Code."
+  echo ""
+  echo "   Options:"
+  echo "     1. Move existing file: mv context/claude.md ./CLAUDE.md"
+  echo "     2. Create fresh from template: cp templates/CLAUDE.md.template ./CLAUDE.md"
+  echo ""
+  read -p "   Move existing file now? [y/N]: " -n 1 -r
+  echo ""
+  if [[ $REPLY =~ ^[Yy]$ ]]; then
+    mv "context/claude.md" "CLAUDE.md"
+    echo "   ✅ Moved to ./CLAUDE.md"
+    echo ""
+  fi
+fi
 
 for template_file in "${!FILE_MAPPINGS[@]}"; do
   context_file="${FILE_MAPPINGS[$template_file]}"
@@ -248,14 +266,12 @@ echo "💡 Tip: Use git diff to see exactly what changed"
 ### What Gets Updated
 
 **Structure updates:**
-
 - Section ordering
 - New sections added to templates
 - Formatting improvements
 - Documentation guidelines
 
 **NOT updated (preserved):**
-
 - Your project-specific content
 - Custom sections you added
 - Filled-in placeholders
@@ -271,14 +287,12 @@ echo "💡 Tip: Use git diff to see exactly what changed"
 ### When to Use
 
 **Good times to update:**
-
 - ✅ After system upgrade (/update-context-system)
 - ✅ New template features you want to adopt
 - ✅ Template structure improved
 - ✅ Periodic maintenance (quarterly)
 
 **Not recommended when:**
-
 - ❌ In middle of active development
 - ❌ Haven't committed recent work
 - ❌ Customizations you want to preserve
@@ -308,7 +322,6 @@ Command tries these strategies in order:
 ## Success Criteria
 
 Command succeeds when:
-
 - Templates located successfully
 - Diffs shown clearly for each file
 - User approves/rejects each update
@@ -317,7 +330,6 @@ Command succeeds when:
 - User knows next steps
 
 **Perfect execution:**
-
 - All templates found locally (fast)
 - Clear visual diffs shown
 - User makes informed decisions

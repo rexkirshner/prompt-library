@@ -11,7 +11,7 @@
 **Answer these questions:**
 
 1. **Project Size:**
-   - [ ] > 20 files across multiple directories
+   - [ ] >20 files across multiple directories
    - [ ] OR >5 distinct deployment targets/platforms
 
 2. **Team Complexity:**
@@ -30,7 +30,6 @@
    - [ ] "Where is X implemented?" asked frequently
 
 **Decision:**
-
 - **0-1 checked:** Don't create CODE_MAP (simple project, not worth overhead)
 - **2-3 checked:** Consider CODE_MAP (marginal value, optional)
 - **4+ checked:** Create CODE_MAP (clear value, recommended)
@@ -46,7 +45,6 @@
 **Entry Point:** `path/to/entry.ts`
 
 **Key Files:**
-
 - `path/to/service.ts` - Business logic (platform-agnostic)
 - `path/to/handler.ts` - HTTP handler (platform-specific)
 - `path/to/component.astro` - UI component
@@ -63,7 +61,6 @@
 **Entry Point:** `path/to/entry.ts`
 
 **Key Files:**
-
 - `path/to/file.ts` - [Purpose]
 - `path/to/file.tsx` - [Purpose]
 
@@ -97,7 +94,6 @@ tests/                  → Test files (mirror src/ structure)
 ```
 
 **Organization Principles:**
-
 - [e.g., "Services are platform-agnostic, adapters handle platform specifics"]
 - [e.g., "Colocation: tests next to source files"]
 - [e.g., "Feature folders over type folders"]
@@ -107,21 +103,18 @@ tests/                  → Test files (mirror src/ structure)
 ## Quick Lookup
 
 **By Feature:**
-
 - Newsletter: `src/server/services/newsletter-service.ts`
 - Contribution: `src/server/services/contribution-service.ts`
 - Rate Limiting: `src/server/adapters/*-adapter.ts`
 - [Feature]: `path/to/implementation`
 
 **By File Type:**
-
 - API Routes: `src/pages/api/`
 - Components: `src/components/`
 - Services: `src/server/services/`
 - Tests: `tests/`
 
 **By Platform:**
-
 - Netlify Functions: `netlify/functions/`
 - Cloudflare Workers: `functions/`
 - Shared Logic: `src/server/services/`
@@ -131,18 +124,15 @@ tests/                  → Test files (mirror src/ structure)
 ## Deployment Targets
 
 **Production:**
-
 - Platform: [e.g., Vercel, Netlify, Cloudflare]
 - Entry: [e.g., netlify.toml, vercel.json]
 - Build: `[build command]`
 
 **Staging:**
-
 - Platform: [Same or different]
 - Configuration: [File location]
 
 **Local Development:**
-
 - Start: `[dev command]`
 - Port: [e.g., 3000, 8080]
 
@@ -151,7 +141,6 @@ tests/                  → Test files (mirror src/ structure)
 ## Common Patterns
 
 **Service Layer Pattern:**
-
 ```
 User Request → API Route → Adapter → Service → Database
                            ↑          ↑
@@ -159,13 +148,11 @@ User Request → API Route → Adapter → Service → Database
 ```
 
 **Where to find:**
-
 - Entry points (API routes): `src/pages/api/`
 - Adapters (platform logic): `src/server/adapters/`
 - Services (business logic): `src/server/services/`
 
 **Dependency Flow:**
-
 - Routes depend on Adapters
 - Adapters depend on Services
 - Services are independent (no platform deps)
@@ -175,16 +162,13 @@ User Request → API Route → Adapter → Service → Database
 ## Integration Points
 
 **External Services:**
-
 - [Service Name]: Connected via `path/to/integration.ts`
 - [API]: Auth in `path/to/auth.ts`, calls in `path/to/client.ts`
 
 **Third-Party Libraries:**
-
 - [Library]: Used in `[files]` for `[purpose]`
 
 **Database:**
-
 - Client: `[path to DB client setup]`
 - Migrations: `[path to migrations]`
 - Models: `[path to models/schemas]`
@@ -194,18 +178,15 @@ User Request → API Route → Adapter → Service → Database
 ## Testing Strategy
 
 **Unit Tests:**
-
 - Location: `tests/` (mirrors `src/` structure)
 - Services: `tests/server/services/*.test.ts`
 - Components: `tests/components/*.test.tsx`
 
 **Integration Tests:**
-
 - Location: `tests/integration/`
 - API Routes: `tests/integration/api/*.test.ts`
 
 **E2E Tests:**
-
 - Location: `tests/e2e/`
 - Flows: `tests/e2e/[feature].test.ts`
 
@@ -220,7 +201,6 @@ User Request → API Route → Adapter → Service → Database
 ---
 
 **Maintenance Note:** Update this file when:
-
 - Adding new features
 - Major refactoring that changes file locations
 - New deployment targets

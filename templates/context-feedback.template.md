@@ -10,7 +10,6 @@
 This file helps improve the AI Context System for everyone. Your feedback matters!
 
 **Please document:**
-
 - 🐛 **Bugs** - Errors, unexpected behavior, crashes
 - 💡 **Improvements** - Ideas to make CCS better
 - ❓ **Questions** - Confusion, unclear documentation
@@ -22,24 +21,20 @@ This file helps improve the AI Context System for everyone. Your feedback matter
 ## Guidelines
 
 **Be specific:**
-
 - Which command? (`/init-context`, `/save-full`, etc.)
 - What were you doing?
 - What happened vs. what you expected?
 
 **Include context:**
-
 - Operating system (macOS, Linux, Windows)
 - Claude Code version
 - Project type (web app, CLI, library)
 
 **Suggest solutions:**
-
 - How could this be better?
 - What would the ideal behavior be?
 
 **Mark severity:**
-
 - 🔴 **Critical** - Blocking work, data loss, security issue
 - 🟡 **Moderate** - Inconvenient, workaround exists
 - 🟢 **Minor** - Nice to have, polish
@@ -60,7 +55,6 @@ Copy this template for each feedback entry:
 **Actual behavior**: [What actually happened]
 
 **Steps to reproduce** (for bugs):
-
 1. Step one
 2. Step two
 3. Step three
@@ -70,7 +64,6 @@ Copy this template for each feedback entry:
 **Severity**: [🔴 Critical / 🟡 Moderate / 🟢 Minor]
 
 **Environment**:
-
 - OS: [macOS 14.x / Ubuntu 22.04 / Windows 11]
 - Claude Code: [version]
 - CCS: [version from context/.context-config.json]
@@ -97,7 +90,6 @@ Copy this template for each feedback entry:
 **Actual behavior**: Got error "invalid byte sequence" and validation stopped
 
 **Steps to reproduce**:
-
 1. Add emoji to session title: `## Session 5 | 2024-10-20 | 🚀 Launch`
 2. Run `/validate-context`
 3. Error appears
@@ -107,7 +99,6 @@ Copy this template for each feedback entry:
 **Severity**: 🟡 Moderate (workaround: remove emoji from titles)
 
 **Environment**:
-
 - OS: macOS 14.5
 - Claude Code: 1.2.0
 - CCS: 2.3.0
@@ -123,7 +114,6 @@ Copy this template for each feedback entry:
 **Expected behavior**: After 30 min without `/save`, gentle reminder appears
 
 **Suggestion**: Add optional reminder in .context-config.json:
-
 ```json
 "notifications": {
   "saveReminder": {
@@ -136,7 +126,6 @@ Copy this template for each feedback entry:
 **Severity**: 🟢 Minor (nice quality of life improvement)
 
 **Environment**:
-
 - OS: Ubuntu 22.04
 - Claude Code: 1.1.5
 - CCS: 2.3.0
@@ -150,7 +139,6 @@ Copy this template for each feedback entry:
 **What happened**: The `/organize-docs` command is AMAZING! Cleaned up 20+ loose files in 2 minutes.
 
 **Why it's great**:
-
 - Interactive and smart (analyzed files before moving)
 - Suggested good locations
 - Dated historical files automatically
@@ -164,4 +152,4 @@ Copy this template for each feedback entry:
 
 **Thank you for helping make the AI Context System better!** 🙏
 
-_Your feedback will be reviewed when you run `/update-context-system` or manually share it with the maintainers._
+*Your feedback will be reviewed when you run `/update-context-system` or manually share it with the maintainers.*

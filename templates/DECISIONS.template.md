@@ -10,7 +10,6 @@
 ## Why This File Exists
 
 AI agents reviewing your code need to understand:
-
 - **WHY** you made certain technical choices
 - What **constraints** influenced decisions
 - What **alternatives** you considered and rejected
@@ -42,7 +41,6 @@ This file captures the reasoning that isn't obvious from code alone.
 [WHY did we choose this approach?]
 
 **Key factors:**
-
 - [Factor 1]
 - [Factor 2]
 
@@ -66,12 +64,10 @@ This file captures the reasoning that isn't obvious from code alone.
 ### Consequences
 
 **Positive:**
-
 - [Good outcome 1]
 - [Good outcome 2]
 
 **Negative:**
-
 - [Limitation 1]
 - [Limitation 2]
 
@@ -80,7 +76,6 @@ This file captures the reasoning that isn't obvious from code alone.
 [Under what conditions should we revisit this decision?]
 
 **Triggers:**
-
 - [Trigger 1]
 - [Trigger 2]
 
@@ -106,7 +101,6 @@ This file captures the reasoning that isn't obvious from code alone.
 ### Context
 
 Need to choose database for user data, posts, and relationships. Requirements:
-
 - Complex queries (joins across user/post/comment tables)
 - ACID guarantees for financial data
 - Mature ecosystem with good TypeScript support
@@ -118,7 +112,6 @@ Use PostgreSQL with Prisma ORM instead of MongoDB.
 ### Rationale
 
 **Key factors:**
-
 - Relational data model fits our use case (users, posts, comments, relationships)
 - Need ACID transactions for payment processing
 - Complex joins required for social graph queries
@@ -144,20 +137,17 @@ Use PostgreSQL with Prisma ORM instead of MongoDB.
 ### Consequences
 
 **Positive:**
-
 - Can enforce referential integrity at DB level
 - Complex social graph queries are performant
 - Prisma provides type-safe database access
 
 **Negative:**
-
 - Schema migrations require planning
 - Horizontal scaling requires sharding (complex)
 
 ### When to Reconsider
 
 **Triggers:**
-
 - Scale beyond single PostgreSQL instance capacity (>10M users)
 - Need multi-region writes with eventual consistency
 - Data model becomes truly document-oriented
@@ -173,25 +163,24 @@ Use PostgreSQL with Prisma ORM instead of MongoDB.
 
 ## Active Decisions
 
-| ID   | Title                   | Date       | Status           |
-| ---- | ----------------------- | ---------- | ---------------- |
-| D001 | PostgreSQL over MongoDB | 2025-01-15 | ✅ Accepted      |
-| D002 | [Next decision]         | [Date]     | 🔄 Reconsidering |
+| ID | Title | Date | Status |
+|----|-------|------|--------|
+| D001 | PostgreSQL over MongoDB | 2025-01-15 | ✅ Accepted |
+| D002 | [Next decision] | [Date] | 🔄 Reconsidering |
 
 ---
 
 ## Superseded Decisions
 
-| ID  | Title | Date | Superseded By | Reason |
-| --- | ----- | ---- | ------------- | ------ |
-| -   | -     | -    | -             | -      |
+| ID | Title | Date | Superseded By | Reason |
+|----|-------|------|---------------|--------|
+| - | - | - | - | - |
 
 ---
 
 ## Guidelines for AI Agents
 
 When reviewing this file:
-
 1. **Respect the context** - Decisions were made with specific constraints
 2. **Check for changes** - Have triggers occurred that warrant reconsideration?
 3. **Understand tradeoffs** - Don't suggest alternatives without acknowledging accepted tradeoffs
@@ -199,7 +188,6 @@ When reviewing this file:
 5. **Ask before suggesting reversals** - Major architectural changes need user approval
 
 When taking over development:
-
 1. Read ALL decisions before making architectural changes
 2. Understand WHY current approach exists
 3. Check "When to Reconsider" sections for current relevance

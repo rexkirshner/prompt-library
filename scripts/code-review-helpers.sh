@@ -1,6 +1,6 @@
 #!/bin/bash
 # Code Review Helper Functions
-# Version: 3.4.0
+# Version: 3.6.0
 #
 # Modular helper functions for /code-review command enhancements:
 # - Smart issue grouping

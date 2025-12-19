@@ -19,6 +19,7 @@ import type { CompoundPromptWithComponents } from '@/lib/compound-prompts/types'
 import { logger as baseLogger } from '@/lib/logging'
 import { JsonLd } from '@/components/JsonLd'
 import { generateCollectionPageSchema, getBaseUrl } from '@/lib/seo/json-ld'
+import { Breadcrumbs } from '@/components/Breadcrumbs'
 
 const logger = baseLogger.child({ module: 'prompts' })
 
@@ -215,12 +216,21 @@ export default async function PromptsPage({ searchParams }: PromptsPageProps) {
     numberOfItems: totalCount,
   })
 
+  // Breadcrumb navigation
+  const breadcrumbItems = [
+    { name: 'Home', url: baseUrl, href: '/' },
+    { name: 'Browse Prompts', url: `${baseUrl}/prompts` },
+  ]
+
   return (
     <>
       {/* Structured data for SEO */}
       <JsonLd data={collectionSchema} />
 
       <div className="mx-auto max-w-7xl px-4 py-12">
+        {/* Breadcrumb navigation */}
+        <Breadcrumbs items={breadcrumbItems} />
+
         {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-100">Browse Prompts</h1>

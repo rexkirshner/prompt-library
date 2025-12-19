@@ -1,6 +1,6 @@
 ---
 name: organize-docs
-description: 'Organize project documentation into proper structure'
+description: "Organize project documentation into proper structure"
 ---
 
 # /organize-docs Command
@@ -113,7 +113,6 @@ echo ""
 ```
 
 **Analysis criteria:**
-
 1. **Read the file** - Use Read tool to examine contents
 2. **Determine type** - Based on content keywords and structure:
    - **Milestone** - Keywords: milestone, completed, done, finished, shipped
@@ -130,11 +129,11 @@ echo ""
 **Create a summary table:**
 
 ```markdown
-| File          | Type         | Status     | Suggested Location  | Reason                           |
-| ------------- | ------------ | ---------- | ------------------- | -------------------------------- |
-| NOTES.md      | planning     | historical | artifacts/planning/ | Old planning notes from Oct 2024 |
-| API_DESIGN.md | architecture | permanent  | docs/architecture/  | Current API design reference     |
-| ...           | ...          | ...        | ...                 | ...                              |
+| File | Type | Status | Suggested Location | Reason |
+|------|------|--------|---------------------|--------|
+| NOTES.md | planning | historical | artifacts/planning/ | Old planning notes from Oct 2024 |
+| API_DESIGN.md | architecture | permanent | docs/architecture/ | Current API design reference |
+| ... | ... | ... | ... | ... |
 ```
 
 **Present this table to the user before proceeding.**
@@ -194,16 +193,13 @@ I've analyzed all loose files and created this organization plan:
 ### Files to Move
 
 **To artifacts/planning/:**
-
 - NOTES.md → artifacts/planning/2024-10-old-notes.md
 - PROPOSAL.md → artifacts/planning/2024-09-initial-proposal.md
 
 **To docs/architecture/:**
-
 - API_DESIGN.md → docs/architecture/api-design.md
 
 **To artifacts/milestones/:**
-
 - MILESTONE_1.md → artifacts/milestones/2024-11-milestone-1.md
 
 ### Naming Conventions Applied
@@ -323,7 +319,6 @@ log_info ""
 ### Categorization Rules
 
 **artifacts/** (Historical - Dated files):
-
 - `artifacts/milestones/` - Completed milestones, feature completions
 - `artifacts/planning/` - Old proposals, specs, roadmaps
 - `artifacts/reviews/` - Code reviews, audits, retrospectives
@@ -331,7 +326,6 @@ log_info ""
 - `artifacts/notes/` - Meeting notes, brainstorms, general notes
 
 **docs/** (Permanent - Topic-organized):
-
 - `docs/setup/` - Installation, configuration guides
 - `docs/development/` - Development workflows, testing
 - `docs/architecture/` - System design, patterns, decisions
@@ -340,13 +334,11 @@ log_info ""
 ### Naming Conventions
 
 **Historical files (artifacts/):**
-
 - Format: `YYYY-MM-DD-description.md`
 - Example: `2024-10-15-auth-milestone-complete.md`
 - Always include date prefix
 
 **Permanent files (docs/):**
-
 - Format: `descriptive-topic-name.md`
 - Example: `database-architecture.md`
 - No dates (living documentation)
@@ -356,14 +348,12 @@ log_info ""
 **When to use artifacts/ vs docs/:**
 
 Use **artifacts/** when:
-
 - Work is completed (milestone, project phase)
 - Proposal was superseded by new approach
 - Document is historical reference
 - Rarely or never updated
 
 Use **docs/** when:
-
 - Documentation is long-term reference
 - Will be updated as system evolves
 - Describes current state
@@ -374,25 +364,21 @@ Use **docs/** when:
 ## When to Run /organize-docs
 
 **Monthly Maintenance:**
-
 - Regular cleanup prevents accumulation
 - Takes 5-10 minutes
 - Keeps organization score high
 
 **Before Major Releases:**
-
 - Ensure professional appearance
 - Clean structure for handoffs
 - Archive completed work
 
 **When Validation Flags Issues:**
-
 - Organization score < 90
 - Loose files > 5 in root
 - Documentation sprawl detected
 
 **When Project Feels Cluttered:**
-
 - Hard to find documentation
 - Unclear what's current vs old
 - New files accumulating in wrong places
@@ -402,7 +388,6 @@ Use **docs/** when:
 ## Expected Outcome
 
 **Before:**
-
 ```
 project-root/
 ├── README.md
@@ -416,7 +401,6 @@ project-root/
 ```
 
 **After:**
-
 ```
 project-root/
 ├── README.md
@@ -450,6 +434,6 @@ project-root/
 
 ---
 
-**Version:** 3.0.0
+**Version:** 3.6.0
 **Added:** Organization features for structural neatness (v2.2.1)
 **Updated:** v2.3.1 - Added feedback system

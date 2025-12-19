@@ -12,7 +12,6 @@
 **Duration:** [X]h | **Focus:** [Brief description] | **Status:** ✅ Complete / ⏳ In Progress
 
 ### TL;DR
-
 **MANDATORY - 2-3 sentences summarizing what was accomplished this session**
 
 [2-3 sentences: what was accomplished, key decisions made, current state]
@@ -28,7 +27,6 @@
 **Issue:** [What problem did this session address?]
 
 **Constraints:** [What limitations existed?]
-
 - [Constraint 1]
 - [Constraint 2]
 
@@ -44,16 +42,13 @@
 ### Files
 
 **NEW:**
-
 - `path/to/file.ts:1-150` - [Purpose and key contents]
 
 **MOD:**
-
 - `path/to/file.tsx:123-145` - [What changed and why]
 - `path/to/config.json` - [What changed]
 
 **DEL:**
-
 - `path/to/old-file.ts` - [Why removed and what replaced it]
 
 ### Mental Models
@@ -62,12 +57,10 @@
 [Explain your mental model of the system/feature you're working on]
 
 **Key insights:**
-
 - [Insight 1 that AI agents should know]
 - [Insight 2]
 
 **Gotchas discovered:**
-
 - [Gotcha 1 - thing that wasn't obvious]
 - [Gotcha 2]
 
@@ -83,7 +76,6 @@
 ### TodoWrite State
 
 **Captured from TodoWrite:**
-
 - [Completed todo 1]
 - [Completed todo 2]
 - [ ] [Incomplete todo - in WIP]
@@ -95,7 +87,6 @@
 **Questions:** [Open questions for next session]
 
 ### Git Operations
-
 **MANDATORY - Auto-logged from conversation**
 
 - **Commits:** [N] commits
@@ -120,12 +111,12 @@ Here's what your first session entry might look like after running `/init-contex
 
 ### TL;DR
 
-Initialized AI Context System v2.1 with 4 core files + 1 AI header (claude.md). System ready for minimal-overhead documentation during development with comprehensive save points before breaks.
+Initialized AI Context System with CLAUDE.md at project root + 5 core files in context/. System ready for minimal-overhead documentation during development with comprehensive save points before breaks.
 
 ### Changed
 
 - ✅ Initialized AI Context System v2.1
-- ✅ Created 4 core documentation files + 1 AI header (claude.md, CONTEXT, STATUS, DECISIONS, SESSIONS)
+- ✅ Created CLAUDE.md at project root + 5 core files in context/ (CONTEXT, STATUS, DECISIONS, SESSIONS)
 - ✅ Configured .context-config.json with version 2.1.0
 
 ### Decisions
@@ -136,8 +127,7 @@ Initialized AI Context System v2.1 with 4 core files + 1 AI header (claude.md). 
 ### Files
 
 **NEW:**
-
-- `context/claude.md` - AI header (entry point for Claude)
+- `CLAUDE.md` - AI entry point (auto-loaded by Claude Code, at project root)
 - `context/CONTEXT.md` - Project orientation (platform-neutral)
 - `context/STATUS.md` - Single source of truth with auto-generated Quick Reference section
 - `context/DECISIONS.md` - Decision log with rationale
@@ -160,46 +150,37 @@ Initialized AI Context System v2.1 with 4 core files + 1 AI header (claude.md). 
 **Duration:** [X]h | **Focus:** [Brief] | **Status:** ✅/⏳
 
 ### TL;DR
-
 [MANDATORY - 2-3 sentences summary]
 
 ### Accomplishments
-
 - ✅ [Accomplishment 1]
 - ✅ [Accomplishment 2]
 
 ### Decisions
-
 - **[Topic]:** [Decision and why] → See DECISIONS.md [ID]
 
 ### Files
-
 **NEW:** `file` (+N lines) - [Purpose]
 **MOD:** `file:lines` (+N, -M) - [What changed]
 **DEL:** `file` - [Why removed]
 
 ### Work In Progress
-
 **Task:** [What's incomplete]
 **Location:** `file:line`
 **Approach:** [How you're solving it]
 **Next:** [Exact action to resume]
 
 ### Next Session
-
 **Priority:** [Most important next]
 **Blockers:** [None / List]
 
 ### Git Operations
-
 **MANDATORY - Auto-logged**
-
 - **Commits:** [N] commits
 - **Pushed:** [YES | NO | USER WILL PUSH]
 - **Approval:** ["User quote" | "Not pushed"]
 
 ### Tests & Build
-
 - **Tests:** [Status]
 - **Build:** [Status]
 ```
@@ -210,18 +191,17 @@ Initialized AI Context System v2.1 with 4 core files + 1 AI header (claude.md). 
 
 Quick navigation to specific work.
 
-| #   | Date       | Phase | Focus   | Status |
-| --- | ---------- | ----- | ------- | ------ |
-| 1   | YYYY-MM-DD | Phase | [Brief] | ✅     |
-| 2   | YYYY-MM-DD | Phase | [Brief] | ✅     |
-| N   | YYYY-MM-DD | Phase | [Brief] | ⏳     |
+| # | Date | Phase | Focus | Status |
+|---|------|-------|-------|--------|
+| 1 | YYYY-MM-DD | Phase | [Brief] | ✅ |
+| 2 | YYYY-MM-DD | Phase | [Brief] | ✅ |
+| N | YYYY-MM-DD | Phase | [Brief] | ⏳ |
 
 ---
 
 ## Tips
 
 **For AI Agent Review & Takeover:**
-
 - **Mental models are critical** - AI needs to understand your thinking
 - **Capture constraints** - AI should know what limitations existed
 - **Explain rationale** - WHY you chose this approach
@@ -229,14 +209,12 @@ Quick navigation to specific work.
 - **Show problem-solving** - AI learns from your approach
 
 **Be structured AND comprehensive:**
-
 - Use structured format (scannable sections)
 - But include depth (mental models, rationale, constraints)
 - 40-60 lines per session is appropriate for AI understanding
 - Structured ≠ minimal. AI needs context.
 
 **Key sections for AI:**
-
 1. **Problem Solved** - What issue existed, constraints, approach
 2. **Mental Models** - Your understanding of the system
 3. **Decisions** - Link to DECISIONS.md for full rationale

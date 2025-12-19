@@ -8,7 +8,8 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
 import { JsonLd } from '@/components/JsonLd'
-import { generateFAQSchema } from '@/lib/seo/json-ld'
+import { generateFAQSchema, getBaseUrl } from '@/lib/seo/json-ld'
+import { Breadcrumbs } from '@/components/Breadcrumbs'
 
 export const metadata: Metadata = {
   title: 'Privacy Policy - Input Atlas',
@@ -40,12 +41,22 @@ export default function PrivacyPage() {
     },
   ])
 
+  // Breadcrumb navigation
+  const baseUrl = getBaseUrl()
+  const breadcrumbItems = [
+    { name: 'Home', url: baseUrl, href: '/' },
+    { name: 'Privacy Policy', url: `${baseUrl}/privacy` },
+  ]
+
   return (
     <>
       {/* FAQ Schema for SEO */}
       <JsonLd data={faqSchema} />
 
       <div className="mx-auto max-w-4xl px-4 py-12">
+        {/* Breadcrumb navigation */}
+        <Breadcrumbs items={breadcrumbItems} />
+
         <h1 className="mb-8 text-4xl font-bold text-gray-900 dark:text-gray-100">Privacy Policy</h1>
 
       <div className="prose prose-gray max-w-none">
@@ -56,7 +67,11 @@ export default function PrivacyPage() {
         <section className="mt-8">
           <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">Introduction</h2>
           <p className="mt-4 text-gray-700">
-            Input Atlas (&ldquo;we,&rdquo; &ldquo;our,&rdquo; or &ldquo;us&rdquo;) is committed to protecting your privacy. This Privacy Policy explains how we collect, use, and safeguard your information when you use our service.
+            Input Atlas (&ldquo;we,&rdquo; &ldquo;our,&rdquo; or &ldquo;us&rdquo;) is committed to protecting your privacy. This Privacy Policy explains how we collect, use, and safeguard your information when you use our service. For legal terms governing use of the service, please see our{' '}
+            <Link href="/terms" className="text-blue-600 hover:text-blue-800 underline">
+              Terms of Service
+            </Link>
+            .
           </p>
         </section>
 
@@ -75,7 +90,11 @@ export default function PrivacyPage() {
 
           <h3 className="mt-6 text-xl font-semibold text-gray-800">Prompt Submissions</h3>
           <p className="mt-2 text-gray-700">
-            When you submit a prompt, we collect:
+            When you{' '}
+            <Link href="/submit" className="text-blue-600 hover:text-blue-800 underline">
+              submit a prompt
+            </Link>
+            , we collect:
           </p>
           <ul className="mt-2 list-disc space-y-1 pl-6 text-gray-700">
             <li>Prompt content (title, text, description, examples)</li>
@@ -116,7 +135,11 @@ export default function PrivacyPage() {
             We do not sell your personal information. Your data may be shared only in these circumstances:
           </p>
           <ul className="mt-2 list-disc space-y-1 pl-6 text-gray-700">
-            <li><strong>Public Content:</strong> All approved prompts and associated author names are publicly visible</li>
+            <li><strong>Public Content:</strong> All{' '}
+              <Link href="/prompts" className="text-blue-600 hover:text-blue-800 underline">
+                approved prompts
+              </Link>
+              {' '}and associated author names are publicly visible</li>
             <li><strong>Legal Requirements:</strong> If required by law or legal process</li>
             <li><strong>Service Providers:</strong> With hosting providers (Vercel) necessary to operate the service</li>
           </ul>

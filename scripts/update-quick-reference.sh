@@ -2,26 +2,30 @@
 
 # update-quick-reference.sh
 # Auto-generates Quick Reference section in STATUS.md
-# v3.4.0 - Implements promised auto-generation feature
+# v3.6.0 - Implements promised auto-generation feature
 
 set -e
 
-# Color codes
-GREEN='\033[0;32m'
-BLUE='\033[0;34m'
-YELLOW='\033[1;33m'
-NC='\033[0m' # No Color
+# Source common functions for colors, exit codes, and utilities
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if [ -f "$SCRIPT_DIR/common-functions.sh" ]; then
+  source "$SCRIPT_DIR/common-functions.sh"
+else
+  # Fallback colors if common-functions.sh not available
+  GREEN='\033[0;32m'
+  BLUE='\033[0;34m'
+  YELLOW='\033[1;33m'
+  NC='\033[0m'
+fi
 
 # =============================================================================
 # Find context folder
 # =============================================================================
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
 # Source the find-context-folder function
 if [ -f "$SCRIPT_DIR/find-context-folder.sh" ]; then
   source "$SCRIPT_DIR/find-context-folder.sh"
-  CONTEXT_DIR=$(find_context_folder) || exit 1
+  CONTEXT_DIR=$(find_context_folder) || exit $EXIT_NOT_FOUND
 else
   # Fallback
   BASE_DIR="$(dirname "$SCRIPT_DIR")"
@@ -34,13 +38,13 @@ SESSIONS_FILE="${CONTEXT_DIR}/SESSIONS.md"
 
 # Verify files exist
 if [ ! -f "$CONFIG_FILE" ]; then
-  echo -e "${YELLOW}⚠️  Config file not found: ${CONFIG_FILE}${NC}" >&2
-  exit 1
+  log_warn "Config file not found: ${CONFIG_FILE}"
+  exit ${EXIT_NOT_FOUND:-1}
 fi
 
 if [ ! -f "$STATUS_FILE" ]; then
-  echo -e "${YELLOW}⚠️  STATUS.md not found: ${STATUS_FILE}${NC}" >&2
-  exit 1
+  log_warn "STATUS.md not found: ${STATUS_FILE}"
+  exit ${EXIT_NOT_FOUND:-1}
 fi
 
 # =============================================================================
@@ -49,9 +53,9 @@ fi
 
 # Check if jq is available
 if ! command -v jq &> /dev/null; then
-  echo -e "${YELLOW}⚠️  jq not installed - Quick Reference will not be fully auto-generated${NC}" >&2
+  log_warn "jq not installed - Quick Reference will not be fully auto-generated"
   echo "   Install jq: brew install jq (macOS) or apt-get install jq (Linux)" >&2
-  exit 1
+  exit ${EXIT_ERROR:-1}
 fi
 
 PROJECT_NAME=$(jq -r '.project.name // "[Project Name]"' "$CONFIG_FILE")
@@ -187,4 +191,4 @@ echo "  Focus: ${CURRENT_FOCUS}"
 echo "  Last Session: Session ${SESSION_NUM:-N/A}"
 echo ""
 
-exit 0
+exit ${EXIT_SUCCESS:-0}

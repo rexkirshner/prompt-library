@@ -8,7 +8,8 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
 import { JsonLd } from '@/components/JsonLd'
-import { generateFAQSchema } from '@/lib/seo/json-ld'
+import { generateFAQSchema, getBaseUrl } from '@/lib/seo/json-ld'
+import { Breadcrumbs } from '@/components/Breadcrumbs'
 
 export const metadata: Metadata = {
   title: 'Terms of Service - Input Atlas',
@@ -16,6 +17,13 @@ export const metadata: Metadata = {
 }
 
 export default function TermsPage() {
+  // Breadcrumb navigation
+  const baseUrl = getBaseUrl()
+  const breadcrumbItems = [
+    { name: 'Home', url: baseUrl, href: '/' },
+    { name: 'Terms of Service', url: `${baseUrl}/terms` },
+  ]
+
   // FAQ schema for rich snippets in search results
   const faqSchema = generateFAQSchema([
     {
@@ -46,6 +54,9 @@ export default function TermsPage() {
       <JsonLd data={faqSchema} />
 
       <div className="mx-auto max-w-4xl px-4 py-12">
+        {/* Breadcrumb navigation */}
+        <Breadcrumbs items={breadcrumbItems} />
+
         <h1 className="mb-8 text-4xl font-bold text-gray-900 dark:text-gray-100">Terms of Service</h1>
 
       <div className="prose prose-gray max-w-none">
@@ -68,9 +79,9 @@ export default function TermsPage() {
             You may use the Service to:
           </p>
           <ul className="mt-2 list-disc space-y-1 pl-6 text-gray-700">
-            <li>Browse and search for AI prompts</li>
+            <li><Link href="/prompts" className="text-blue-600 hover:text-blue-800 underline">Browse and search for AI prompts</Link></li>
             <li>Copy and use prompts for any purpose (they are public domain)</li>
-            <li>Submit original prompts for community benefit</li>
+            <li><Link href="/submit" className="text-blue-600 hover:text-blue-800 underline">Submit original prompts</Link> for community benefit</li>
             <li>Create an account to track your submissions</li>
           </ul>
 
@@ -147,7 +158,11 @@ export default function TermsPage() {
             <li>You must notify us immediately of any unauthorized access</li>
           </ul>
           <p className="mt-4 text-gray-700">
-            We may suspend or terminate accounts that violate these Terms.
+            We may suspend or terminate accounts that violate these Terms. For information about how we handle your data, see our{' '}
+            <Link href="/privacy" className="text-blue-600 hover:text-blue-800 underline">
+              Privacy Policy
+            </Link>
+            .
           </p>
         </section>
 

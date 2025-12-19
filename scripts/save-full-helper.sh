@@ -2,47 +2,47 @@
 
 # save-full-helper.sh
 # Pre-populates session data for /save-full command
-# v3.4.0 - Auto-detects context folder, fixes session numbering, improves meta-project support
+# v3.6.0 - Auto-detects context folder, fixes session numbering, improves meta-project support
 
 set -e
 
-# Color codes
-GREEN='\033[0;32m'
-BLUE='\033[0;34m'
-YELLOW='\033[1;33m'
-NC='\033[0m' # No Color
+# Source common functions for colors, exit codes, and utilities
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if [ -f "$SCRIPT_DIR/common-functions.sh" ]; then
+  source "$SCRIPT_DIR/common-functions.sh"
+else
+  echo "Error: common-functions.sh not found" >&2
+  exit 1
+fi
 
-echo -e "${BLUE}📝 Save Context Helper (v3.2.1)${NC}"
+echo -e "${BLUE}📝 Save Context Helper (v3.6.0)${NC}"
 echo ""
 
 # =============================================================================
 # Step 1: Find and verify context folder
 # =============================================================================
 
-# Find context folder (checks current dir, parent, grandparent)
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
-# Source the find-context-folder function
+# Find context folder using common function or fallback
 if [ -f "$SCRIPT_DIR/find-context-folder.sh" ]; then
   source "$SCRIPT_DIR/find-context-folder.sh"
-  CONTEXT_DIR=$(find_context_folder) || exit 1
+  CONTEXT_DIR=$(find_context_folder) || exit $EXIT_NOT_FOUND
 else
   # Fallback: Check relative to script location
   BASE_DIR="$(dirname "$SCRIPT_DIR")"
   if [ -d "${BASE_DIR}/context" ] && [ -f "${BASE_DIR}/context/.context-config.json" ]; then
     CONTEXT_DIR="${BASE_DIR}/context"
   else
-    echo -e "${YELLOW}⚠️  Context directory not found${NC}"
+    log_warn "Context directory not found"
     echo "Run /init-context first to initialize the context system"
-    exit 1
+    exit $EXIT_NOT_FOUND
   fi
 fi
 
 # Verify SESSIONS.md exists
 if [ ! -f "$CONTEXT_DIR/SESSIONS.md" ]; then
-  echo -e "${YELLOW}⚠️  SESSIONS.md not found in ${CONTEXT_DIR}${NC}"
+  log_warn "SESSIONS.md not found in ${CONTEXT_DIR}"
   echo "Run /init-context first to initialize the context system"
-  exit 1
+  exit $EXIT_NOT_FOUND
 fi
 
 echo -e "${GREEN}✅ Context folder found: ${CONTEXT_DIR}${NC}"
@@ -55,11 +55,6 @@ echo ""
 echo -e "${BLUE}🔢 Detecting session number...${NC}"
 
 # Use common function for consistent session numbering across all commands
-source "$(dirname "$0")/common-functions.sh" 2>/dev/null || {
-  echo -e "${RED}Error: Unable to load common-functions.sh${NC}"
-  exit 1
-}
-
 NEXT_SESSION=$(get_next_session_number "$CONTEXT_DIR")
 
 echo "   Next session: $NEXT_SESSION"
@@ -262,7 +257,7 @@ cat >> "$SESSION_TEMPLATE" <<EOF
 - ✅ [Completed todo 1]
 - [ ] [Incomplete todo - in WIP]
 
-[TODO: Extract actual TodoWrite state if available]
+*(Copy current TodoWrite tasks from Claude Code's todo list if any)*
 
 ### Next Session
 
@@ -335,4 +330,4 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
   fi
 fi
 
-exit 0
+exit $EXIT_SUCCESS

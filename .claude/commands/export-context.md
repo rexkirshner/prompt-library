@@ -20,7 +20,7 @@ Generate a comprehensive export package combining all context documentation in b
 
 ## What This Command Does
 
-1. Combines all context/\*.md files into one document
+1. Combines all context/*.md files into one document
 2. Exports machine-readable JSON (.sessions-data.json)
 3. Bundles both formats into export package
 4. Maintains proper structure and headings
@@ -31,10 +31,26 @@ Generate a comprehensive export package combining all context documentation in b
 
 ## Execution Steps
 
+### Step 0.5: Find Context Folder
+
+**ACTION:** Source the context folder detection script and find the context directory:
+
+```bash
+# Load context folder detection (v3.5.0+ - fixes BUG-6)
+source "$(dirname "${BASH_SOURCE[0]}")/../scripts/find-context-folder.sh" || exit 1
+CONTEXT_DIR=$(find_context_folder) || exit 1
+
+echo "✅ Found context at: $CONTEXT_DIR"
+```
+
+**Why this matters:** Allows command to work from subdirectories (backend/, src/, etc.) by searching up to 2 parent directories.
+
+---
+
 ### Step 1: Verify Context Exists
 
 ```bash
-if [ ! -d "context" ]; then
+if [ ! -d "$CONTEXT_DIR" ]; then
   echo "❌ No context/ directory found"
   echo "Run /init-context or /migrate-context first"
   exit 1
@@ -70,24 +86,24 @@ Gather all markdown files in order:
 ```bash
 # Core documentation files (in logical order)
 FILES=(
-  "context/CONTEXT.md"          # or CLAUDE.md for pre-v2.0
-  "context/STATUS.md"            # v2.0+ single source of truth
-  "context/STATUS.md (includes Quick Reference)"         # v2.0+ auto-generated dashboard
-  "context/DECISIONS.md"
-  "context/SESSIONS.md"
-  "context/PRD.md"               # optional
-  "context/ARCHITECTURE.md"      # optional
-  "context/CODE_STYLE.md"        # optional
-  "context/KNOWN_ISSUES.md"      # optional
+  "$CONTEXT_DIR/CONTEXT.md"          # or CLAUDE.md for pre-v2.0
+  "$CONTEXT_DIR/STATUS.md"            # v2.0+ single source of truth
+  "$CONTEXT_DIR/STATUS.md (includes Quick Reference)"         # v2.0+ auto-generated dashboard
+  "$CONTEXT_DIR/DECISIONS.md"
+  "$CONTEXT_DIR/SESSIONS.md"
+  "$CONTEXT_DIR/PRD.md"               # optional
+  "$CONTEXT_DIR/ARCHITECTURE.md"      # optional
+  "$CONTEXT_DIR/CODE_STYLE.md"        # optional
+  "$CONTEXT_DIR/KNOWN_ISSUES.md"      # optional
 )
 
 # Support both v1.x and v2.0 structures
-if [ -f "context/CLAUDE.md" ] && [ ! -f "context/CONTEXT.md" ]; then
-  FILES[0]="context/CLAUDE.md"
+if [ -f "$CONTEXT_DIR/CLAUDE.md" ] && [ ! -f "$CONTEXT_DIR/CONTEXT.md" ]; then
+  FILES[0]="$CONTEXT_DIR/CLAUDE.md"
 fi
 
 # Additional files if they exist
-for file in context/*.md; do
+for file in $CONTEXT_DIR/*.md; do
   if [ -f "$file" ] && ! echo "${FILES[@]}" | grep -q "$file"; then
     FILES+=("$file")
   fi
@@ -106,7 +122,6 @@ Create header with project information:
 **System Version:** [AI Context System version]
 
 **Included Sections:**
-
 - Project Orientation (CONTEXT.md)
 - Current Status (STATUS.md)
 - Quick Reference (STATUS.md (includes Quick Reference))
@@ -115,10 +130,9 @@ Create header with project information:
 - Product Requirements (PRD.md, if exists)
 - Architecture (ARCHITECTURE.md, if exists)
 - Code Style (CODE_STYLE.md, if exists)
-  [+ X additional files]
+[+ X additional files]
 
 **Statistics:**
-
 - Total Files: X
 - Total Size: XX KB
 - Session Count: XX
@@ -191,7 +205,6 @@ done
 ```
 
 **Processing rules:**
-
 - Remove duplicate H1 headings
 - Preserve all other content exactly
 - Add source file markers as HTML comments
@@ -199,7 +212,7 @@ done
 
 ### Step 6: Add Footer
 
-````markdown
+```markdown
 ---
 
 ## Export Information
@@ -212,25 +225,21 @@ done
 ### Regenerating This Export
 
 To create a fresh export:
-
 ```bash
 /export-context
 ```
-````
 
 ### Importing Into New Project
 
 To use this export to initialize a new project:
-
 1. Copy relevant sections to new project
 2. Run /init-context in new project
 3. Update with project-specific information
 
 ---
 
-_Generated with [Claude Code](https://claude.com/claude-code)_
-
-````
+*Generated with [Claude Code](https://claude.com/claude-code)*
+```
 
 ### Step 7: Write Export Files
 
@@ -253,7 +262,7 @@ echo "✅ Export complete: $EXPORT_DIR"
 echo "   Markdown: $MD_SIZE"
 echo "   JSON: $JSON_SIZE"
 echo "   Total: $TOTAL_SIZE"
-````
+```
 
 ### Step 8: Generate Report
 
@@ -264,20 +273,17 @@ echo "   Total: $TOTAL_SIZE"
 `context-export-20251004-143022/`
 
 **Files Included:**
-
 - 📄 README.md - Complete documentation export (156 KB)
 - 📊 sessions-data.json - Machine-readable session history (23 KB)
-- ⚙️ context-config.json - Project configuration
+- ⚙️  context-config.json - Project configuration
 
 **Statistics:**
-
 - Total size: 182 KB
 - Markdown sections: 9 core + 2 additional
 - JSON session count: 23
 - Last session: 2025-10-04
 
 **Markdown Export (README.md):**
-
 - ✅ CONTEXT.md (Developer Guide)
 - ✅ STATUS.md (Current Status)
 - ✅ DECISIONS.md (Decision Log)
@@ -288,7 +294,6 @@ echo "   Total: $TOTAL_SIZE"
 - ✅ [Additional .md files]
 
 **JSON Export (sessions-data.json):**
-
 - Structured session history
 - Mental models and decision rationale
 - Problem-solving approaches
@@ -296,18 +301,15 @@ echo "   Total: $TOTAL_SIZE"
 - Perfect for multi-agent workflows
 
 **Table of Contents:**
-
 - Auto-generated with 47 sections
 - All headings linked
 
 **Formats:**
-
 - 📄 Markdown: GitHub-flavored, human-readable
 - 📊 JSON: Machine-readable, schema-validated
 - Complete self-contained reference
 
 **Use Cases:**
-
 - **Team sharing:** Email or Slack the directory
 - **Backup:** Store in safe location
 - **Offline reference:** Read without context/ folder
@@ -317,7 +319,6 @@ echo "   Total: $TOTAL_SIZE"
 - **Documentation:** Include in project wiki
 
 **Next Steps:**
-
 - Review export for completeness
 - Share with stakeholders if needed
 - Store for backup/archival
@@ -327,33 +328,26 @@ echo "   Total: $TOTAL_SIZE"
 ## Export Options
 
 ### Default Export
-
 ```
 /export-context
 ```
-
 Includes everything, full table of contents
 
 ### Minimal Export (future enhancement)
-
 ```
 /export-context --minimal
 ```
-
 Only CONTEXT.md, STATUS.md, DECISIONS.md (core reference)
 
 ### Recent Only (future enhancement)
-
 ```
 /export-context --recent
 ```
-
 Excludes old session history, keeps last 10 sessions
 
 ## Important Notes
 
 ### What's Included
-
 - All .md files in context/
 - Proper formatting and structure
 - Source file markers
@@ -362,20 +356,17 @@ Excludes old session history, keeps last 10 sessions
 - Both v1.x and v2.0 file structures supported
 
 ### What's Excluded
-
 - .context-config.json (contains personal preferences)
 - artifacts/ folder (code reviews, lighthouse, etc.)
 - Hidden files
 - Binary files
 
 ### File Size
-
 - Typical export: 50-200 KB
 - Large projects (100+ sessions): Up to 1-2 MB
 - Compressed well (gzip reduces ~70%)
 
 ### Format Notes
-
 - GitHub-flavored Markdown
 - All internal links preserved
 - Code blocks maintain syntax highlighting
@@ -385,7 +376,6 @@ Excludes old session history, keeps last 10 sessions
 ## Use Cases
 
 ### Team Handoff
-
 ```
 # Before leaving project
 /save-context
@@ -396,7 +386,6 @@ Excludes old session history, keeps last 10 sessions
 ```
 
 ### Backup Before Refactor
-
 ```
 /save-context
 /export-context
@@ -405,7 +394,6 @@ Excludes old session history, keeps last 10 sessions
 ```
 
 ### Stakeholder Summary
-
 ```
 /export-context
 # Edit export to add executive summary
@@ -414,7 +402,6 @@ Excludes old session history, keeps last 10 sessions
 ```
 
 ### Offline Development
-
 ```
 /export-context
 # Copy to laptop
@@ -425,7 +412,6 @@ Excludes old session history, keeps last 10 sessions
 ## Success Criteria
 
 Export succeeds when:
-
 - Single markdown file generated
 - All context files included
 - Table of contents complete
@@ -434,7 +420,6 @@ Export succeeds when:
 - Report shows all sections
 
 **Perfect export:**
-
 - Complete documentation in one file
 - Easy to read and navigate
 - Shareable and portable

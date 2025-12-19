@@ -5,19 +5,17 @@ description: Initialize AI Context System for this project
 
 # /init-context Command
 
-Initialize a **minimal overhead** context system for this project. Creates 5 core files (CONTEXT.md, STATUS.md, DECISIONS.md, SESSIONS.md, context-feedback.md) plus 1 AI header (claude.md), with optional files (CODE_MAP.md, other AI headers) suggested when complexity demands.
+Initialize a **minimal overhead** context system for this project. Creates 5 core files (CONTEXT.md, STATUS.md, DECISIONS.md, SESSIONS.md, context-feedback.md) plus CLAUDE.md at project root (auto-loaded by Claude Code), with optional files (CODE_MAP.md, other AI headers) suggested when complexity demands.
 
 **Philosophy:** Minimal overhead during work. Good-enough recovery when needed. Single source of truth. Platform-neutral core with tool-specific entry points.
 
 **See also:**
-
 - `.claude/docs/command-philosophy.md` for core principles
 
 ## What This Command Does
 
 Creates **5 core files + 1 AI header** that serve dual purpose (developer productivity + AI agent review/takeover):
-
-1. **claude.md** - AI header (entry point for Claude, points to CONTEXT.md)
+1. **CLAUDE.md** - AI entry point (auto-loaded by Claude Code, contains critical rules and project context)
 2. **CONTEXT.md** - Orientation (rarely changes: who/what/how/why, platform-neutral)
 3. **STATUS.md** - Current state with auto-generated Quick Reference at top
 4. **DECISIONS.md** - Decision log (WHY choices made - critical for AI agents)
@@ -29,20 +27,17 @@ Optional files (CODE_MAP.md, cursor.md, aider.md, PRD.md, ARCHITECTURE.md) sugge
 ## Why These 6 Files?
 
 **The Dual Purpose:**
-
 1. **Session continuity** - Resume work seamlessly
 2. **AI agent review/takeover** - Enable AI to understand WHY, review code, take over development
 
 **Real-world feedback revealed:**
-
 - System isn't just for you - it's for AI agents reviewing and improving your work
 - AI agents need to understand WHY decisions were made, not just WHAT code exists
 - TodoWrite for productivity during work, rich docs for AI at save points
 - DECISIONS.md is critical - AI needs rationale, constraints, tradeoffs
 
 **v2.1.0 approach:**
-
-- claude.md as AI header (tool-specific entry point)
+- CLAUDE.md at project root (auto-loaded by Claude Code)
 - CONTEXT.md for orientation (platform-neutral, ~300 lines)
 - STATUS.md for current state (with auto-generated Quick Reference section)
 - **DECISIONS.md for rationale (AI agents understand WHY)**
@@ -233,20 +228,17 @@ Check if context/ folder already exists:
 Gather information about the project:
 
 **File System Analysis:**
-
 - Run `ls -la` to see root structure
 - Check for package.json, Cargo.toml, go.mod, requirements.txt, etc.
 - Identify project type (web app, CLI, library, API, etc.)
 - Find README.md if exists
 
 **Git Analysis (if git repo):**
-
 - Run `git log --oneline -10` for recent history
 - Run `git remote -v` to find repo URL
 - Check current branch with `git branch --show-current`
 
 **Technology Stack:**
-
 - Read package.json for Node.js projects
 - Read Cargo.toml for Rust projects
 - Read go.mod for Go projects
@@ -276,12 +268,33 @@ Create the **4 core files + 1 AI header** from templates:
 ```bash
 log_info "Creating core documentation files in context/ directory..."
 
-# 1. AI Header (claude.md)
-if [ ! -f "context/claude.md" ]; then
-  cp templates/claude.md.template context/claude.md
-  log_success "✅ Created context/claude.md"
+# 1. CLAUDE.md at project root (auto-loaded by Claude Code)
+# Check for old location first (v3.5.0 and earlier)
+if [ -f "context/claude.md" ] && [ ! -f "CLAUDE.md" ]; then
+  log_info "⚠️  Found old location: context/claude.md"
+  log_info "   Starting v3.6.0, CLAUDE.md should be at project root for auto-loading."
+  echo ""
+  read -p "   Move existing file to project root? [Y/n]: " -n 1 -r
+  echo ""
+  if [[ ! $REPLY =~ ^[Nn]$ ]]; then
+    mv "context/claude.md" "CLAUDE.md"
+    log_success "✅ Moved context/claude.md → ./CLAUDE.md"
+    log_info "   💡 Review ./CLAUDE.md - v3.6.0 template has new sections you may want to add"
+  else
+    log_info "   Skipped. Creating new CLAUDE.md at root..."
+    cp templates/CLAUDE.md.template CLAUDE.md
+    log_success "✅ Created CLAUDE.md (project root)"
+    log_info "   ⚠️  Old file remains at context/claude.md - review and delete if not needed"
+  fi
+elif [ ! -f "CLAUDE.md" ]; then
+  cp templates/CLAUDE.md.template CLAUDE.md
+  log_success "✅ Created CLAUDE.md (project root - auto-loaded by Claude Code)"
 else
-  log_verbose "claude.md already exists, skipping"
+  log_verbose "CLAUDE.md already exists, skipping"
+  # Warn if old location also exists
+  if [ -f "context/claude.md" ]; then
+    log_info "⚠️  Note: Old context/claude.md still exists. Consider removing it."
+  fi
 fi
 
 # 2. CONTEXT.md - Orientation (analyze project and customize from template)
@@ -331,13 +344,11 @@ fi
 
 **What each file contains:**
 
-**context/claude.md** - AI header (entry point)
-
-- 7-line file pointing to CONTEXT.md
-- **Tool-specific entry point for platform-neutral docs**
+**./CLAUDE.md** - AI entry point (auto-loaded by Claude Code)
+- Contains critical rules, project identity, working style, session management
+- **Auto-loaded at every conversation start - prime real estate for essential context**
 
 **context/CONTEXT.md** - Orientation (platform-neutral, ~300 lines)
-
 - Project overview (from README or git description)
 - **"Getting Started Path"** with 5-min and 30-min orientations
 - Tech stack (from package analysis)
@@ -348,7 +359,6 @@ fi
 - **References other files for current work** (no duplication)
 
 **context/STATUS.md** - Current state with auto-generated Quick Reference
-
 - **Quick Reference section (auto-generated, DO NOT edit manually)**
   - Project info, URLs, tech stack from .context-config.json
   - Current phase, active tasks, status indicator
@@ -361,25 +371,36 @@ fi
 - **Single source of truth for "what's happening now"**
 
 **context/DECISIONS.md** - Decision log (critical for AI agents)
-
 - Initialize with template and "Guidelines for AI Agents" section
 - Empty active decisions table ready for use
 - Example decision showing proper format
 - **Critical for AI agents to understand WHY choices were made**
 
 **context/SESSIONS.md** - History (structured, comprehensive)
-
 - First entry documenting initialization (with mandatory TL;DR)
 - Session index table
 - Template for future entries (TL;DR, accomplishments, git operations, tests)
 - **Mandatory TL;DR ensures perfect continuity**
 
 **context/context-feedback.md** - Feedback log (v2.3.1+)
-
 - Structured feedback collection for system improvements
 - Template for bugs, improvements, questions, feature requests
 - Archived on `/update-context-system` (if has content)
 - **Helps make AI Context System better for everyone**
+
+### Step 4.5: Detect System Version
+
+**ACTION:** Detect the current system version from the VERSION file for accurate config initialization:
+
+```bash
+echo "🔍 Detecting system version..."
+SYSTEM_VERSION=$(cat VERSION 2>/dev/null || echo "unknown")
+echo "   System version: $SYSTEM_VERSION"
+```
+
+**Why this matters:** Ensures the configuration file reflects the actual installed version, preventing version mismatch confusion.
+
+---
 
 ### Step 5: Create Configuration
 
@@ -389,12 +410,24 @@ fi
 # Download the latest config template from GitHub
 curl -sL https://raw.githubusercontent.com/rexkirshner/ai-context-system/main/config/.context-config.template.json -o context/.context-config.json
 
+# Update version fields to match system version (v3.5.0+)
+if [ "$SYSTEM_VERSION" != "unknown" ]; then
+  # macOS uses different sed syntax than Linux
+  if [[ "$OSTYPE" == "darwin"* ]]; then
+    sed -i '' "s/\"3.0.0\"/\"$SYSTEM_VERSION\"/g" context/.context-config.json
+  else
+    sed -i "s/\"3.0.0\"/\"$SYSTEM_VERSION\"/g" context/.context-config.json
+  fi
+  echo "✅ Configuration created with version $SYSTEM_VERSION"
+else
+  echo "⚠️  VERSION file not found - using template version"
+fi
+
 # Update placeholders (project name, owner, dates)
 # Use Read tool to get current config, then Edit tool to replace placeholders with actual values
 ```
 
 **IMPORTANT:** You MUST:
-
 1. Use Read tool to read `context/.context-config.json`
 2. Use Edit tool to replace ALL placeholders:
    - `[Your Name]` → actual owner name
@@ -572,8 +605,8 @@ After initialization, explain to the user:
 ```
 ✅ Context System Initialized (v3.0.0)
 
-Created 4 core files + 1 AI header:
-- context/claude.md - AI header (entry point for Claude)
+Created CLAUDE.md + 5 core files:
+- CLAUDE.md - AI entry point (auto-loaded by Claude Code)
 - context/CONTEXT.md - Orientation (platform-neutral, ~300 lines)
 - context/STATUS.md - Current state (with auto-generated Quick Reference)
 - context/DECISIONS.md - Decision log (WHY choices made)
@@ -696,14 +729,12 @@ When filling templates, use this priority:
 When `/save-context` runs, it should check if additional documentation is needed:
 
 **Check for ARCHITECTURE.md need:**
-
 - Project has >20 files in src/
 - Multiple directories with different purposes
 - Complex dependency relationships
 - Ask: "Your architecture is getting complex. Should I create ARCHITECTURE.md for AI agents to understand system design?"
 
 **Check for PRD.md need:**
-
 - Product vision discussed multiple times
 - Feature roadmap getting complex
 - Ask: "Product scope is expanding. Should I create PRD.md to document vision and roadmap for AI agent context?"
@@ -727,7 +758,6 @@ When `/save-context` runs, it should check if additional documentation is needed
 ## Error Handling
 
 If errors occur:
-
 - Report what failed clearly
 - Show what was successfully created
 - Provide manual recovery steps
@@ -736,8 +766,7 @@ If errors occur:
 ## Success Criteria
 
 Command succeeds when:
-
-- 5 core files + 1 AI header (claude.md, CONTEXT.md, STATUS.md, DECISIONS.md, SESSIONS.md, context-feedback.md) created with available data
+- CLAUDE.md at project root + 5 core files in context/ (CONTEXT.md, STATUS.md, DECISIONS.md, SESSIONS.md, context-feedback.md) created with available data
 - All files use v2.1 structure and format
 - STATUS.md includes auto-generated Quick Reference section
 - Configuration valid
@@ -773,7 +802,6 @@ Understood?
 ```
 
 **Why this matters:**
-
 - Standardizes git workflow expectations across all AI assistants
 - Prevents accidental pushes to remote repository
 - Encourages frequent local commits (good practice)
@@ -792,5 +820,5 @@ Understood?
 
 ---
 
-**Version:** 3.0.0
+**Version:** 3.6.0
 **Updated:** v2.3.2 - Fixed files created in root instead of context/ directory

@@ -2,17 +2,23 @@
 
 # validate-context.sh
 # Validates AI Context System documentation and configuration files
-# v3.4.0 - Multi-AI support and real-world feedback improvements
+# v3.6.0 - Multi-AI support and real-world feedback improvements
 # Exit codes: 0 = pass, 1 = warnings, 2 = errors
 
 set -e
 
-# Color codes for output
-RED='\033[0;31m'
-YELLOW='\033[1;33m'
-GREEN='\033[0;32m'
-BLUE='\033[0;34m'
-NC='\033[0m' # No Color
+# Source common functions for colors, exit codes, and utilities
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if [ -f "$SCRIPT_DIR/common-functions.sh" ]; then
+  source "$SCRIPT_DIR/common-functions.sh"
+else
+  # Fallback colors if common-functions.sh not available
+  RED='\033[0;31m'
+  YELLOW='\033[1;33m'
+  GREEN='\033[0;32m'
+  BLUE='\033[0;34m'
+  NC='\033[0m'
+fi
 
 # Counters
 ERRORS=0
@@ -20,13 +26,12 @@ WARNINGS=0
 INFO=0
 
 # Base directory (assume script is in scripts/ directory)
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BASE_DIR="$(dirname "$SCRIPT_DIR")"
 CONTEXT_DIR="${BASE_DIR}/context"
 CONFIG_DIR="${BASE_DIR}/config"
 TEMPLATES_DIR="${BASE_DIR}/templates"
 
-echo "🔍 Validating AI Context System (v3.0.0)..."
+echo "🔍 Validating AI Context System (v3.6.0)..."
 echo "Base directory: $BASE_DIR"
 echo ""
 
@@ -36,7 +41,7 @@ echo ""
 echo "📄 Checking REQUIRED core files (4 core + 1 AI header)..."
 
 REQUIRED_CORE=(
-  "context/claude.md"
+  "CLAUDE.md"
   "context/CONTEXT.md"
   "context/STATUS.md"
   "context/DECISIONS.md"
@@ -51,6 +56,25 @@ for doc in "${REQUIRED_CORE[@]}"; do
     ((ERRORS++))
   fi
 done
+
+# Check for old CLAUDE.md location (v3.5.0 and earlier)
+if [ -f "$BASE_DIR/context/claude.md" ]; then
+  echo ""
+  echo -e "  ${YELLOW}⚠️  MIGRATION NEEDED: Found old location context/claude.md${NC}"
+  echo "     CLAUDE.md should be at project root for auto-loading by Claude Code"
+  echo ""
+  echo "     To migrate:"
+  if [ ! -f "$BASE_DIR/CLAUDE.md" ]; then
+    echo "       mv context/claude.md ./CLAUDE.md"
+  else
+    echo "       # Both files exist - merge or remove old file:"
+    echo "       # 1. Review both files for unique content"
+    echo "       # 2. Merge customizations into ./CLAUDE.md"
+    echo "       # 3. rm context/claude.md"
+  fi
+  echo ""
+  ((WARNINGS++))
+fi
 echo ""
 
 # =============================================================================
@@ -220,7 +244,7 @@ echo ""
 echo "📋 Checking template files..."
 
 TEMPLATE_FILES=(
-  "templates/claude.md.template"
+  "templates/CLAUDE.md.template"
   "templates/CONTEXT.template.md"
   "templates/STATUS.template.md"
   "templates/DECISIONS.template.md"
@@ -346,20 +370,22 @@ echo ""
 # Summary
 # =============================================================================
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "📊 Validation Summary (v1.8.0)"
+echo "📊 Validation Summary (v3.6.0)"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
+# Exit codes are part of script's documented API - do not change
+# 0 = all checks passed, 1 = warnings only, 2 = errors found
 if [ $ERRORS -eq 0 ] && [ $WARNINGS -eq 0 ]; then
   echo -e "${GREEN}✅ All checks passed!${NC}"
   echo ""
-  echo "Your context system is fully aligned with v1.8.0 dual-purpose philosophy."
-  exit 0
+  echo "Your context system is fully aligned with v3.6.0."
+  exit 0  # All passed
 elif [ $ERRORS -eq 0 ]; then
   echo -e "${YELLOW}⚠️  $WARNINGS warning(s) found${NC}"
   echo ""
   echo "Warnings are non-critical but should be addressed for optimal AI agent support."
   echo "Core files are present and valid."
-  exit 1
+  exit 1  # Warnings only
 else
   echo -e "${RED}❌ $ERRORS error(s) found${NC}"
   if [ $WARNINGS -gt 0 ]; then
@@ -369,5 +395,5 @@ else
   echo "Please fix errors before proceeding."
   echo ""
   echo "Missing core files? Run /init-context to create them."
-  exit 2
+  exit 2  # Errors found
 fi

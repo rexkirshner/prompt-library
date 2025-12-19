@@ -8,7 +8,6 @@ description: View condensed session history for quick navigation
 **Purpose:** Quick navigation of session history via TL;DR summaries
 
 **Use this when:**
-
 - Starting a new session and want to quickly catch up
 - Looking for when a specific feature was implemented
 - Reviewing recent work before a handoff
@@ -66,7 +65,6 @@ done
 **ACTION:** Parse SESSIONS.md and extract session information
 
 **For each session:**
-
 1. Extract session number, date, and phase from header: `## Session N | YYYY-MM-DD | Phase`
 2. Extract TL;DR section content (2-3 sentence summary)
 3. Extract Status from session header
@@ -85,7 +83,6 @@ done
 **ACTION:** Output formatted summary to user
 
 **Format (default - TL;DR only):**
-
 ```
 📖 Session History (Last 5)
 
@@ -124,7 +121,6 @@ Next: Test all hosting providers, validate patterns
 ```
 
 **Format (--full mode):**
-
 ```
 📖 Session History (Last 5) - Full Details
 
@@ -161,7 +157,6 @@ Next: Review feedback, approve improvements, begin implementation
 ### Step 5: Handle Edge Cases
 
 **If no sessions found:**
-
 ```
 📖 Session History
 
@@ -174,7 +169,6 @@ breaks/handoffs). For quick updates, use /save.
 ```
 
 **If fewer sessions than requested:**
-
 ```
 📖 Session History (Showing all 3 sessions, requested 5)
 
@@ -186,14 +180,12 @@ breaks/handoffs). For quick updates, use /save.
 ### What This Command Shows
 
 **TL;DR mode (default):**
-
 - Session number, date, phase
 - 2-3 sentence summary (from TL;DR section)
 - Status (complete/in progress)
 - Next priority
 
 **Full mode (--full flag):**
-
 - Everything from TL;DR mode
 - Accomplishments list
 - Files changed with line counts
@@ -203,14 +195,12 @@ breaks/handoffs). For quick updates, use /save.
 ### When to Use This Command
 
 **Use /session-summary when:**
-
 - ✅ Starting a new session (quick catch-up)
 - ✅ Looking for when something was implemented
 - ✅ Need to explain recent progress
 - ✅ Reviewing before creating handoff documentation
 
 **Don't use when:**
-
 - ❌ Need full session details (read SESSIONS.md directly)
 - ❌ Need to see code changes (use git log)
 - ❌ Looking for specific decision rationale (use DECISIONS.md)
@@ -220,19 +210,16 @@ breaks/handoffs). For quick updates, use /save.
 ### Session History Best Practices
 
 **For best results:**
-
 1. Always include mandatory TL;DR in session entries (enforced by v2.1)
 2. Make TL;DR 2-3 sentences: what + why + current state
 3. Be specific in accomplishments (not "made progress")
 4. Include file locations for resume context
 
 **Good TL;DR examples:**
-
 - ✅ "Implemented newsletter signup with rate limiting (10/hour). Chose Redis for distributed rate limiting across serverless functions. All tests passing, ready for production."
 - ✅ "Fixed critical XSS vulnerability in contribution form by switching to parameterized queries. Validated fix with security tests. Deployed to staging for verification."
 
 **Bad TL;DR examples:**
-
 - ❌ "Made progress on the feature" (too vague)
 - ❌ "Fixed some bugs and added tests" (not specific)
 - ❌ "Worked on the project" (useless for context)
@@ -240,7 +227,6 @@ breaks/handoffs). For quick updates, use /save.
 ## Success Criteria
 
 Command succeeds when:
-
 - Session history displayed in clear, scannable format
 - TL;DR summaries provide quick understanding
 - User can navigate to specific sessions if needed
@@ -248,7 +234,6 @@ Command succeeds when:
 - Most recent sessions shown first (reverse chronological)
 
 **Perfect execution:**
-
 - Quick overview in <5 seconds
 - Easy to scan and find relevant sessions
 - Clear what was accomplished when

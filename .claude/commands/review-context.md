@@ -14,7 +14,6 @@ Verify that all context documentation is accurate, consistent, and complete enou
 **Primary use:** First thing at session start (always!)
 
 **Other uses:**
-
 - Before major decisions
 - When feeling disoriented
 - After someone else worked on project
@@ -87,8 +86,15 @@ If context/ exists:
 **ACTION:** Use the Bash tool to check version using shared functions:
 
 ```bash
-# Get current version (from .context-config.json or fallback to VERSION file)
-CURRENT_VERSION=$(get_system_version)
+# Get current version using shell-compatible approach (v3.5.0+ - fixes zsh parsing error)
+# Fallback chain: VERSION file → .context-config.json → "unknown"
+CURRENT_VERSION=$(cat VERSION 2>/dev/null)
+if [ -z "$CURRENT_VERSION" ]; then
+  CURRENT_VERSION=$(grep -m 1 '"version":' context/.context-config.json 2>/dev/null | sed 's/.*"version": "\([^"]*\)".*/\1/')
+fi
+if [ -z "$CURRENT_VERSION" ]; then
+  CURRENT_VERSION="unknown"
+fi
 
 # Fetch latest version from GitHub (with retry logic)
 log_verbose "Checking for system updates..."
@@ -102,8 +108,8 @@ if [ -z "$LATEST_VERSION" ]; then
     | grep -m 1 '"version":' | sed 's/.*"version": "\([^"]*\)".*/\1/' 2>/dev/null)
 fi
 
-# Compare versions
-if [ -n "$LATEST_VERSION" ] && [ "$CURRENT_VERSION" != "$LATEST_VERSION" ]; then
+# Compare versions (skip if current version is unknown)
+if [ "$CURRENT_VERSION" != "unknown" ] && [ -n "$LATEST_VERSION" ] && [ "$CURRENT_VERSION" != "$LATEST_VERSION" ]; then
   echo "UPDATE_AVAILABLE|$CURRENT_VERSION|$LATEST_VERSION"
 else
   echo "UP_TO_DATE|$CURRENT_VERSION"
@@ -128,23 +134,19 @@ Would you like to update now? [Y/n]
 ```
 
 **If user responds Y or yes:**
-
 - Report: "Running /update-context-system..."
 - **ACTION:** Execute the /update-context-system command
 - After update completes, resume from Step 2 of this command
 
 **If user responds n or no:**
-
 - Report: "⏭️ Skipping update - continuing with context review"
 - Note in final report: "System update available (v[LATEST_VERSION])"
 - Continue to Step 2
 
 **If output contains "UP_TO_DATE":**
-
 - Silently continue to Step 2 (no message needed)
 
 **If version check fails (network issue, etc.):**
-
 - Silently continue to Step 2 (don't block review on network)
 
 ### Step 1.6: Critical Protocol Reminder
@@ -219,93 +221,81 @@ Files to load:
 
 **Note any missing files** - will affect confidence score.
 
-#### SESSIONS.md Smart Loading Strategy (v3.0.0 - MANDATORY)
+#### SESSIONS.md Smart Loading (v3.5.0 - Automated)
 
-**🔴 CRITICAL:** NEVER attempt to read entire SESSIONS.md without checking size first
+**Step 1: Detect file size**
 
-**Real-world issue:** Files >25K tokens cause Read tool failures and command crashes
-
-**MANDATORY STEPS:**
-
-**Step 1: Check file size FIRST**
+First, check if SESSIONS.md exists and get its line count:
 
 ```bash
-wc -l $CONTEXT_DIR/SESSIONS.md
-# This shows line count - use this to determine loading strategy
+if [ -f "$CONTEXT_DIR/SESSIONS.md" ]; then
+  FILE_SIZE=$(wc -l < "$CONTEXT_DIR/SESSIONS.md" 2>/dev/null | tr -d ' ')
+
+  # Validate FILE_SIZE is a number
+  if ! [[ "$FILE_SIZE" =~ ^[0-9]+$ ]]; then
+    echo "⚠️  Could not determine SESSIONS.md size"
+    FILE_SIZE=0
+  fi
+
+  if [ "$FILE_SIZE" -eq 0 ]; then
+    echo "⚠️  SESSIONS.md is empty"
+  else
+    echo "📖 SESSIONS.md size: $FILE_SIZE lines"
+  fi
+else
+  echo "⚠️  SESSIONS.md not found"
+  FILE_SIZE=0
+fi
 ```
 
-**Step 2: Choose loading strategy based on size**
+**Step 2: Determine Session Index size (for medium/large files)**
 
-**If < 1000 lines: Read entire file**
+For medium and large files, we need to know where Session Index ends to load it completely.
 
-```
-Use Read tool:
-- file_path: $CONTEXT_DIR/SESSIONS.md
-- No offset/limit needed
-```
-
-**If 1000-5000 lines: Strategic reading (RECOMMENDED threshold)**
-
-```
-⚠️ File is medium-sized - using strategic loading
-
-Part 1 - Session Index:
-  Use Read tool with:
-  - file_path: $CONTEXT_DIR/SESSIONS.md
-  - offset: 0 (or omit)
-  - limit: 300
-
-Part 2 - Recent Sessions:
-  Calculate offset: <SESSIONS_LINES> - 800
-  Use Read tool with:
-  - file_path: $CONTEXT_DIR/SESSIONS.md
-  - offset: <calculated>
-  - limit: 800
-
-Result: Loaded session index + last ~2 sessions
+```bash
+# Find line number where Session Index ends (first --- separator after index)
+if [ "$FILE_SIZE" -ge 1000 ]; then
+  INDEX_END=$(grep -n "^---$" "$CONTEXT_DIR/SESSIONS.md" | head -1 | cut -d: -f1)
+  if [ -z "$INDEX_END" ]; then
+    # No separator found, assume index is first 300 lines
+    INDEX_END=300
+  fi
+  echo "📋 Session Index ends at line $INDEX_END"
+fi
 ```
 
-**If > 5000 lines: Index + current session only**
+**Step 3: Apply smart loading strategy based on file size**
 
-```
-⚠️ File is large - loading index + current session only
+**If file size < 1000 lines (small file):**
+- Use Read tool to load entire file: `Read "$CONTEXT_DIR/SESSIONS.md"`
+- Display: "📖 Loading SESSIONS.md fully ($FILE_SIZE lines)"
 
-Part 1 - Session Index:
-  Use Read tool with:
-  - file_path: $CONTEXT_DIR/SESSIONS.md
-  - offset: 0 (or omit)
-  - limit: 200
+**If file size 1000-5000 lines (medium file):**
+- Display: "📖 Loading SESSIONS.md strategically ($FILE_SIZE lines)"
+- Display: "   Reading: Session index + recent sessions"
+- Part 1: Use Read tool with `limit=$INDEX_END` to get complete session index
+- Part 2: Calculate offset: `OFFSET = FILE_SIZE - 500`
+- Part 2: Use Read tool with `offset=$OFFSET limit=500` to get recent sessions
 
-Part 2 - Current Session:
-  Calculate offset: <SESSIONS_LINES> - 400
-  Use Read tool with:
-  - file_path: $CONTEXT_DIR/SESSIONS.md
-  - offset: <calculated>
-  - limit: 400
-
-Show file statistics:
-  Total sessions: (count "^## Session" with grep)
-  Total lines: <SESSIONS_LINES>
-  Loaded: Index + latest session
-
-💡 Suggest: Run /session-summary for condensed full history
-```
-
-**Step 3: Handle Read failures gracefully**
-
-If Read tool returns error about token limits:
-
-1. Report the error clearly
-2. Fall back to smaller load (reduce limits by 50%)
-3. Suggest session archiving if file > 3000 lines
-4. NEVER crash - partial load is better than none
+**If file size > 5000 lines (large file):**
+- Display: "📖 Loading SESSIONS.md minimally ($FILE_SIZE lines - very large)"
+- Display: "   Reading: Session index + current session only"
+- Part 1: Use Read tool with `limit=$INDEX_END` to get complete session index
+- Part 2: Calculate offset: `OFFSET = FILE_SIZE - 300`
+- Part 2: Use Read tool with `offset=$OFFSET limit=300` to get current session
+- Display warning:
+  ```
+  ⚠️  SESSIONS.md is very large ($FILE_SIZE lines)
+     Consider archiving old sessions to improve performance
+  ```
 
 **Why this works:**
-
-- Session index at top shows all session titles
-- Most recent session has current WIP state
-- Avoids reading middle history (not needed for resuming)
-- Prevents timeouts on large files
+- Auto-detects file size and chooses optimal strategy
+- Small files (<1000 lines): Full read
+- Medium files (1000-5000 lines): Index + recent sessions (800 lines total)
+- Large files (>5000 lines): Index + current session only (500 lines total) + warning
+- Prevents token limit crashes on large files
+- Clear instructions, not mixed bash/tool calls
 
 ---
 
@@ -349,7 +339,6 @@ echo ""
 ```
 
 **Color coding:**
-
 - 🟢 Green: ≤7 days (current)
 - 🟡 Yellow: 8-14 days (getting stale)
 - 🔴 Red: >14 days (stale, update recommended)
@@ -406,7 +395,11 @@ if [ ! -f "$CONTEXT_DIR/DECISIONS.md" ]; then
   echo ""
 else
   # Count documented decisions
-  DECISION_COUNT=$(grep -c "^### D[0-9]" "$CONTEXT_DIR/DECISIONS.md" 2>/dev/null || echo "0")
+  DECISION_COUNT=$(grep "^### D[0-9]" "$CONTEXT_DIR/DECISIONS.md" 2>/dev/null | wc -l | tr -d ' ')
+  # Use wc -l instead of grep -c to avoid multiline output issues
+  if [ -z "$DECISION_COUNT" ]; then
+    DECISION_COUNT="0"
+  fi
 
   # Count total git commits (if in git repo)
   if git rev-parse --git-dir > /dev/null 2>&1; then
@@ -436,11 +429,82 @@ echo ""
 ```
 
 **Why this matters:**
-
 - Detects documentation drift before it becomes a problem
 - Identifies missing module READMEs (common gap)
 - Highlights underused DECISIONS.md (architectural context loss)
 - Proactive warnings = better context maintenance
+
+**Non-blocking:** This is informational only - won't prevent review from completing.
+
+---
+
+### Step 2.8: Cross-Document Consistency ✨ v3.5.0
+
+**NEW in v3.5.0:** Automated consistency verification across context files to catch drift.
+
+Check that key fields align across CONTEXT.md, STATUS.md, and SESSIONS.md:
+
+```bash
+echo ""
+echo "🔍 Cross-Document Consistency Check"
+echo ""
+
+# 1. Last Updated Dates
+echo "📅 Last Updated Dates:"
+# Extract just the YYYY-MM-DD portion for flexibility (handles dates with times, etc.)
+CONTEXT_DATE=$(grep "Last Updated:" "$CONTEXT_DIR/CONTEXT.md" 2>/dev/null | head -1 | grep -oE '[0-9]{4}-[0-9]{2}-[0-9]{2}')
+STATUS_DATE=$(grep "Last Updated:" "$CONTEXT_DIR/STATUS.md" 2>/dev/null | head -1 | grep -oE '[0-9]{4}-[0-9]{2}-[0-9]{2}')
+SESSIONS_DATE=$(grep "Last Updated:" "$CONTEXT_DIR/SESSIONS.md" 2>/dev/null | head -1 | grep -oE '[0-9]{4}-[0-9]{2}-[0-9]{2}')
+
+echo "  CONTEXT.md:  ${CONTEXT_DATE:-not found}"
+echo "  STATUS.md:   ${STATUS_DATE:-not found}"
+echo "  SESSIONS.md: ${SESSIONS_DATE:-not found}"
+echo ""
+
+# 2. Phase Consistency
+echo "🎯 Current Phase:"
+CONTEXT_PHASE=$(grep -E "^Phase:|^\*\*Phase:\*\*" "$CONTEXT_DIR/CONTEXT.md" 2>/dev/null | sed 's/.*Phase: *//' | sed 's/\*\*//g' | head -1)
+STATUS_PHASE=$(grep -E "^Phase:|^\*\*Phase:\*\*" "$CONTEXT_DIR/STATUS.md" 2>/dev/null | sed 's/.*Phase: *//' | sed 's/\*\*//g' | head -1)
+
+echo "  CONTEXT.md: ${CONTEXT_PHASE:-not found}"
+echo "  STATUS.md:  ${STATUS_PHASE:-not found}"
+
+if [ -n "$CONTEXT_PHASE" ] && [ -n "$STATUS_PHASE" ] && [ "$CONTEXT_PHASE" != "$STATUS_PHASE" ]; then
+  echo ""
+  echo "  ⚠️  Phase mismatch detected:"
+  echo "      CONTEXT.md: \"$CONTEXT_PHASE\""
+  echo "      STATUS.md:  \"$STATUS_PHASE\""
+  echo ""
+  echo "  📝 Action Required:"
+  echo "     1. Determine which phase is correct (usually STATUS.md is most current)"
+  echo "     2. Update the out-of-date file to match"
+  echo "     3. Typically: Edit CONTEXT.md to match STATUS.md"
+  echo "     4. Or if CONTEXT.md is correct: Update STATUS.md with /save command"
+  echo ""
+fi
+echo ""
+
+# 3. Session Count
+echo "📊 Session Statistics:"
+if [ -f "$CONTEXT_DIR/SESSIONS.md" ]; then
+  SESSION_COUNT=$(grep -cE "^## Session [0-9]+" "$CONTEXT_DIR/SESSIONS.md" 2>/dev/null || echo "0")
+  echo "  Total sessions documented: $SESSION_COUNT"
+else
+  echo "  SESSIONS.md not found"
+fi
+echo ""
+```
+
+**What this checks:**
+- **Date alignment**: Ensures documentation is updated together
+- **Phase consistency**: Catches phase drift between files
+- **Session tracking**: Validates session count is accurate
+
+**Why this matters:**
+- Manual cross-file comparison is error-prone
+- Catches inconsistencies early
+- Specific, actionable warnings
+- Maintains context quality automatically
 
 **Non-blocking:** This is informational only - won't prevent review from completing.
 
@@ -451,7 +515,6 @@ echo ""
 Analyze actual project state:
 
 **Git state:**
-
 ```bash
 git status
 git log --oneline -5
@@ -460,14 +523,12 @@ git diff HEAD
 ```
 
 **File system:**
-
 ```bash
 ls -la
 # Check key directories exist as documented
 ```
 
 **Project info:**
-
 - Read package.json (or equivalent)
 - Verify tech stack matches documentation
 - Check dependencies match ARCHITECTURE.md
@@ -479,95 +540,79 @@ Check each file against reality:
 #### CONTEXT.md Verification
 
 **Getting Started section:**
-
 - [ ] Verify links to STATUS.md, SESSIONS.md, DECISIONS.md work
 - [ ] Check that orientation paths (5-min, 30-min) are accurate
 
 **Tech Stack section:**
-
 - [ ] Verify listed technologies match package.json (or equivalent)
 - [ ] Check links to DECISIONS.md for rationale are correct
 
 **High-Level Architecture section:**
-
 - [ ] Verify architecture pattern matches actual implementation
 - [ ] Check system diagram reflects current structure
 - [ ] Confirm key components are accurately described
 
 **Directory Structure section:**
-
 - [ ] Check directories mentioned actually exist
 - [ ] Verify file paths are correct
 - [ ] Confirm folder structure matches description
 
 **Environment Setup section:**
-
 - [ ] Run listed commands to verify they exist (dev, test, build)
 - [ ] Check prerequisites are accurate
 - [ ] Verify environment variables section is current
 
 **Issues found:**
-
 - List specific inaccuracies
 - Note severity (critical, minor, cosmetic)
 
 #### PRD.md Verification
 
 **Current Status:**
-
 - [ ] Version number makes sense
 - [ ] Phase status matches actual progress
 - [ ] Timeline aligns with reality
 
 **Progress Log:**
-
 - [ ] Last entry date is recent
 - [ ] Logged work matches git history
 - [ ] Sessions are numbered correctly
 
 **Implementation Plan:**
-
 - [ ] Completed phases actually complete
 - [ ] Current phase reflects actual work
 - [ ] Roadmap is still relevant
 
 **Issues found:**
-
 - Note any disconnects from reality
 
 #### ARCHITECTURE.md Verification
 
 **System design:**
-
 - [ ] Described architecture matches code structure
 - [ ] Dependencies listed exist in package files
 - [ ] Patterns described are actually used
 
 **Data flow:**
-
 - [ ] Matches actual implementation
 - [ ] Integration points accurate
 
 **Issues found:**
-
 - Note architectural drift
 
 #### DECISIONS.md Verification
 
 **For each decision:**
-
 - [ ] Decision is actually implemented
 - [ ] Code follows documented choice
 - [ ] Trade-offs mentioned are accurate
 
 **Check for undocumented decisions:**
-
 - Scan recent commits for major choices
 - Look for framework/library additions
 - Identify patterns not documented
 
 **Issues found:**
-
 - Missing decisions
 - Contradicted decisions
 - Outdated decisions
@@ -575,25 +620,21 @@ Check each file against reality:
 #### KNOWN_ISSUES.md Verification
 
 **For each listed issue:**
-
 - [ ] Issue still exists (check code)
 - [ ] Severity is accurate
 - [ ] Workaround still works if listed
 
 **Check for resolved issues:**
-
 - Scan git log for fixes
 - Test known broken areas
 - Verify workarounds
 
 **Check for new issues:**
-
 - Look for TODO comments
 - Check for console errors (if applicable)
 - Review recent bug reports
 
 **Issues found:**
-
 - Stale issues (already fixed)
 - Missing new issues
 - Incorrect severities
@@ -601,20 +642,17 @@ Check each file against reality:
 #### SESSIONS.md Verification
 
 **Last session entry:**
-
 - [ ] Entry exists and is recent
 - [ ] Work described matches git log
 - [ ] Files mentioned were actually modified
 - [ ] WIP state is captured
 
 **Session continuity:**
-
 - [ ] Can identify exact resume point
 - [ ] Understand context of last work
 - [ ] Know what was in progress
 
 **Issues found:**
-
 - Missing entries
 - Incomplete WIP capture
 - Gap in session history
@@ -622,7 +660,6 @@ Check each file against reality:
 #### STATUS.md Verification (v2.1+)
 
 **Quick Reference section (auto-generated):**
-
 - [ ] Project info accurate (name, phase, status)
 - [ ] URLs current (production, staging, repository)
 - [ ] Tech stack summary matches CONTEXT.md
@@ -632,7 +669,6 @@ Check each file against reality:
 - [ ] Documentation health timestamp recent
 
 **Active Tasks section:**
-
 - [ ] Tasks are accurate and current
 - [ ] Completed items marked done
 - [ ] Work In Progress section reflects reality
@@ -640,13 +676,11 @@ Check each file against reality:
 - [ ] Next session priorities make sense
 
 **Check against actual state:**
-
 - [ ] Matches git status and recent commits
 - [ ] WIP location references exist
 - [ ] Next actions are actionable
 
 **Issues found:**
-
 - Stale tasks
 - Missing recent work
 - Incorrect WIP state
@@ -657,32 +691,27 @@ Check each file against reality:
 Verify documentation tells coherent story:
 
 **Status consistency:**
-
 - [ ] STATUS.md Quick Reference section reflects current state
 - [ ] STATUS.md matches latest SESSIONS.md entry
 - [ ] Progress matches across docs
 - [ ] Dates/versions align
 
 **Technical consistency:**
-
 - [ ] ARCHITECTURE.md reflects DECISIONS.md choices
 - [ ] CODE_STYLE.md matches actual code patterns
 - [ ] Tech stack consistent across docs
 
 **Issue tracking consistency:**
-
 - [ ] KNOWN_ISSUES.md blockers mentioned in STATUS.md
 - [ ] Resolved issues removed from both
 - [ ] New issues documented everywhere
 
 **Timeline consistency:**
-
 - [ ] Session numbers sequential in SESSIONS.md
 - [ ] Progress log entries match session log
 - [ ] Timestamps make sense
 
 **Contradictions found:**
-
 - List specific inconsistencies
 - Note impact on continuity
 - Identify which doc is correct
@@ -692,7 +721,6 @@ Verify documentation tells coherent story:
 Evaluate if context is complete enough:
 
 **Critical information present:**
-
 - [ ] Can identify current project phase
 - [ ] Know exact last work done
 - [ ] Understand WIP state
@@ -701,7 +729,6 @@ Evaluate if context is complete enough:
 - [ ] Aware of current issues
 
 **Gap analysis:**
-
 - What information is missing?
 - What would help resume work?
 - What's unclear or ambiguous?
@@ -735,7 +762,6 @@ Assess ability to resume work seamlessly:
 **Total score:** 0-100
 
 **Confidence levels:**
-
 - 90-100: **Perfect** - Resume immediately with full confidence
 - 75-89: **Good** - Resume with minor clarifications needed
 - 60-74: **Adequate** - Review gaps before resuming
@@ -796,7 +822,6 @@ Provide comprehensive report:
 If confidence score >= 60, actively load context:
 
 **Internalize key information:**
-
 - Current project phase and goals
 - Last work session details
 - WIP state and exact resume point
@@ -805,7 +830,6 @@ If confidence score >= 60, actively load context:
 - Immediate next actions
 
 **Prepare for work:**
-
 - Understand user preferences from CONTEXT.md
 - Check STATUS.md for current priorities
 - Review CODE_STYLE.md standards (if exists)
@@ -813,7 +837,6 @@ If confidence score >= 60, actively load context:
 - Set mental context for continuation
 
 **If score < 60:**
-
 - Don't load potentially incorrect context
 - Wait for /save-context to update first
 
@@ -822,14 +845,12 @@ If confidence score >= 60, actively load context:
 ### Trust But Verify
 
 **Trust the docs when:**
-
 - Recent (last updated <48 hours)
 - Consistent across files
 - Match git history
 - WIP clearly stated
 
 **Verify against code when:**
-
 - Last updated >3 days ago
 - Contradictions found
 - Major changes in git log
@@ -883,7 +904,6 @@ Understood?
 ```
 
 **Why this matters:**
-
 - Standardizes git workflow expectations across all AI assistants
 - Prevents accidental pushes to remote repository
 - Encourages frequent local commits (good practice)
@@ -893,5 +913,5 @@ Understood?
 
 ---
 
-**Version:** 3.0.4
+**Version:** 3.6.0
 **Updated:** v3.0.4 - Added git workflow reminder for session start

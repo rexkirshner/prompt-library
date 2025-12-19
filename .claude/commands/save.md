@@ -12,7 +12,6 @@ description: Quick session save - updates current state only (2-3 minutes)
 ## When to Use This Command
 
 **Every session (default):**
-
 - End of work session
 - Switching tasks
 - Quick check-in points
@@ -27,7 +26,6 @@ description: Quick session save - updates current state only (2-3 minutes)
 4. Reports what changed
 
 **Does NOT:**
-
 - Create SESSIONS.md entry (use /save-full for that)
 - Update DECISIONS.md (add manually when needed)
 - Export JSON (use /export-context when needed)
@@ -53,13 +51,11 @@ echo "✅ Found context at: $CONTEXT_DIR"
 **ACTION:** Use Bash tool to extract git information with simple sequential commands:
 
 **Check if git repository:**
-
 ```bash
 git rev-parse --git-dir > /dev/null 2>&1 && echo "Git repository detected" || echo "Not a git repository"
 ```
 
 **If git repository detected, get branch and status:**
-
 ```bash
 git branch --show-current
 ```
@@ -79,7 +75,6 @@ git log --oneline -5
 **ACTION:** Use Read tool to read current STATUS.md, then use Edit tool to update:
 
 **Prompt user for quick updates:**
-
 ```
 Current tasks? (comma-separated, or press enter to keep existing):
 >
@@ -92,7 +87,6 @@ Next steps? (or press enter to keep existing):
 ```
 
 **Update Work In Progress section:**
-
 ```markdown
 ## Work In Progress
 
@@ -105,7 +99,6 @@ Next steps? (or press enter to keep existing):
 ```
 
 **Update Active Tasks section:**
-
 ```markdown
 ## Active Tasks
 
@@ -133,7 +126,6 @@ echo ""
 ```
 
 **What this does:**
-
 - Extracts project info from .context-config.json
 - Extracts current phase and focus from STATUS.md
 - Finds last session from SESSIONS.md
@@ -141,7 +133,6 @@ echo ""
 - Generates Quick Reference section automatically
 
 **Auto-populates:**
-
 1. Project name, URLs, tech stack (from config)
 2. Current phase and status (from STATUS.md)
 3. Active tasks / current focus (from STATUS.md)
@@ -151,7 +142,6 @@ echo ""
 **No manual editing required!** The script handles all 15+ fields automatically.
 
 **Note:** Requires `jq` to be installed:
-
 ```bash
 # macOS: brew install jq
 # Linux: apt-get install jq
@@ -188,14 +178,12 @@ Run /save again for quick update, or /save-full before breaks/handoffs.
 ### This is the Default Command
 
 For **continuous work** (most sessions):
-
 - Use `/save`
 - 2-3 minutes
 - Updates current state
 - No comprehensive session history
 
 For **breaks/handoffs** (occasional):
-
 - Use `/save-full`
 - 10-15 minutes
 - Creates SESSIONS.md entry
@@ -204,11 +192,9 @@ For **breaks/handoffs** (occasional):
 ### What Gets Updated
 
 **Every /save:**
-
 - ✅ STATUS.md (current tasks, blockers, next steps, Quick Reference section auto-generated)
 
 **Not updated:**
-
 - ❌ SESSIONS.md (use /save-full)
 - ❌ DECISIONS.md (update manually when important decision made)
 
@@ -219,7 +205,6 @@ For **breaks/handoffs** (occasional):
 **Target:** 2-3 minutes per session
 
 **20 sessions:**
-
 - 17× /save: 34-51 minutes
 - 3× /save-full: 30-45 minutes
 - **Total: 64-96 minutes** (vs. 100-200 min in v1.8.0)
@@ -227,7 +212,6 @@ For **breaks/handoffs** (occasional):
 ### When to Use /save-full
 
 Use `/save-full` (comprehensive) when:
-
 - Taking break >1 week
 - Handing off to another agent
 - Major milestone completed
@@ -249,7 +233,6 @@ Session 20:    /save-full (project handoff)
 ```
 
 **Time Investment:**
-
 - 17× /save: ~40-50 min
 - 3× /save-full: ~30-45 min
 - **Total: ~70-95 min** (instead of 100-200 min)
@@ -259,7 +242,6 @@ Session 20:    /save-full (project handoff)
 ## Success Criteria
 
 Save succeeds when:
-
 - STATUS.md updated with current state
 - Quick Reference section in STATUS.md regenerated
 - Completed in 2-3 minutes
@@ -267,7 +249,6 @@ Save succeeds when:
 - Can resume easily next session
 
 **Perfect save:**
-
 - Quick and painless (no overhead feeling)
 - Current state captured
 - Ready to resume work

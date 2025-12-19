@@ -9,6 +9,8 @@ import { Metadata } from 'next'
 import { getCurrentUser } from '@/lib/auth'
 import { getAvailablePromptsForCompound } from '@/lib/db/cached-queries'
 import { SubmitPromptFormWrapper } from './SubmitPromptFormWrapper'
+import { Breadcrumbs } from '@/components/Breadcrumbs'
+import { getBaseUrl } from '@/lib/utils/url'
 
 export const metadata: Metadata = {
   title: 'Submit a Prompt - Input Atlas',
@@ -24,8 +26,18 @@ export default async function SubmitPage() {
   // Fetch approved prompts for compound prompt creation (cached, deduped)
   const availablePrompts = await getAvailablePromptsForCompound()
 
+  // Breadcrumb navigation
+  const baseUrl = getBaseUrl()
+  const breadcrumbItems = [
+    { name: 'Home', url: baseUrl, href: '/' },
+    { name: 'Submit Prompt', url: `${baseUrl}/submit` },
+  ]
+
   return (
     <div className="mx-auto max-w-4xl px-4 py-12">
+      {/* Breadcrumb navigation */}
+      <Breadcrumbs items={breadcrumbItems} />
+
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-100">

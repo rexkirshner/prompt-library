@@ -1,6 +1,6 @@
 #!/bin/bash
 # Common functions used across AI Context System commands
-# Version: 3.4.0
+# Version: 3.6.0
 #
 # This file extracts duplicate code from multiple commands into shared utilities.
 # Source this file at the beginning of any command that needs these functions.
@@ -555,6 +555,167 @@ rollback_from_backup() {
 
   log_success "Rolled back to: $backup_dir"
   return 0
+}
+
+# =============================================================================
+# Preflight Checks
+# =============================================================================
+
+# Run preflight checks before command execution
+# Validates environment is ready for AI Context System operations
+#
+# Args:
+#   $1 - Check level: "minimal" | "standard" | "full" (default: standard)
+#
+# Returns:
+#   0 if all checks pass, 1 if any fail
+#
+# Usage:
+#   preflight_check "minimal"   # Just check context dir exists
+#   preflight_check "standard"  # Context dir + required files
+#   preflight_check "full"      # All checks including dependencies
+preflight_check() {
+  local level="${1:-standard}"
+  local failed=0
+
+  log_debug "Running preflight check (level: $level)"
+
+  # Minimal: Check we're in a project with context
+  if ! find_context_dir >/dev/null 2>&1; then
+    show_error $EXIT_NOT_FOUND "Context directory not found" \
+      "Run from project root directory" \
+      "Initialize context with /init-context if this is a new project" \
+      "Check that context/ folder exists"
+    return 1
+  fi
+
+  if [ "$level" = "minimal" ]; then
+    return 0
+  fi
+
+  # Standard: Check required files exist
+  local context_dir=$(find_context_dir)
+  local required_files=(
+    "$context_dir/CONTEXT.md"
+    "$context_dir/STATUS.md"
+  )
+
+  for file in "${required_files[@]}"; do
+    if [ ! -f "$file" ]; then
+      log_warn "Missing required file: $file"
+      failed=$((failed + 1))
+    fi
+  done
+
+  if [ $failed -gt 0 ]; then
+    show_error $EXIT_VALIDATION "Context system incomplete ($failed missing files)" \
+      "Run /init-context to create missing files" \
+      "Or run /validate-context for detailed analysis"
+    return 1
+  fi
+
+  if [ "$level" = "standard" ]; then
+    return 0
+  fi
+
+  # Full: Check dependencies
+  if ! check_dependencies "curl" "git"; then
+    return 1
+  fi
+
+  # Full: Check CLAUDE.md at root
+  if [ ! -f "CLAUDE.md" ] && [ ! -f ".claude/CLAUDE.md" ]; then
+    log_warn "CLAUDE.md not found at project root"
+    log_info "  Run /init-context or move context/claude.md to ./CLAUDE.md"
+  fi
+
+  return 0
+}
+
+# =============================================================================
+# Dependency Checks
+# =============================================================================
+
+# Check if required dependencies are available
+# Provides helpful installation instructions if missing
+#
+# Args:
+#   $@ - List of commands to check (e.g., "curl" "git" "jq")
+#
+# Returns:
+#   0 if all dependencies present, 1 if any missing
+#
+# Usage:
+#   check_dependencies "curl" "git"
+#   check_dependencies "jq"  # Optional, warns but doesn't fail
+check_dependencies() {
+  local missing=()
+  local optional=("jq")  # These warn but don't fail
+
+  for cmd in "$@"; do
+    if ! command -v "$cmd" >/dev/null 2>&1; then
+      missing+=("$cmd")
+    fi
+  done
+
+  if [ ${#missing[@]} -eq 0 ]; then
+    return 0
+  fi
+
+  # Check if all missing are optional
+  local critical=0
+  for cmd in "${missing[@]}"; do
+    local is_optional=0
+    for opt in "${optional[@]}"; do
+      if [ "$cmd" = "$opt" ]; then
+        is_optional=1
+        break
+      fi
+    done
+
+    if [ $is_optional -eq 1 ]; then
+      log_warn "Optional dependency missing: $cmd"
+      show_install_hint "$cmd"
+    else
+      log_error "Required dependency missing: $cmd"
+      show_install_hint "$cmd"
+      critical=$((critical + 1))
+    fi
+  done
+
+  if [ $critical -gt 0 ]; then
+    return 1
+  fi
+
+  return 0
+}
+
+# Show installation hints for common dependencies
+show_install_hint() {
+  local cmd="$1"
+
+  case "$cmd" in
+    jq)
+      echo "  Install jq for JSON validation:" >&2
+      echo "    macOS:  brew install jq" >&2
+      echo "    Ubuntu: sudo apt-get install jq" >&2
+      echo "    Fedora: sudo dnf install jq" >&2
+      ;;
+    curl)
+      echo "  Install curl for network operations:" >&2
+      echo "    macOS:  brew install curl" >&2
+      echo "    Ubuntu: sudo apt-get install curl" >&2
+      ;;
+    git)
+      echo "  Install git for version control:" >&2
+      echo "    macOS:  brew install git" >&2
+      echo "    Ubuntu: sudo apt-get install git" >&2
+      ;;
+    *)
+      echo "  Install $cmd using your package manager" >&2
+      ;;
+  esac
+  echo "" >&2
 }
 
 # =============================================================================
