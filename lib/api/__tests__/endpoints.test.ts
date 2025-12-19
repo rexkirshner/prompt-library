@@ -137,7 +137,7 @@ describe('Prompts List Endpoint', () => {
     expect(data.meta).toHaveProperty('totalPages')
   })
 
-  it('each prompt has all public fields', async () => {
+  it('each prompt has all public fields (unauthenticated)', async () => {
     const request = createMockRequest('/api/v1/prompts?limit=1')
     const response = await getPrompts(request)
     const data = await parseResponse(response)
@@ -150,8 +150,10 @@ describe('Prompts List Endpoint', () => {
     expect(prompt).toHaveProperty('prompt_text')
     expect(prompt).toHaveProperty('resolved_text')
     expect(prompt).toHaveProperty('category')
-    expect(prompt).toHaveProperty('author_name')
-    expect(prompt).toHaveProperty('author_url')
+    // author_name and author_url are only included for authenticated users
+    expect(prompt).not.toHaveProperty('author_name')
+    expect(prompt).not.toHaveProperty('author_url')
+    expect(prompt).not.toHaveProperty('ai_generated')
     expect(prompt).toHaveProperty('tags')
     expect(prompt).toHaveProperty('is_compound')
     expect(prompt).toHaveProperty('featured')
@@ -311,7 +313,7 @@ describe('Single Prompt Endpoint', () => {
     expect(data.data.id).toBe(testPrompt.id)
   })
 
-  it('returns all public fields', async () => {
+  it('returns all public fields (unauthenticated)', async () => {
     if (!testPrompt) {
       console.warn('Skipping test: no prompts in database')
       return
@@ -333,8 +335,10 @@ describe('Single Prompt Endpoint', () => {
     expect(prompt).toHaveProperty('prompt_text')
     expect(prompt).toHaveProperty('resolved_text')
     expect(prompt).toHaveProperty('category')
-    expect(prompt).toHaveProperty('author_name')
-    expect(prompt).toHaveProperty('author_url')
+    // author_name and author_url are only included for authenticated users
+    expect(prompt).not.toHaveProperty('author_name')
+    expect(prompt).not.toHaveProperty('author_url')
+    expect(prompt).not.toHaveProperty('ai_generated')
     expect(prompt).toHaveProperty('tags')
     expect(prompt).toHaveProperty('is_compound')
     expect(prompt).toHaveProperty('featured')
