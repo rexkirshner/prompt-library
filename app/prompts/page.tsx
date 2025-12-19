@@ -264,11 +264,11 @@ export default async function PromptsPage({ searchParams }: PromptsPageProps) {
       {/* Prompts list with view toggle */}
       {promptsWithResolvedText.length === 0 ? (
         <div className="rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-700 p-12 text-center">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
             {filters.query || filters.category || filters.tags.length > 0
               ? 'No prompts found'
               : 'No prompts yet'}
-          </h3>
+          </h2>
           <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
             {filters.query || filters.category || filters.tags.length > 0
               ? 'Try adjusting your search or filters'
