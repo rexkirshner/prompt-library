@@ -24,7 +24,12 @@ export default function SubmissionSuccessPage() {
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
+            width="40"
+            height="40"
+            role="img"
+            aria-label="Success checkmark"
           >
+            <title>Success</title>
             <path
               strokeLinecap="round"
               strokeLinejoin="round"

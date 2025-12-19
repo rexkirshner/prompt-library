@@ -260,7 +260,12 @@ export default async function PromptPage({ params }: PromptPageProps) {
               viewBox="0 0 24 24"
               strokeWidth="1.5"
               stroke="currentColor"
+              width="16"
+              height="16"
+              role="img"
+              aria-label="Edit icon"
             >
+              <title>Edit</title>
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -281,7 +286,16 @@ export default async function PromptPage({ params }: PromptPageProps) {
           </span>
           {currentUser && prompt.ai_generated && (
             <span className="inline-flex items-center gap-1 rounded-md bg-purple-100 px-2 py-1 text-sm font-medium text-purple-700 dark:bg-purple-900 dark:text-purple-300">
-              <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="currentColor">
+              <svg
+                className="h-3.5 w-3.5"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                width="14"
+                height="14"
+                role="img"
+                aria-label="AI sparkle icon"
+              >
+                <title>AI Generated</title>
                 <path d="M12 2L9.19 8.63L2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2z" />
               </svg>
               AI Generated
