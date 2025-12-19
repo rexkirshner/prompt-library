@@ -151,7 +151,7 @@ export async function findRelatedPrompts(
   const sourceTagIds = sourcePrompt.prompt_tags.map((pt) => pt.tag_id)
 
   // 2. Build where clause based on options
-  const whereConditions: Prisma.PromptsWhereInput[] = []
+  const whereConditions: Prisma.promptsWhereInput[] = []
 
   // Always exclude the source prompt
   whereConditions.push({ NOT: { id: promptId } })
@@ -163,7 +163,7 @@ export async function findRelatedPrompts(
   whereConditions.push({ deleted_at: null })
 
   // 3. Build category/tag filter
-  const categoryTagFilter: Prisma.PromptsWhereInput[] = []
+  const categoryTagFilter: Prisma.promptsWhereInput[] = []
 
   // Include same category prompts
   if (opts.includeDifferentCategories || sourceTagIds.length === 0) {
