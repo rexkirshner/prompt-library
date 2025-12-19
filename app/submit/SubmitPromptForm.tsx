@@ -51,8 +51,8 @@ export function SubmitPromptForm({ defaultAuthorName = '' }: SubmitPromptFormPro
     <form action={formAction} className="space-y-6">
       {/* Form-level error */}
       {state?.errors?.form && (
-        <div className="rounded-md bg-red-50 p-4">
-          <p className="text-sm text-red-800">{state.errors.form}</p>
+        <div className="rounded-md bg-red-50 dark:bg-red-900/20 p-4">
+          <p className="text-sm text-red-800 dark:text-red-200">{state.errors.form}</p>
         </div>
       )}
 
@@ -60,9 +60,9 @@ export function SubmitPromptForm({ defaultAuthorName = '' }: SubmitPromptFormPro
       <div>
         <label
           htmlFor="title"
-          className="block text-sm font-medium leading-6 text-gray-900"
+          className="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-100"
         >
-          Title <span className="text-red-600">*</span>
+          Title <span className="text-red-600 dark:text-red-400">*</span>
         </label>
         <div className="mt-2">
           <input
@@ -72,16 +72,16 @@ export function SubmitPromptForm({ defaultAuthorName = '' }: SubmitPromptFormPro
             required
             maxLength={100}
             placeholder="e.g., Code Review Assistant"
-            className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
+            className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 dark:text-gray-100 dark:bg-gray-800 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
             aria-invalid={state?.errors?.title ? 'true' : 'false'}
             aria-describedby={state?.errors?.title ? 'title-error' : 'title-help'}
           />
         </div>
-        <p id="title-help" className="mt-2 text-sm text-gray-500">
+        <p id="title-help" className="mt-2 text-sm text-gray-500 dark:text-gray-400">
           10-100 characters. Be concise and descriptive.
         </p>
         {state?.errors?.title && (
-          <p id="title-error" className="mt-2 text-sm text-red-600">
+          <p id="title-error" className="mt-2 text-sm text-red-600 dark:text-red-400">
             {state.errors.title}
           </p>
         )}
@@ -92,14 +92,14 @@ export function SubmitPromptForm({ defaultAuthorName = '' }: SubmitPromptFormPro
         <div className="flex items-center justify-between">
           <label
             htmlFor="promptText"
-            className="block text-sm font-medium leading-6 text-gray-900"
+            className="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-100"
           >
-            Prompt Text <span className="text-red-600">*</span>
+            Prompt Text <span className="text-red-600 dark:text-red-400">*</span>
           </label>
           <button
             type="button"
             onClick={() => setShowPreview(!showPreview)}
-            className="text-sm text-blue-600 hover:text-blue-800"
+            className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
           >
             {showPreview ? 'Hide Preview' : 'Show Preview'}
           </button>
@@ -115,25 +115,25 @@ export function SubmitPromptForm({ defaultAuthorName = '' }: SubmitPromptFormPro
               value={promptText}
               onChange={(e) => setPromptText(e.target.value)}
               placeholder="Enter your prompt here..."
-              className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6 font-mono"
+              className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 dark:text-gray-100 dark:bg-gray-800 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6 font-mono"
               aria-invalid={state?.errors?.promptText ? 'true' : 'false'}
               aria-describedby={
                 state?.errors?.promptText ? 'prompt-error' : 'prompt-help'
               }
             />
           ) : (
-            <div className="rounded-md border border-gray-300 bg-gray-50 px-3 py-2 min-h-[240px] whitespace-pre-wrap font-mono text-sm">
+            <div className="rounded-md border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-3 py-2 min-h-[240px] whitespace-pre-wrap font-mono text-sm text-gray-900 dark:text-gray-100">
               {promptText || (
-                <span className="text-gray-400">Preview will appear here...</span>
+                <span className="text-gray-400 dark:text-gray-500">Preview will appear here...</span>
               )}
             </div>
           )}
         </div>
-        <p id="prompt-help" className="mt-2 text-sm text-gray-500">
+        <p id="prompt-help" className="mt-2 text-sm text-gray-500 dark:text-gray-400">
           {promptText.length}/5000 characters. Minimum 150 characters required.
         </p>
         {state?.errors?.promptText && (
-          <p id="prompt-error" className="mt-2 text-sm text-red-600">
+          <p id="prompt-error" className="mt-2 text-sm text-red-600 dark:text-red-400">
             {state.errors.promptText}
           </p>
         )}
@@ -143,16 +143,16 @@ export function SubmitPromptForm({ defaultAuthorName = '' }: SubmitPromptFormPro
       <div>
         <label
           htmlFor="category"
-          className="block text-sm font-medium leading-6 text-gray-900"
+          className="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-100"
         >
-          Category <span className="text-red-600">*</span>
+          Category <span className="text-red-600 dark:text-red-400">*</span>
         </label>
         <div className="mt-2">
           <select
             id="category"
             name="category"
             required
-            className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
+            className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 dark:text-gray-100 dark:bg-gray-800 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
             aria-invalid={state?.errors?.category ? 'true' : 'false'}
             aria-describedby={state?.errors?.category ? 'category-error' : undefined}
           >
@@ -165,7 +165,7 @@ export function SubmitPromptForm({ defaultAuthorName = '' }: SubmitPromptFormPro
           </select>
         </div>
         {state?.errors?.category && (
-          <p id="category-error" className="mt-2 text-sm text-red-600">
+          <p id="category-error" className="mt-2 text-sm text-red-600 dark:text-red-400">
             {state.errors.category}
           </p>
         )}
@@ -184,9 +184,9 @@ export function SubmitPromptForm({ defaultAuthorName = '' }: SubmitPromptFormPro
       <div>
         <label
           htmlFor="description"
-          className="block text-sm font-medium leading-6 text-gray-900"
+          className="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-100"
         >
-          Description <span className="text-gray-500">(optional)</span>
+          Description <span className="text-gray-500 dark:text-gray-400">(optional)</span>
         </label>
         <div className="mt-2">
           <textarea
@@ -195,18 +195,18 @@ export function SubmitPromptForm({ defaultAuthorName = '' }: SubmitPromptFormPro
             rows={3}
             maxLength={500}
             placeholder="Brief explanation of when and how to use this prompt..."
-            className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
+            className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 dark:text-gray-100 dark:bg-gray-800 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
             aria-invalid={state?.errors?.description ? 'true' : 'false'}
             aria-describedby={
               state?.errors?.description ? 'description-error' : 'description-help'
             }
           />
         </div>
-        <p id="description-help" className="mt-2 text-sm text-gray-500">
+        <p id="description-help" className="mt-2 text-sm text-gray-500 dark:text-gray-400">
           Up to 500 characters.
         </p>
         {state?.errors?.description && (
-          <p id="description-error" className="mt-2 text-sm text-red-600">
+          <p id="description-error" className="mt-2 text-sm text-red-600 dark:text-red-400">
             {state.errors.description}
           </p>
         )}
@@ -216,9 +216,9 @@ export function SubmitPromptForm({ defaultAuthorName = '' }: SubmitPromptFormPro
       <div>
         <label
           htmlFor="exampleOutput"
-          className="block text-sm font-medium leading-6 text-gray-900"
+          className="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-100"
         >
-          Example Output <span className="text-gray-500">(optional)</span>
+          Example Output <span className="text-gray-500 dark:text-gray-400">(optional)</span>
         </label>
         <div className="mt-2">
           <textarea
@@ -227,18 +227,18 @@ export function SubmitPromptForm({ defaultAuthorName = '' }: SubmitPromptFormPro
             rows={4}
             maxLength={1000}
             placeholder="Sample of what this prompt produces..."
-            className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6 font-mono text-sm"
+            className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 dark:text-gray-100 dark:bg-gray-800 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6 font-mono text-sm"
             aria-invalid={state?.errors?.exampleOutput ? 'true' : 'false'}
             aria-describedby={
               state?.errors?.exampleOutput ? 'example-error' : 'example-help'
             }
           />
         </div>
-        <p id="example-help" className="mt-2 text-sm text-gray-500">
+        <p id="example-help" className="mt-2 text-sm text-gray-500 dark:text-gray-400">
           Up to 1000 characters.
         </p>
         {state?.errors?.exampleOutput && (
-          <p id="example-error" className="mt-2 text-sm text-red-600">
+          <p id="example-error" className="mt-2 text-sm text-red-600 dark:text-red-400">
             {state.errors.exampleOutput}
           </p>
         )}
@@ -248,9 +248,9 @@ export function SubmitPromptForm({ defaultAuthorName = '' }: SubmitPromptFormPro
       <div>
         <label
           htmlFor="authorName"
-          className="block text-sm font-medium leading-6 text-gray-900"
+          className="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-100"
         >
-          Author Name <span className="text-red-600">*</span>
+          Author Name <span className="text-red-600 dark:text-red-400">*</span>
         </label>
         <div className="mt-2">
           <input
@@ -261,18 +261,18 @@ export function SubmitPromptForm({ defaultAuthorName = '' }: SubmitPromptFormPro
             maxLength={100}
             defaultValue={defaultAuthorName}
             placeholder="Your name or pseudonym"
-            className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
+            className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 dark:text-gray-100 dark:bg-gray-800 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
             aria-invalid={state?.errors?.authorName ? 'true' : 'false'}
             aria-describedby={
               state?.errors?.authorName ? 'author-error' : 'author-help'
             }
           />
         </div>
-        <p id="author-help" className="mt-2 text-sm text-gray-500">
+        <p id="author-help" className="mt-2 text-sm text-gray-500 dark:text-gray-400">
           Attribution will be displayed on the prompt page.
         </p>
         {state?.errors?.authorName && (
-          <p id="author-error" className="mt-2 text-sm text-red-600">
+          <p id="author-error" className="mt-2 text-sm text-red-600 dark:text-red-400">
             {state.errors.authorName}
           </p>
         )}
@@ -282,9 +282,9 @@ export function SubmitPromptForm({ defaultAuthorName = '' }: SubmitPromptFormPro
       <div>
         <label
           htmlFor="authorUrl"
-          className="block text-sm font-medium leading-6 text-gray-900"
+          className="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-100"
         >
-          Author Website <span className="text-gray-500">(optional)</span>
+          Author Website <span className="text-gray-500 dark:text-gray-400">(optional)</span>
         </label>
         <div className="mt-2">
           <input
@@ -292,18 +292,18 @@ export function SubmitPromptForm({ defaultAuthorName = '' }: SubmitPromptFormPro
             name="authorUrl"
             type="url"
             placeholder="https://example.com"
-            className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
+            className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 dark:text-gray-100 dark:bg-gray-800 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
             aria-invalid={state?.errors?.authorUrl ? 'true' : 'false'}
             aria-describedby={
               state?.errors?.authorUrl ? 'author-url-error' : 'author-url-help'
             }
           />
         </div>
-        <p id="author-url-help" className="mt-2 text-sm text-gray-500">
+        <p id="author-url-help" className="mt-2 text-sm text-gray-500 dark:text-gray-400">
           Link to your website or portfolio.
         </p>
         {state?.errors?.authorUrl && (
-          <p id="author-url-error" className="mt-2 text-sm text-red-600">
+          <p id="author-url-error" className="mt-2 text-sm text-red-600 dark:text-red-400">
             {state.errors.authorUrl}
           </p>
         )}
