@@ -7,6 +7,8 @@
 
 import { Metadata } from 'next'
 import Link from 'next/link'
+import { JsonLd } from '@/components/JsonLd'
+import { generateFAQSchema } from '@/lib/seo/json-ld'
 
 export const metadata: Metadata = {
   title: 'Privacy Policy - Input Atlas',
@@ -14,9 +16,37 @@ export const metadata: Metadata = {
 }
 
 export default function PrivacyPage() {
+  // FAQ schema for rich snippets in search results
+  const faqSchema = generateFAQSchema([
+    {
+      question: 'What personal information do you collect?',
+      answer: 'We collect your email address, optional name, and encrypted password when you create an account. When you submit a prompt, we collect the prompt content, author name, optional website URL, and selected category and tags. We also automatically collect view counts and copy counts for usage statistics.',
+    },
+    {
+      question: 'Do you sell my personal data?',
+      answer: 'No, we do not sell your personal information. Your data may only be shared in specific circumstances: approved prompts and author names are publicly visible, data may be shared if required by law or legal process, and with hosting providers (Vercel) necessary to operate the service.',
+    },
+    {
+      question: 'How do you protect my password?',
+      answer: 'Passwords are encrypted using bcrypt with 12 rounds. We also use HTTPS/TLS encryption for all data transmission, secure session management, and regular security updates.',
+    },
+    {
+      question: 'What are my rights under GDPR?',
+      answer: 'If you are in the European Economic Area (EEA), you have the right to access (request a copy of your data), rectification (correct inaccurate data), erasure (delete your account and data), data portability (request your data in portable format), and objection (object to processing of your data). Note that approved prompts are public domain under CC0 and cannot be retroactively removed from public access after approval.',
+    },
+    {
+      question: 'Do you use cookies or tracking?',
+      answer: 'We use minimal cookies. We require a session cookie for authentication (HTTP-only, secure), but we do not use third-party analytics or advertising cookies for tracking.',
+    },
+  ])
+
   return (
-    <div className="mx-auto max-w-4xl px-4 py-12">
-      <h1 className="mb-8 text-4xl font-bold text-gray-900 dark:text-gray-100">Privacy Policy</h1>
+    <>
+      {/* FAQ Schema for SEO */}
+      <JsonLd data={faqSchema} />
+
+      <div className="mx-auto max-w-4xl px-4 py-12">
+        <h1 className="mb-8 text-4xl font-bold text-gray-900 dark:text-gray-100">Privacy Policy</h1>
 
       <div className="prose prose-gray max-w-none">
         <p className="text-sm text-gray-500">
@@ -192,5 +222,6 @@ export default function PrivacyPage() {
         </div>
       </div>
     </div>
+    </>
   )
 }

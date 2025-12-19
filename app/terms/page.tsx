@@ -7,6 +7,8 @@
 
 import { Metadata } from 'next'
 import Link from 'next/link'
+import { JsonLd } from '@/components/JsonLd'
+import { generateFAQSchema } from '@/lib/seo/json-ld'
 
 export const metadata: Metadata = {
   title: 'Terms of Service - Input Atlas',
@@ -14,9 +16,37 @@ export const metadata: Metadata = {
 }
 
 export default function TermsPage() {
+  // FAQ schema for rich snippets in search results
+  const faqSchema = generateFAQSchema([
+    {
+      question: 'What license are prompts released under?',
+      answer: 'All prompts submitted to Input Atlas are released under CC0 1.0 Universal (CC0 1.0) Public Domain Dedication. This means you waive all copyright and related rights to the prompt and dedicate it to the public domain.',
+    },
+    {
+      question: 'Can I use prompts for commercial purposes?',
+      answer: 'Yes. All prompts are in the public domain under CC0, which means anyone can use them for any purpose without attribution, including commercial use.',
+    },
+    {
+      question: 'Can I edit or modify prompts after submission?',
+      answer: 'We reserve the right to approve, reject, or edit any submission. Once approved, prompts remain in the public domain under CC0 and cannot be retroactively removed from public access.',
+    },
+    {
+      question: 'What happens if I violate the Terms of Service?',
+      answer: 'We may terminate or suspend your account immediately, without prior notice or liability, for breach of these Terms, fraudulent or illegal activity, or abuse of the Service. Upon termination, your right to use the Service will immediately cease, though prompts you submitted remain in the public domain under CC0.',
+    },
+    {
+      question: 'What content is prohibited?',
+      answer: 'You may not submit prompts containing illegal, harmful, or offensive content; prompts you do not have the right to share; impersonate others; attempt unauthorized access; use automated scraping tools; or violate any applicable laws or regulations.',
+    },
+  ])
+
   return (
-    <div className="mx-auto max-w-4xl px-4 py-12">
-      <h1 className="mb-8 text-4xl font-bold text-gray-900 dark:text-gray-100">Terms of Service</h1>
+    <>
+      {/* FAQ Schema for SEO */}
+      <JsonLd data={faqSchema} />
+
+      <div className="mx-auto max-w-4xl px-4 py-12">
+        <h1 className="mb-8 text-4xl font-bold text-gray-900 dark:text-gray-100">Terms of Service</h1>
 
       <div className="prose prose-gray max-w-none">
         <p className="text-sm text-gray-500">
@@ -242,5 +272,6 @@ export default function TermsPage() {
         </div>
       </div>
     </div>
+    </>
   )
 }
