@@ -32,6 +32,19 @@ export const metadata: Metadata = {
   authors: [{ name: 'Input Atlas' }],
   creator: 'Input Atlas',
   publisher: 'Input Atlas',
+  // Mobile browser customization
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#3b82f6' },
+    { media: '(prefers-color-scheme: dark)', color: '#3b82f6' },
+  ],
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'Input Atlas',
+  },
+  formatDetection: {
+    telephone: false,
+  },
   openGraph: {
     type: 'website',
     locale: 'en_US',
