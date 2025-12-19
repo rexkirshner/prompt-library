@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 export default function PrivacyPage() {
   return (
     <div className="mx-auto max-w-4xl px-4 py-12">
-      <h1 className="mb-8 text-4xl font-bold text-gray-900">Privacy Policy</h1>
+      <h1 className="mb-8 text-4xl font-bold text-gray-900 dark:text-gray-100">Privacy Policy</h1>
 
       <div className="prose prose-gray max-w-none">
         <p className="text-sm text-gray-500">
@@ -24,14 +24,14 @@ export default function PrivacyPage() {
         </p>
 
         <section className="mt-8">
-          <h2 className="text-2xl font-semibold text-gray-900">Introduction</h2>
+          <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">Introduction</h2>
           <p className="mt-4 text-gray-700">
             Input Atlas (&ldquo;we,&rdquo; &ldquo;our,&rdquo; or &ldquo;us&rdquo;) is committed to protecting your privacy. This Privacy Policy explains how we collect, use, and safeguard your information when you use our service.
           </p>
         </section>
 
         <section className="mt-8">
-          <h2 className="text-2xl font-semibold text-gray-900">Information We Collect</h2>
+          <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">Information We Collect</h2>
 
           <h3 className="mt-6 text-xl font-semibold text-gray-800">Account Information</h3>
           <p className="mt-2 text-gray-700">
@@ -66,7 +66,7 @@ export default function PrivacyPage() {
         </section>
 
         <section className="mt-8">
-          <h2 className="text-2xl font-semibold text-gray-900">How We Use Your Information</h2>
+          <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">How We Use Your Information</h2>
           <p className="mt-4 text-gray-700">
             We use collected information to:
           </p>
@@ -81,7 +81,7 @@ export default function PrivacyPage() {
         </section>
 
         <section className="mt-8">
-          <h2 className="text-2xl font-semibold text-gray-900">Data Sharing and Disclosure</h2>
+          <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">Data Sharing and Disclosure</h2>
           <p className="mt-4 text-gray-700">
             We do not sell your personal information. Your data may be shared only in these circumstances:
           </p>
@@ -93,7 +93,7 @@ export default function PrivacyPage() {
         </section>
 
         <section className="mt-8">
-          <h2 className="text-2xl font-semibold text-gray-900">Content License</h2>
+          <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">Content License</h2>
           <p className="mt-4 text-gray-700">
             All prompts submitted to this library are released under{' '}
             <a
@@ -109,7 +109,7 @@ export default function PrivacyPage() {
         </section>
 
         <section className="mt-8">
-          <h2 className="text-2xl font-semibold text-gray-900">Data Security</h2>
+          <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">Data Security</h2>
           <p className="mt-4 text-gray-700">
             We implement security measures including:
           </p>
@@ -125,7 +125,7 @@ export default function PrivacyPage() {
         </section>
 
         <section className="mt-8">
-          <h2 className="text-2xl font-semibold text-gray-900">Your Rights (GDPR)</h2>
+          <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">Your Rights (GDPR)</h2>
           <p className="mt-4 text-gray-700">
             If you are in the European Economic Area (EEA), you have these rights:
           </p>
@@ -142,7 +142,7 @@ export default function PrivacyPage() {
         </section>
 
         <section className="mt-8">
-          <h2 className="text-2xl font-semibold text-gray-900">Cookies and Tracking</h2>
+          <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">Cookies and Tracking</h2>
           <p className="mt-4 text-gray-700">
             We use minimal cookies:
           </p>
@@ -153,21 +153,21 @@ export default function PrivacyPage() {
         </section>
 
         <section className="mt-8">
-          <h2 className="text-2xl font-semibold text-gray-900">Children&apos;s Privacy</h2>
+          <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">Children&apos;s Privacy</h2>
           <p className="mt-4 text-gray-700">
             Our service is not intended for children under 13. We do not knowingly collect personal information from children under 13.
           </p>
         </section>
 
         <section className="mt-8">
-          <h2 className="text-2xl font-semibold text-gray-900">Changes to This Policy</h2>
+          <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">Changes to This Policy</h2>
           <p className="mt-4 text-gray-700">
             We may update this Privacy Policy from time to time. We will notify users of significant changes by updating the &ldquo;Last updated&rdquo; date.
           </p>
         </section>
 
         <section className="mt-8">
-          <h2 className="text-2xl font-semibold text-gray-900">Contact Us</h2>
+          <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">Contact Us</h2>
           <p className="mt-4 text-gray-700">
             For privacy-related questions or to exercise your rights, please contact us through{' '}
             <a

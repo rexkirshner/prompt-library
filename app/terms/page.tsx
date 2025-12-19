@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 export default function TermsPage() {
   return (
     <div className="mx-auto max-w-4xl px-4 py-12">
-      <h1 className="mb-8 text-4xl font-bold text-gray-900">Terms of Service</h1>
+      <h1 className="mb-8 text-4xl font-bold text-gray-900 dark:text-gray-100">Terms of Service</h1>
 
       <div className="prose prose-gray max-w-none">
         <p className="text-sm text-gray-500">
@@ -24,14 +24,14 @@ export default function TermsPage() {
         </p>
 
         <section className="mt-8">
-          <h2 className="text-2xl font-semibold text-gray-900">Agreement to Terms</h2>
+          <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">Agreement to Terms</h2>
           <p className="mt-4 text-gray-700">
             By accessing or using Input Atlas (&ldquo;Service&rdquo;), you agree to be bound by these Terms of Service (&ldquo;Terms&rdquo;). If you disagree with any part of these terms, you may not access the Service.
           </p>
         </section>
 
         <section className="mt-8">
-          <h2 className="text-2xl font-semibold text-gray-900">Use of Service</h2>
+          <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">Use of Service</h2>
 
           <h3 className="mt-6 text-xl font-semibold text-gray-800">Permitted Use</h3>
           <p className="mt-2 text-gray-700">
@@ -59,7 +59,7 @@ export default function TermsPage() {
         </section>
 
         <section className="mt-8">
-          <h2 className="text-2xl font-semibold text-gray-900">Content and Licensing</h2>
+          <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">Content and Licensing</h2>
 
           <h3 className="mt-6 text-xl font-semibold text-gray-800">CC0 Public Domain Dedication</h3>
           <p className="mt-2 text-gray-700">
@@ -106,7 +106,7 @@ export default function TermsPage() {
         </section>
 
         <section className="mt-8">
-          <h2 className="text-2xl font-semibold text-gray-900">Accounts and Security</h2>
+          <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">Accounts and Security</h2>
           <p className="mt-4 text-gray-700">
             When you create an account:
           </p>
@@ -122,7 +122,7 @@ export default function TermsPage() {
         </section>
 
         <section className="mt-8">
-          <h2 className="text-2xl font-semibold text-gray-900">Moderation</h2>
+          <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">Moderation</h2>
           <p className="mt-4 text-gray-700">
             All prompt submissions are subject to moderation. We reserve the right to:
           </p>
@@ -138,7 +138,7 @@ export default function TermsPage() {
         </section>
 
         <section className="mt-8">
-          <h2 className="text-2xl font-semibold text-gray-900">Disclaimer of Warranties</h2>
+          <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">Disclaimer of Warranties</h2>
           <p className="mt-4 text-gray-700">
             THE SERVICE IS PROVIDED &ldquo;AS IS&rdquo; AND &ldquo;AS AVAILABLE&rdquo; WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO:
           </p>
@@ -154,7 +154,7 @@ export default function TermsPage() {
         </section>
 
         <section className="mt-8">
-          <h2 className="text-2xl font-semibold text-gray-900">Limitation of Liability</h2>
+          <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">Limitation of Liability</h2>
           <p className="mt-4 text-gray-700">
             TO THE MAXIMUM EXTENT PERMITTED BY LAW, WE SHALL NOT BE LIABLE FOR ANY:
           </p>
@@ -167,7 +167,7 @@ export default function TermsPage() {
         </section>
 
         <section className="mt-8">
-          <h2 className="text-2xl font-semibold text-gray-900">Indemnification</h2>
+          <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">Indemnification</h2>
           <p className="mt-4 text-gray-700">
             You agree to indemnify and hold harmless Input Atlas and its operators from any claims, damages, or expenses arising from:
           </p>
@@ -180,7 +180,7 @@ export default function TermsPage() {
         </section>
 
         <section className="mt-8">
-          <h2 className="text-2xl font-semibold text-gray-900">Termination</h2>
+          <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">Termination</h2>
           <p className="mt-4 text-gray-700">
             We may terminate or suspend your account immediately, without prior notice or liability, for any reason, including:
           </p>
@@ -195,21 +195,21 @@ export default function TermsPage() {
         </section>
 
         <section className="mt-8">
-          <h2 className="text-2xl font-semibold text-gray-900">Changes to Terms</h2>
+          <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">Changes to Terms</h2>
           <p className="mt-4 text-gray-700">
             We reserve the right to modify these Terms at any time. We will notify users of material changes by updating the &ldquo;Last updated&rdquo; date. Continued use of the Service after changes constitutes acceptance of the new Terms.
           </p>
         </section>
 
         <section className="mt-8">
-          <h2 className="text-2xl font-semibold text-gray-900">Governing Law</h2>
+          <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">Governing Law</h2>
           <p className="mt-4 text-gray-700">
             These Terms shall be governed by and construed in accordance with the laws of the jurisdiction where the Service operates, without regard to conflict of law provisions.
           </p>
         </section>
 
         <section className="mt-8">
-          <h2 className="text-2xl font-semibold text-gray-900">Contact</h2>
+          <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">Contact</h2>
           <p className="mt-4 text-gray-700">
             For questions about these Terms, please contact us through{' '}
             <a

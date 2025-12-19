@@ -36,7 +36,7 @@ export default function SubmissionSuccessPage() {
 
         {/* Success message */}
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-gray-900">
+          <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-100">
             Submission Successful!
           </h1>
           <p className="mt-2 text-gray-600">
@@ -69,7 +69,7 @@ export default function SubmissionSuccessPage() {
           </Link>
           <Link
             href="/"
-            className="block text-sm text-gray-600 hover:text-gray-900"
+            className="block text-sm text-gray-600 hover:text-gray-900 dark:text-gray-100"
           >
             Back to Home
           </Link>
