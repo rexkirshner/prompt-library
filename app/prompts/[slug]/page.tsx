@@ -19,6 +19,7 @@ import { logger as baseLogger } from '@/lib/logging'
 import { JsonLd } from '@/components/JsonLd'
 import { generateArticleSchema, getBaseUrl } from '@/lib/seo/json-ld'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
+import { RelatedPrompts } from '@/components/RelatedPrompts'
 
 const logger = baseLogger.child({ module: 'prompts/[slug]' })
 
@@ -424,6 +425,11 @@ export default async function PromptPage({ params }: PromptPageProps) {
           </div>
         </div>
       )}
+
+      {/* Related Prompts */}
+      <div className="mb-8">
+        <RelatedPrompts promptId={prompt.id} limit={5} />
+      </div>
 
       {/* License notice */}
       <div className="mt-12 rounded-md border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-4">
