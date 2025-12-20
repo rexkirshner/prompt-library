@@ -1878,3 +1878,110 @@ Completed Sprint 003 code quality improvements, fixed critical Next.js security 
 **Blockers:** None
 
 ---
+## Session 17 - 2025-12-19
+
+**Duration:** 3.5h | **Focus:** Database optimization (Phases 2-3) | **Status:** ✅
+
+### TL;DR
+- Completed Phase 2: Cross-request caching, performance indexes, related prompts optimization (~500 queries/day saved)
+- Completed Phase 3: View count deduplication with cookies (~70-80 queries/day saved)
+- Updated audit document with completed optimizations and results
+- **Total reduction: ~1,570-2,080 queries/day (71-94% from baseline 2,210/day)**
+- All 634 tests passing, site operational and well within free tier limits
+
+### Problem Solved
+**Issue:** After completing Phase 1 (N+1 fixes), still had ~1,200 ops/day remaining from caching, indexing, and view count inefficiencies. Original database suspension was due to 42k operations/month exceeding free tier.
+
+**Constraints:**
+- Must maintain test coverage (no breaking changes)
+- Follow modular, maintainable architecture principles
+- Use only Next.js built-in features (no Redis, no new dependencies)
+- Support Jest test environment (no Node.js-only APIs)
+- Build incrementally with testing after each change
+
+**Approach:**
+1. **Phase 2** - Implemented cross-request caching using `unstable_cache` for categories/tags/featured prompts
+2. **Phase 2** - Added composite database indexes for common filter patterns
+3. **Phase 2** - Optimized related prompts to accept pre-fetched data (avoid duplicate queries)
+4. **Phase 3** - Implemented cookie-based view count deduplication (24-hour window)
+
+**Why this approach:**
+- `unstable_cache` is built into Next.js (no new dependencies)
+- Database indexes improve query performance without code changes
+- Cookie-based deduplication is simple, secure, and doesn't require Redis
+- All optimizations are modular and testable
+- Fire-and-forget patterns prevent blocking user experience
+
+### Decisions
+- **Cookie-based view tracking over batch updates:** Simpler implementation, no background jobs needed, httpOnly cookies for security → Provides 70-80% reduction in view count queries
+- **Conditional caching helper for Jest:** `unstable_cache` throws in Jest due to missing incremental cache - created runtime environment detection to bypass in tests → All tests pass in test environment
+- **24-hour deduplication window:** Balances data accuracy (prevents refresh spam) with user experience (counts unique daily views) → Industry standard for analytics
+
+### Files
+**NEW:** `lib/analytics/view-tracker.ts:1-187` - Modular view tracking with cookie-based deduplication, fire-and-forget updates, comprehensive error handling
+**NEW:** `lib/analytics/__tests__/view-tracker.test.ts:1-240` - 10 comprehensive tests covering all scenarios (cookie checking, DB updates, error handling, production vs dev)
+**MOD:** `lib/db/cached-queries.ts:25-47` - Added `conditionalCache` helper for Jest compatibility, wrapped all cache functions with `unstable_cache`
+**MOD:** `lib/db/cached-queries.ts:263-285` - Added cache invalidation helpers (`revalidatePromptDataCache`, `revalidateTagDataCache`)
+**MOD:** `app/admin/queue/actions.ts:12,47,123` - Integrated cache invalidation on approve/delete
+**MOD:** `app/admin/prompts/compound/actions.ts:14,254,466` - Integrated cache invalidation on create/update
+**MOD:** `lib/prompts/related.ts:16-27,132-167` - Added optional category/tagIds parameters to avoid re-fetching
+**MOD:** `components/RelatedPrompts.tsx:11,16-27,46-59` - Accept and pass pre-fetched data
+**MOD:** `app/prompts/[slug]/page.tsx:23,147-149` - Use `trackPromptView()` instead of direct DB update
+**MOD:** `prisma/schema.prisma:108-111` - Added 3 composite indexes for filtering
+**NEW:** `prisma/migrations/20251220011836_add_performance_indexes/migration.sql:1-9` - Migration for composite indexes
+**MOD:** `docs/audits/PRISMA_OPERATIONS_AUDIT.md:1-793` - Comprehensive update with completion status and results
+
+### Mental Models
+**Current understanding:**
+- Database optimization is layered: N+1 fixes (biggest wins) → caching (medium wins) → deduplication (small wins)
+- `unstable_cache` is perfect for infrequently-changing data (categories, tags, featured prompts)
+- React.cache() only deduplicates within a single request - need unstable_cache for cross-request
+- Cookie-based tracking is sufficient for view deduplication - Redis would be overkill
+- Fire-and-forget database updates prevent blocking user experience (view counts are non-critical)
+
+**Key insights:**
+- Testing environment differences matter - Jest doesn't provide Next.js cache infrastructure
+- Conditional runtime checks (process.env.NODE_ENV) enable test compatibility without code duplication
+- Pre-fetching data and passing it down prevents duplicate queries (related prompts optimization)
+- Database indexes are "free" performance - no code changes, just faster queries
+- Small optimizations add up: 70-80 queries/day may seem small, but improves data quality significantly
+
+**Gotchas discovered:**
+- `unstable_cache` throws "Invariant: incrementalCache missing" in Jest - need environment detection
+- Jest cache can cause false failures after migrations - always `npx jest --clearCache` after schema changes
+- Cookie `secure` flag must be runtime-checked (can't be const in config) to support testing
+- Cache invalidation must be manual with `unstable_cache` - called in admin actions where data changes
+
+### Work In Progress
+**Task:** Documentation and decision on next steps
+**Location:** N/A (optimization work complete)
+**Current approach:** All critical and high-priority optimizations complete. Remaining items (full-text search, Redis caching) are optional and low-ROI at current scale.
+**Why this approach:** Focus on high-impact items first, validate in production before adding complexity
+**Next specific action:** User decides whether to push commits or tackle full-text search index
+**Context needed:** All commits are local (not pushed). 6 commits ready: Phase 2 caching, Phase 2 indexes, Phase 2 related prompts, Phase 3 view tracking, audit update.
+
+### TodoWrite State
+**Completed:**
+- ✅ Implement cross-request caching with unstable_cache
+- ✅ Add limit to getAvailablePromptsForCompound
+- ✅ Add cache invalidation on prompt changes
+- ✅ Test caching behavior and performance
+- ✅ Add missing database indexes
+- ✅ Create and test database migration
+- ✅ Run full test suite to verify Phase 2
+- ✅ Optimize related prompts to avoid re-fetching
+- ✅ Update RelatedPrompts component to pass data
+- ✅ Test related prompts optimization
+- ✅ Create view tracking utility module
+- ✅ Update detail page to use view tracker
+- ✅ Write tests for view tracking logic
+- ✅ Run tests to verify behavior
+- ✅ Commit view count deduplication
+
+**In Progress:** None
+
+### Next Session
+**Priority:** Monitor production metrics in Vercel dashboard to validate optimization impact
+**Blockers:** None - all optimizations complete and tested
+
+---

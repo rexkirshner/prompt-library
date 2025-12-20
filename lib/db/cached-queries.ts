@@ -23,7 +23,7 @@
  */
 
 import { cache } from 'react'
-import { unstable_cache } from 'next/cache'
+import { unstable_cache, revalidateTag } from 'next/cache'
 import { prisma } from './client'
 
 /**
@@ -261,9 +261,8 @@ export const getRecentPrompts = cache(async (limit: number = 6) => {
  * await revalidatePromptDataCache()
  */
 export async function revalidatePromptDataCache(): Promise<void> {
-  const { revalidateTag } = await import('next/cache')
-  revalidateTag('prompt-data')
-  revalidateTag('featured-prompts')
+  revalidateTag('prompt-data', '')
+  revalidateTag('featured-prompts', '')
 }
 
 /**
@@ -279,7 +278,6 @@ export async function revalidatePromptDataCache(): Promise<void> {
  * await revalidateTagDataCache()
  */
 export async function revalidateTagDataCache(): Promise<void> {
-  const { revalidateTag } = await import('next/cache')
-  revalidateTag('tag-data')
-  revalidateTag('prompt-data') // Tags affect prompt data too
+  revalidateTag('tag-data', '')
+  revalidateTag('prompt-data', '') // Tags affect prompt data too
 }

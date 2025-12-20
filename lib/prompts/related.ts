@@ -29,7 +29,11 @@ export interface RelatedPromptsOptions {
 /**
  * Default options for related prompts queries
  */
-const DEFAULT_OPTIONS: Required<RelatedPromptsOptions> = {
+const DEFAULT_OPTIONS: Omit<RelatedPromptsOptions, 'category' | 'tagIds'> & {
+  limit: number
+  minTagMatches: number
+  includeDifferentCategories: boolean
+} = {
   limit: 5,
   minTagMatches: 0,
   includeDifferentCategories: true,
