@@ -105,6 +105,10 @@ model prompts {
   @@index([deleted_at])
   @@index([status, deleted_at])
   @@index([is_compound])
+  // Phase 2 optimization indexes (added 2025-12-19)
+  @@index([is_compound, status, deleted_at]) // For compound prompt filtering
+  @@index([ai_generated, status, deleted_at]) // For "hide AI" filter
+  @@index([copy_count]) // For popular sort (most copied)
 }
 
 model compound_prompt_components {
