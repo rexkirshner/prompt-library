@@ -14,8 +14,7 @@ import { buildSearchWhere, parseTagFilter } from '@/lib/prompts/search'
 import { PromptFilters } from '@/components/PromptFilters'
 import { Pagination } from '@/components/Pagination'
 import { PromptsListClient } from '@/components/PromptsListClient'
-import { resolvePrompt } from '@/lib/compound-prompts/resolution'
-import type { CompoundPromptWithComponents } from '@/lib/compound-prompts/types'
+import { bulkResolvePrompts } from '@/lib/compound-prompts/bulk-resolution'
 import { logger as baseLogger } from '@/lib/logging'
 import { JsonLd } from '@/components/JsonLd'
 import { generateCollectionPageSchema, getBaseUrl } from '@/lib/seo/json-ld'
@@ -45,45 +44,6 @@ interface PromptsPageProps {
 }
 
 const ITEMS_PER_PAGE = 20
-
-/**
- * Helper to fetch prompt with components for resolution
- */
-async function getPromptWithComponents(
-  id: string
-): Promise<CompoundPromptWithComponents | null> {
-  const prompt = await prisma.prompts.findUnique({
-    where: { id },
-    include: {
-      compound_components: {
-        include: {
-          component_prompt: true,
-        },
-        orderBy: { position: 'asc' },
-      },
-    },
-  })
-
-  if (!prompt) return null
-
-  return {
-    id: prompt.id,
-    prompt_text: prompt.prompt_text,
-    is_compound: prompt.is_compound,
-    max_depth: prompt.max_depth,
-    compound_components: prompt.compound_components.map((comp) => ({
-      ...comp,
-      component_prompt: comp.component_prompt
-        ? {
-            id: comp.component_prompt.id,
-            prompt_text: comp.component_prompt.prompt_text,
-            is_compound: comp.component_prompt.is_compound,
-            max_depth: comp.component_prompt.max_depth,
-          }
-        : null,
-    })),
-  }
-}
 
 export default async function PromptsPage({ searchParams }: PromptsPageProps) {
   const params = await searchParams
@@ -180,31 +140,39 @@ export default async function PromptsPage({ searchParams }: PromptsPageProps) {
   // Calculate pagination values (uses totalCount from parallel fetch)
   const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE)
 
-  // Resolve compound prompts to get their display text
-  // Note: This still runs sequentially per prompt as each may need nested lookups
-  const promptsWithResolvedText = await Promise.all(
-    prompts.map(async (prompt) => {
-      let resolvedText: string
-      if (prompt.is_compound) {
-        try {
-          resolvedText = await resolvePrompt(prompt.id, getPromptWithComponents)
-        } catch (error) {
-          logger.error('Failed to resolve compound prompt', error as Error, {
-            promptId: prompt.id,
-            slug: prompt.slug,
-          })
-          resolvedText = ''
-        }
-      } else {
-        resolvedText = prompt.prompt_text || ''
-      }
+  // Resolve compound prompts efficiently using bulk resolution
+  // This eliminates N+1 queries: instead of 20 separate queries for compound prompts,
+  // we make 1-3 queries total using breadth-first fetching
+  const promptIds = prompts.map((p) => p.id)
+  const bulkResolutionResult = await bulkResolvePrompts(promptIds)
 
-      return {
-        ...prompt,
-        resolved_text: resolvedText,
-      }
-    })
-  )
+  // Log query performance metrics
+  logger.info('Browse page rendered', {
+    promptCount: prompts.length,
+    compoundCount: prompts.filter((p) => p.is_compound).length,
+    queriesExecuted: bulkResolutionResult.queriesExecuted,
+    successCount: bulkResolutionResult.successCount,
+    errorCount: bulkResolutionResult.errorCount,
+  })
+
+  // Map prompts with resolved text
+  const promptsWithResolvedText = prompts.map((prompt) => {
+    const resolvedText = bulkResolutionResult.resolvedTexts.get(prompt.id)
+
+    // Log errors for failed resolutions
+    if (resolvedText === undefined && prompt.is_compound) {
+      const errorMessage = bulkResolutionResult.errors.get(prompt.id)
+      logger.error('Failed to resolve compound prompt', new Error(errorMessage), {
+        promptId: prompt.id,
+        slug: prompt.slug,
+      })
+    }
+
+    return {
+      ...prompt,
+      resolved_text: resolvedText || prompt.prompt_text || '',
+    }
+  })
 
   // Generate structured data for SEO
   const baseUrl = getBaseUrl()
