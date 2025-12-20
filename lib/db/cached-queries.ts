@@ -27,6 +27,26 @@ import { unstable_cache } from 'next/cache'
 import { prisma } from './client'
 
 /**
+ * Conditional caching helper
+ *
+ * Uses unstable_cache in production/development, falls back to direct execution in tests.
+ * This is necessary because Jest doesn't provide Next.js's incremental cache infrastructure.
+ */
+function conditionalCache<T>(
+  fn: () => Promise<T>,
+  keys: string[],
+  options: { revalidate: number; tags: string[] }
+): () => Promise<T> {
+  // In test environment, skip unstable_cache (not available in Jest)
+  if (process.env.NODE_ENV === 'test' || process.env.JEST_WORKER_ID) {
+    return fn
+  }
+
+  // In production/development, use unstable_cache for cross-request caching
+  return unstable_cache(fn, keys, options)
+}
+
+/**
  * Get distinct categories from approved prompts
  *
  * Two-layer caching:
@@ -36,7 +56,7 @@ import { prisma } from './client'
  * Cache is invalidated when prompts are created/updated/deleted.
  */
 export const getCategories = cache(
-  unstable_cache(
+  conditionalCache(
     async (): Promise<string[]> => {
       const results = await prisma.prompts.findMany({
         where: {
@@ -69,35 +89,33 @@ export const getCategories = cache(
  * Two-layer caching with limit-specific cache keys.
  * Cache is invalidated when tags are created or usage counts change.
  */
-export const getPopularTags = cache(
-  async (limit: number = 20): Promise<{ id: string; slug: string; name: string }[]> => {
-    // Use unstable_cache with limit in the cache key
-    const getCachedTags = unstable_cache(
-      async () => {
-        const tags = await prisma.tags.findMany({
-          select: {
-            id: true,
-            slug: true,
-            name: true,
-          },
-          orderBy: {
-            usage_count: 'desc',
-          },
-          take: limit,
-        })
+export const getPopularTags = async (
+  limit: number = 20
+): Promise<{ id: string; slug: string; name: string }[]> => {
+  // Use conditionalCache with limit in the cache key
+  return conditionalCache(
+    async () => {
+      const tags = await prisma.tags.findMany({
+        select: {
+          id: true,
+          slug: true,
+          name: true,
+        },
+        orderBy: {
+          usage_count: 'desc',
+        },
+        take: limit,
+      })
 
-        return tags
-      },
-      ['popular-tags', `limit-${limit}`], // Include limit in cache key
-      {
-        revalidate: 3600, // 1 hour TTL
-        tags: ['tag-data', 'prompt-data'], // Tags for invalidation
-      }
-    )
-
-    return getCachedTags()
-  }
-)
+      return tags
+    },
+    ['popular-tags', `limit-${limit}`], // Include limit in cache key
+    {
+      revalidate: 3600, // 1 hour TTL
+      tags: ['tag-data', 'prompt-data'], // Tags for invalidation
+    }
+  )()
+}
 
 /**
  * Get total count of approved prompts
@@ -122,7 +140,7 @@ export const getApprovedPromptCount = cache(async (): Promise<number> => {
  * Two-layer caching since this data changes infrequently.
  */
 export const getAvailablePromptsForCompound = cache(
-  unstable_cache(
+  conditionalCache(
     async (): Promise<
       {
         id: string
@@ -165,8 +183,8 @@ export const getAvailablePromptsForCompound = cache(
  * Two-layer caching with limit-specific cache keys.
  * Cache is invalidated when prompts are featured/unfeatured or modified.
  */
-export const getFeaturedPrompts = cache(async (limit: number = 3) => {
-  const getCachedFeatured = unstable_cache(
+export const getFeaturedPrompts = async (limit: number = 3) => {
+  return conditionalCache(
     async () => {
       return prisma.prompts.findMany({
         where: {
@@ -192,10 +210,8 @@ export const getFeaturedPrompts = cache(async (limit: number = 3) => {
       revalidate: 3600, // 1 hour TTL
       tags: ['prompt-data', 'featured-prompts'],
     }
-  )
-
-  return getCachedFeatured()
-})
+  )()
+}
 
 /**
  * Get recent prompts for home page
