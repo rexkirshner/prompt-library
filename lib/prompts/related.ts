@@ -20,6 +20,10 @@ export interface RelatedPromptsOptions {
   minTagMatches?: number
   /** Whether to include prompts from different categories */
   includeDifferentCategories?: boolean
+  /** Pre-fetched category (avoids re-fetch) */
+  category?: string
+  /** Pre-fetched tag IDs (avoids re-fetch) */
+  tagIds?: string[]
 }
 
 /**
@@ -132,23 +136,35 @@ export async function findRelatedPrompts(
   const opts = { ...DEFAULT_OPTIONS, ...options }
 
   // 1. Get the source prompt with its category and tags
-  const sourcePrompt = await prisma.prompts.findUnique({
-    where: { id: promptId },
-    select: {
-      category: true,
-      prompt_tags: {
-        select: {
-          tag_id: true,
+  // OPTIMIZATION: Use pre-fetched data if available to avoid extra query
+  let sourceCategory: string
+  let sourceTagIds: string[]
+
+  if (opts.category !== undefined && opts.tagIds !== undefined) {
+    // Use pre-fetched data (avoids 1 query)
+    sourceCategory = opts.category
+    sourceTagIds = opts.tagIds
+  } else {
+    // Fallback: fetch from database
+    const sourcePrompt = await prisma.prompts.findUnique({
+      where: { id: promptId },
+      select: {
+        category: true,
+        prompt_tags: {
+          select: {
+            tag_id: true,
+          },
         },
       },
-    },
-  })
+    })
 
-  if (!sourcePrompt) {
-    return []
+    if (!sourcePrompt) {
+      return []
+    }
+
+    sourceCategory = sourcePrompt.category
+    sourceTagIds = sourcePrompt.prompt_tags.map((pt) => pt.tag_id)
   }
-
-  const sourceTagIds = sourcePrompt.prompt_tags.map((pt) => pt.tag_id)
 
   // 2. Build where clause based on options
   const whereConditions: Prisma.promptsWhereInput[] = []
@@ -167,7 +183,7 @@ export async function findRelatedPrompts(
 
   // Include same category prompts
   if (opts.includeDifferentCategories || sourceTagIds.length === 0) {
-    categoryTagFilter.push({ category: sourcePrompt.category })
+    categoryTagFilter.push({ category: sourceCategory })
   }
 
   // Include prompts with matching tags (if source has tags)
@@ -224,7 +240,7 @@ export async function findRelatedPrompts(
     const promptTagIds = prompt.prompt_tags.map((pt) => pt.tags.id)
     const matchingTags = promptTagIds.filter((id) => sourceTagIds.includes(id))
       .length
-    const sameCategory = prompt.category === sourcePrompt.category
+    const sameCategory = prompt.category === sourceCategory
 
     return {
       ...prompt,

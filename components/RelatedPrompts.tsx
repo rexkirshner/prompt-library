@@ -8,7 +8,7 @@
  */
 
 import Link from 'next/link'
-import { getRelatedPromptsForDisplay } from '@/lib/prompts/related'
+import { findRelatedPrompts } from '@/lib/prompts/related'
 
 /**
  * Props for RelatedPrompts component
@@ -20,6 +20,10 @@ interface RelatedPromptsProps {
   limit?: number
   /** Optional className for custom styling */
   className?: string
+  /** Pre-fetched category (optimization to avoid re-fetch) */
+  category?: string
+  /** Pre-fetched tag IDs (optimization to avoid re-fetch) */
+  tagIds?: string[]
 }
 
 /**
@@ -43,9 +47,16 @@ export async function RelatedPrompts({
   promptId,
   limit = 5,
   className = '',
+  category,
+  tagIds,
 }: RelatedPromptsProps) {
   // Fetch related prompts on the server
-  const relatedPrompts = await getRelatedPromptsForDisplay(promptId, limit)
+  // OPTIMIZATION: Pass pre-fetched category and tagIds to avoid re-fetch
+  const relatedPrompts = await findRelatedPrompts(promptId, {
+    limit,
+    category,
+    tagIds,
+  })
 
   // Don't render section if no related prompts found
   if (relatedPrompts.length === 0) {

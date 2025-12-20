@@ -399,7 +399,12 @@ export default async function PromptPage({ params }: PromptPageProps) {
 
       {/* Related Prompts */}
       <div className="mb-8">
-        <RelatedPrompts promptId={prompt.id} limit={5} />
+        <RelatedPrompts
+          promptId={prompt.id}
+          limit={5}
+          category={prompt.category}
+          tagIds={prompt.prompt_tags.map((pt) => pt.tags.id)}
+        />
       </div>
 
       {/* License notice */}
