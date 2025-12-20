@@ -8,13 +8,13 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { cache } from 'react'
 import { prisma } from '@/lib/db/client'
 import { auth } from '@/lib/auth'
 import { getCurrentUser } from '@/lib/auth'
 import { CopyButton } from '@/components/CopyButton'
 import { CopyPreview } from '@/components/CopyPreview'
-import { resolvePrompt } from '@/lib/compound-prompts/resolution'
-import type { CompoundPromptWithComponents } from '@/lib/compound-prompts/types'
+import { resolveSinglePrompt } from '@/lib/compound-prompts/bulk-resolution'
 import { logger as baseLogger } from '@/lib/logging'
 import { JsonLd } from '@/components/JsonLd'
 import { generateArticleSchema, getBaseUrl } from '@/lib/seo/json-ld'
@@ -33,43 +33,39 @@ interface PromptPageProps {
 export const dynamic = 'force-dynamic'
 
 /**
- * Helper to fetch prompt with components for resolution
+ * Cached helper to fetch prompt by slug
+ *
+ * Uses React.cache() to deduplicate queries across generateMetadata and main component.
+ * This eliminates duplicate queries - both functions can call this and only one
+ * database query will be made per request.
+ *
+ * @param slug - Prompt slug to fetch
+ * @returns Prompt with tags and components, or null if not found
  */
-async function getPromptWithComponents(
-  id: string
-): Promise<CompoundPromptWithComponents | null> {
-  const prompt = await prisma.prompts.findUnique({
-    where: { id },
+const getCachedPromptBySlug = cache(async (slug: string) => {
+  return prisma.prompts.findUnique({
+    where: { slug },
     include: {
+      prompt_tags: {
+        include: {
+          tags: true,
+        },
+      },
       compound_components: {
         include: {
-          component_prompt: true,
+          component_prompt: {
+            select: {
+              id: true,
+              title: true,
+              is_compound: true,
+            },
+          },
         },
         orderBy: { position: 'asc' },
       },
     },
   })
-
-  if (!prompt) return null
-
-  return {
-    id: prompt.id,
-    prompt_text: prompt.prompt_text,
-    is_compound: prompt.is_compound,
-    max_depth: prompt.max_depth,
-    compound_components: prompt.compound_components.map((comp) => ({
-      ...comp,
-      component_prompt: comp.component_prompt
-        ? {
-            id: comp.component_prompt.id,
-            prompt_text: comp.component_prompt.prompt_text,
-            is_compound: comp.component_prompt.is_compound,
-            max_depth: comp.component_prompt.max_depth,
-          }
-        : null,
-    })),
-  }
-}
+})
 
 /**
  * Generate metadata for SEO
@@ -78,16 +74,8 @@ export async function generateMetadata({
   params,
 }: PromptPageProps): Promise<Metadata> {
   const { slug } = await params
-  const prompt = await prisma.prompts.findUnique({
-    where: { slug },
-    include: {
-      prompt_tags: {
-        include: {
-          tags: true,
-        },
-      },
-    },
-  })
+  // Use cached fetch - deduplicates with main component query
+  const prompt = await getCachedPromptBySlug(slug)
 
   if (!prompt) {
     return {
@@ -100,7 +88,8 @@ export async function generateMetadata({
   if (!descriptionText) {
     if (prompt.is_compound) {
       try {
-        const resolvedText = await resolvePrompt(prompt.id, getPromptWithComponents)
+        // Use optimized single prompt resolution
+        const resolvedText = await resolveSinglePrompt(prompt.id)
         descriptionText = resolvedText.substring(0, 160)
       } catch {
         descriptionText = 'Compound prompt'
@@ -146,29 +135,8 @@ export default async function PromptPage({ params }: PromptPageProps) {
   const currentUser = await getCurrentUser()
   const isAdmin = currentUser?.isAdmin === true
 
-  // Fetch prompt with tags and components
-  const prompt = await prisma.prompts.findUnique({
-    where: { slug },
-    include: {
-      prompt_tags: {
-        include: {
-          tags: true,
-        },
-      },
-      compound_components: {
-        include: {
-          component_prompt: {
-            select: {
-              id: true,
-              title: true,
-              is_compound: true,
-            },
-          },
-        },
-        orderBy: { position: 'asc' },
-      },
-    },
-  })
+  // Use cached fetch - deduplicates with generateMetadata query
+  const prompt = await getCachedPromptBySlug(slug)
 
   // 404 if prompt not found or not approved
   if (!prompt || prompt.status !== 'APPROVED' || prompt.deleted_at) {
@@ -191,11 +159,14 @@ export default async function PromptPage({ params }: PromptPageProps) {
       })
     )
 
-  // For compound prompts, resolve the text
+  // For compound prompts, resolve the text using optimized bulk resolution
   let displayText: string
   if (prompt.is_compound) {
     try {
-      displayText = await resolvePrompt(prompt.id, getPromptWithComponents)
+      displayText = await resolveSinglePrompt(prompt.id)
+      if (!displayText) {
+        displayText = '[Error: Could not resolve compound prompt]'
+      }
     } catch (error) {
       logger.error('Failed to resolve compound prompt', error as Error, {
         promptId: prompt.id,
