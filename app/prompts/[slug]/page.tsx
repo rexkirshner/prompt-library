@@ -20,6 +20,7 @@ import { JsonLd } from '@/components/JsonLd'
 import { generateArticleSchema, getBaseUrl } from '@/lib/seo/json-ld'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { RelatedPrompts } from '@/components/RelatedPrompts'
+import { trackPromptView } from '@/lib/analytics/view-tracker'
 
 const logger = baseLogger.child({ module: 'prompts/[slug]' })
 
@@ -143,21 +144,9 @@ export default async function PromptPage({ params }: PromptPageProps) {
     notFound()
   }
 
-  // Increment view count (fire and forget, don't await)
-  // Use warn level since view count is non-critical
-  prisma.prompts
-    .update({
-      where: { id: prompt.id },
-      data: { view_count: { increment: 1 } },
-    })
-    .catch((err) =>
-      logger.warn('Failed to increment view count', {
-        operation: 'view-count-increment',
-        promptId: prompt.id,
-        slug: prompt.slug,
-        error: (err as Error).message,
-      })
-    )
+  // Track view with deduplication (fire and forget)
+  // Uses cookie to prevent duplicate counting within 24 hours
+  trackPromptView(prompt.id, prompt.slug)
 
   // For compound prompts, resolve the text using optimized bulk resolution
   let displayText: string
