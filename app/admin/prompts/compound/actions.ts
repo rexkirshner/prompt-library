@@ -11,6 +11,7 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/db/client'
 import { getAdminUser } from '@/lib/auth/admin'
+import { revalidatePromptDataCache } from '@/lib/db/cached-queries'
 import { generateSlug, generateUniqueSlug, normalizeTag, isValidTag } from '@/lib/prompts/validation'
 import {
   validateComponent,
@@ -249,6 +250,9 @@ export async function createCompoundPrompt(
       // This is non-critical, so we don't fail the entire submission
     }
 
+    // Invalidate cached data (categories, featured prompts, available prompts)
+    await revalidatePromptDataCache()
+
     // Revalidate paths
     revalidatePath('/admin')
     revalidatePath('/admin/queue')
@@ -457,6 +461,9 @@ export async function updateCompoundPrompt(
     )
     return { success: false, errors: { form: 'Failed to update compound prompt' } }
   }
+
+  // Invalidate cached data (categories, featured prompts, available prompts)
+  await revalidatePromptDataCache()
 
   // Revalidate paths (outside try-catch to avoid catching redirect)
   revalidatePath(`/prompts/${data.slug}`)

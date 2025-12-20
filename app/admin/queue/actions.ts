@@ -9,6 +9,7 @@
 import { revalidatePath } from 'next/cache'
 import { prisma } from '@/lib/db/client'
 import { getAdminUser } from '@/lib/auth/admin'
+import { revalidatePromptDataCache } from '@/lib/db/cached-queries'
 import { logger as baseLogger } from '@/lib/logging'
 
 const logger = baseLogger.child({ module: 'admin/queue/actions' })
@@ -41,6 +42,9 @@ export async function approvePrompt(
         featured,
       },
     })
+
+    // Invalidate cached data (categories, tags, featured prompts)
+    await revalidatePromptDataCache()
 
     // Revalidate relevant pages
     revalidatePath('/admin/queue')
@@ -80,6 +84,9 @@ export async function rejectPrompt(
       },
     })
 
+    // Note: No need to invalidate prompt cache for rejections
+    // (rejected prompts don't appear in public views)
+
     // Revalidate queue page
     revalidatePath('/admin/queue')
 
@@ -111,6 +118,9 @@ export async function deletePrompt(promptId: string): Promise<ModerationResult> 
         deleted_at: new Date(),
       },
     })
+
+    // Invalidate cached data (categories, featured prompts)
+    await revalidatePromptDataCache()
 
     // Revalidate relevant pages
     revalidatePath('/admin')
