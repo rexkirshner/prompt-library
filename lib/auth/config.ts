@@ -61,6 +61,7 @@ export const authConfig: NextAuthConfig = {
   ],
 
   // Pages configuration
+  // Note: Callback URLs are determined by environment variables (NEXTAUTH_URL, NEXT_PUBLIC_BASE_URL)
   pages: {
     signIn: '/auth/signin',
     error: '/auth/error',
